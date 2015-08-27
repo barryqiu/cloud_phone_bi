@@ -57,6 +57,8 @@ class Device(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     device_name = db.Column(db.String(50), unique=True, index=True)
     random_code = db.Column(db.String(30))
+    user_name = db.Column(db.String(50))
+    password = db.Column(db.String(50))
     collect_time = db.Column(db.DateTime(), default=datetime.utcnow)
     state = db.Column(db.Integer, default=1)
 
@@ -66,9 +68,19 @@ class Device(db.Model):
         device.device_name = json_device.get('device_name')
         if device.device_name is None or device.device_name == '':
             raise ValidationError('device does not have a name')
+
         device.random_code = json_device.get('random_code')
         if device.random_code is None or device.random_code == '':
             raise ValidationError('device does not have a random code')
+
+        device.user_name = json_device.get('user_name')
+        if device.user_name is None or device.user_name == '':
+            raise ValidationError('device does not have a username')
+
+        device.password = json_device.get('password')
+        if device.password is None or device.password == '':
+            raise ValidationError('device does not have a password')
+
         return device
 
     def to_json(self):
@@ -76,6 +88,8 @@ class Device(db.Model):
             'id': self.id,
             'deivice_name': self.device_name,
             'random_code': self.random_code,
+            'user_name': self.user_name,
+            'password': self.password,
             'collect_time': self.collect_time,
             'state': self.state
         }
