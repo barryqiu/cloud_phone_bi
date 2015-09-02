@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request, g
 from . import api
 from .base_api import BaseApi
 from manage import app
@@ -6,13 +6,10 @@ from ..models import User
 from .. import db
 
 
-@api.route('/user/<int:id>')
-def get_user(id):
+@api.route('/user')
+def get_user():
     try:
-        user = User.query.filter_by(id=id)
-        if not user:
-            return jsonify(BaseApi.api_wrong_param())
-        return jsonify(BaseApi.api_success(user.to_json()))
+        return jsonify(BaseApi.api_success(g.current_user.to_json()))
     except Exception, e:
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
