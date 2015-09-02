@@ -100,11 +100,10 @@ class User(db.Model):
     def to_json(self):
         json_user = {
             'id': self.id,
-            'mobile_bum': self.mobile_num,
+            'mobile_num': self.mobile_num,
             'system_version': self.system_version,
             'imei': self.imei,
             'imsi': self.imsi,
-            'model_num': self.model_number,
             'collect_time': self.collect_time,
             'android_id': self.android_id,
             'mac': self.mac,
