@@ -15,10 +15,12 @@ class BaseApi:
         return ret
 
     @staticmethod
-    def api_system_error():
+    def api_system_error(msg):
+        if msg is None or msg == '':
+            msg = "system error"
         ret = {
             'err_code': ERR_CODE_SYSTEM,
-            'content': 'system error',
+            'content': msg,
         }
         return ret
 
