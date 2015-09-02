@@ -10,6 +10,8 @@ from .. import db
 def get_user(id):
     try:
         user = User.query.get_or_404(id)
+        if user is None:
+            return jsonify(BaseApi.api_wrong_param())
         return jsonify(BaseApi.api_success(user.to_json()))
     except Exception, e:
         app.logger.error(e.message)
