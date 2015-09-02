@@ -10,7 +10,7 @@ from .. import db
 def get_user(id):
     try:
         user = User.query.filter_by(id=id)
-        if user is None:
+        if not user:
             return jsonify(BaseApi.api_wrong_param())
         return jsonify(BaseApi.api_success(user.to_json()))
     except Exception, e:
