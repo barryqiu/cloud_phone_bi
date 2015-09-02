@@ -106,10 +106,10 @@ def free_device():
             raise ValidationError('does not have a user id')
         if game_id is None or game_id == '':
             raise ValidationError('does not have a game id')
-        if game_id is None or game_id == '':
-            raise ValidationError('does not have a game id')
-        if game_id is None or game_id == '':
-            raise ValidationError('does not have a game id')
+        if device_id is None or device_id == '':
+            raise ValidationError('does not have a device id')
+        if record_id is None or record_id == '':
+            raise ValidationError('does not have a record id')
 
         device = Device.query.filter_by(id=device_id)
         if device.state != DEVICE_STATE_BUSY:
