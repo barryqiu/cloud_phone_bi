@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import jsonify, request
+from flask import jsonify, request, g
 
 from . import api
 from .base_api import BaseApi
@@ -58,7 +58,7 @@ def new_device():
 @api.route('/device/allot', methods=['POST'])
 def allot_device():
     try:
-        user_id = request.json.get('user_id')
+        user_id = g.current_user.id
         game_id = request.json.get('game_id')
 
         if user_id is None or user_id == '':
@@ -97,7 +97,7 @@ def allot_device():
 def free_device():
     try:
         print(datetime.now())
-        user_id = request.json.get('user_id')
+        user_id = g.current_user.id
         game_id = request.json.get('game_id')
         device_id = request.json.get('device_id')
         record_id = request.json.get('record_id')
