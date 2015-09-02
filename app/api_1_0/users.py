@@ -27,6 +27,5 @@ def new_user():
         db.session.commit()
         return jsonify(BaseApi.api_success(user.to_json()))
     except BaseException, e:
-        print(e.message)
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))

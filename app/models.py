@@ -91,12 +91,10 @@ class User(db.Model):
             raise ValidationError('user does not have a password')
         user.confirmed = True
         user.system_version = json_user.get('system_version')
-        user.system_version = json_user.get('imei')
-        user.system_version = json_user.get('imsi')
-        user.system_version = json_user.get('model_num')
-        user.system_version = json_user.get('collect_time')
-        user.system_version = json_user.get('android_id')
-        user.system_version = json_user.get('mac')
+        user.imei = json_user.get('imei')
+        user.imsi = json_user.get('imsi')
+        user.android_id = json_user.get('android_id')
+        user.mac = json_user.get('mac')
         return user
 
     def to_json(self):
