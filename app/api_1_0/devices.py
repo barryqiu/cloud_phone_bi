@@ -111,7 +111,7 @@ def free_device():
         if game_id is None or game_id == '':
             raise ValidationError('does not have a game id')
 
-        device = Device.query.get_or_404(device_id)
+        device = Device.query.filter_by(id=device_id)
         if device.state != DEVICE_STATE_BUSY:
             raise ValidationError('wrong device id')
 
