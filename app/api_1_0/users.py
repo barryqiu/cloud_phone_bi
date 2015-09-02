@@ -13,7 +13,7 @@ def get_user(id):
         return jsonify(BaseApi.api_success(user.to_json()))
     except Exception, e:
         app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error())
+        return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/user', methods=['POST'])
@@ -28,4 +28,4 @@ def new_user():
         return jsonify(BaseApi.api_success(user.to_json()))
     except BaseException, e:
         app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error())
+        return jsonify(BaseApi.api_system_error(e.message))
