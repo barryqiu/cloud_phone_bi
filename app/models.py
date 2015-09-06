@@ -105,6 +105,7 @@ class User(db.Model):
             'system_version': self.system_version,
             'imei': self.imei,
             'imsi': self.imsi,
+            'model_number': self.model_number,
             'collect_time': self.collect_time,
             'android_id': self.android_id,
             'mac': self.mac,
