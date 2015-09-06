@@ -26,8 +26,8 @@ def get_device(name):
             return jsonify(BaseApi.api_wrong_param())
         return jsonify(BaseApi.api_success(device.to_json()))
     except Exception, e:
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+        app.logger.error(e.name+e.message)
+        return jsonify(BaseApi.api_system_error(e.name+e.message))
 
 
 @api.route('/device')
@@ -36,8 +36,8 @@ def get_all_device():
         devices = Device.query.all()
         return jsonify(BaseApi.api_success([device.to_json() for device in devices]))
     except BaseException, e:
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+        app.logger.error(e.name+e.message)
+        return jsonify(BaseApi.api_system_error(e.name+e.message))
 
 
 @api.route('/device', methods=['POST'])
@@ -51,8 +51,8 @@ def new_device():
         db.session.commit()
         return jsonify(BaseApi.api_success(device.to_json()))
     except BaseException, e:
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+        app.logger.error(e.name+e.message)
+        return jsonify(BaseApi.api_system_error(e.name+e.message))
 
 
 @api.route('/device/allot', methods=['POST'])
@@ -89,8 +89,8 @@ def allot_device():
             "device": idle_device.to_json()}
         return jsonify(BaseApi.api_success(ret))
     except BaseException, e:
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+        app.logger.error(e.name+e.message)
+        return jsonify(BaseApi.api_system_error(e.name+e.message))
 
 
 @api.route('/device/free', methods=['POST'])
@@ -142,5 +142,5 @@ def free_device():
 
         return jsonify(BaseApi.api_success("free success"))
     except BaseException, e:
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+        app.logger.error(e.name+e.message)
+        return jsonify(BaseApi.api_system_error(e.name+e.message))

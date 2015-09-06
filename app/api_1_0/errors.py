@@ -28,6 +28,7 @@ def forbidden(message):
     response.status_code = 403
     return response
 
+
 def system_error(message):
     response = jsonify({'err_code': ERR_CODE_SYSTEM, 'content': message})
     response.status_code = 500

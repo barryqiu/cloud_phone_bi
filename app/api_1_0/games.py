@@ -12,5 +12,5 @@ def get_games():
         games = Game.query.all()
         return jsonify(BaseApi.api_success([game.to_json() for game in games]))
     except BaseException, e:
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+        app.logger.error(e.name+e.message)
+        return jsonify(BaseApi.api_system_error(e.name+e.message))
