@@ -111,7 +111,7 @@ def free_device():
     if record_id is None or record_id == '':
         raise ValidationError('does not have a record id')
 
-    device = Device.query.filter_by(id=device_id)
+    device = Device.query.filter_by(id=device_id).first()
     if device.state != DEVICE_STATE_BUSY:
         raise ValidationError('wrong device id')
 
