@@ -95,52 +95,51 @@ def allot_device():
 
 @api.route('/device/free', methods=['POST'])
 def free_device():
-    # try:
-    print(datetime.now())
-    user_id = g.current_user.id
-    game_id = request.json.get('game_id')
-    device_id = request.json.get('device_id')
-    record_id = request.json.get('record_id')
+    try:
+        user_id = g.current_user.id
+        game_id = request.json.get('game_id')
+        device_id = request.json.get('device_id')
+        record_id = request.json.get('record_id')
 
-    if user_id is None or user_id == '':
-        raise ValidationError('does not have a user id')
-    if game_id is None or game_id == '':
-        raise ValidationError('does not have a game id')
-    if device_id is None or device_id == '':
-        raise ValidationError('does not have a device id')
-    if record_id is None or record_id == '':
-        raise ValidationError('does not have a record id')
+        if user_id is None or user_id == '':
+            raise ValidationError('does not have a user id')
+        if game_id is None or game_id == '':
+            raise ValidationError('does not have a game id')
+        if device_id is None or device_id == '':
+            raise ValidationError('does not have a device id')
+        if record_id is None or record_id == '':
+            raise ValidationError('does not have a record id')
 
-    device = Device.query.filter_by(id=device_id).first()
-    if device.state != DEVICE_STATE_BUSY:
-        raise ValidationError('wrong device id')
+        device = Device.query.filter_by(id=device_id).first()
+        if device.state != DEVICE_STATE_BUSY:
+            raise ValidationError('wrong device id')
 
-    start_agent_record = AgentRecord.query.filter_by(
-        type=RECORD_TYPE_START,
-        user_id=user_id,
-        game_id=game_id,
-        device_id=device_id,
-        id=record_id).first()
+        start_agent_record = AgentRecord.query.filter_by(
+            type=RECORD_TYPE_START,
+            user_id=user_id,
+            game_id=game_id,
+            device_id=device_id,
+            id=record_id).first()
 
-    if start_agent_record is None:
-        raise ValidationError('start record does not exists')
+        if start_agent_record is None:
+            raise ValidationError('start record does not exists')
 
-    agent_rocord = AgentRecord()
-    agent_rocord.game_id = game_id
-    agent_rocord.user_id = user_id
-    agent_rocord.device_id = device_id
-    agent_rocord.type = RECORD_TYPE_END
-    agent_rocord.record_time = datetime.now()
-    agent_rocord.time_long = (agent_rocord.record_time - start_agent_record.record_time).seconds
-    agent_rocord.start_time = start_agent_record.record_time
+        agent_rocord = AgentRecord()
+        agent_rocord.game_id = game_id
+        agent_rocord.user_id = user_id
+        agent_rocord.device_id = device_id
+        agent_rocord.type = RECORD_TYPE_END
+        agent_rocord.record_time = datetime.now()
+        agent_rocord.time_long = (agent_rocord.record_time - start_agent_record.record_time).seconds
+        agent_rocord.start_time = start_agent_record.record_time
 
-    device.state = DEVICE_STATE_IDLE
+        device.state = DEVICE_STATE_IDLE
 
-    db.session.add(device)
-    db.session.add(agent_rocord)
-    db.session.commit()
+        db.session.add(device)
+        db.session.add(agent_rocord)
+        db.session.commit()
 
-    return jsonify(BaseApi.api_success("free success"))
-    # except BaseException, e:
-    #     app.logger.error(e.message)
-    #     return jsonify(BaseApi.api_system_error(e.message))
+        return jsonify(BaseApi.api_success("free success"))
+    except BaseException, e:
+        app.logger.error(e.message)
+        return jsonify(BaseApi.api_system_error(e.message))
