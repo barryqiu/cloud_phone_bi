@@ -86,6 +86,7 @@ def allot_device():
         print jsonify(idle_device.to_json())
         ret = {
             "record_id": agent_rocord.id,
+            "game_id": game_id,
             "device": idle_device.to_json()}
         return jsonify(BaseApi.api_success(ret))
     except BaseException, e:
@@ -139,7 +140,12 @@ def free_device():
         db.session.add(agent_rocord)
         db.session.commit()
 
-        return jsonify(BaseApi.api_success("free success"))
+        ret = {
+            "device_id": device_id,
+            "device_name": device.device_name
+        }
+
+        return jsonify(BaseApi.api_success(ret))
     except BaseException, e:
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
