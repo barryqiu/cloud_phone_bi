@@ -34,7 +34,7 @@ class User(db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def generate_confirmation_token(self, expiration=3600*24*30):
+    def generate_confirmation_token(self, expiration=3600 * 24 * 30):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id})
 
@@ -50,7 +50,7 @@ class User(db.Model):
         db.session.add(self)
         return True
 
-    def generate_reset_token(self, expiration=3600*24*30):
+    def generate_reset_token(self, expiration=3600 * 24 * 30):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'reset': self.id})
 
@@ -198,6 +198,7 @@ class Game(db.Model):
 class AgentRecord(db.Model):
     __tablename__ = 'tb_agent_record'
     id = db.Column(db.Integer, primary_key=True)
+    start_id = db.Column(db.Integer, default=0)
     type = db.Column(db.Integer, default=0)
     start_time = db.Column(db.DateTime(), default=datetime.now())
     record_time = db.Column(db.DateTime(), default=datetime.now())

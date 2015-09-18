@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from flask import jsonify, request, g
+from flask import jsonify, request, g, Session
 
 from . import api
+from sqlalchemy import and_
 from .base_api import BaseApi
 from manage import app
 from ..models import AgentRecord
@@ -126,6 +127,7 @@ def free_device():
             raise ValidationError('start record does not exists')
 
         agent_rocord = AgentRecord()
+        agent_rocord.start_id = record_id
         agent_rocord.game_id = game_id
         agent_rocord.user_id = user_id
         agent_rocord.device_id = device_id
@@ -147,5 +149,23 @@ def free_device():
 
         return jsonify(BaseApi.api_success(ret))
     except BaseException, e:
+        app.logger.error(e.message)
+        return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api.route('/device/user')
+def user_device():
+    try:
+        user_id = g.current_user.id
+
+        # user_records = AgentRecord.query.filter(
+        #     and_(AgentRecord.user_id == user_id, AgentRecord.id.notin_(AgentRecord.start_id))).all()
+        idle_device = Device.query.filter_by(state=DEVICE_STATE_IDLE).first()
+        start_ids = AgentRecord.query.filter_by(start_id=0)
+        print(start_ids)
+        # user_records = AgentRecord.query.filter(AgentRecord.id.notin_(AgentRecord.start_id).subquery().all()).all()
+
+        # return jsonify(BaseApi.api_success([user_record.to_json() for user_record in user_records]))
+    except Exception, e:
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
