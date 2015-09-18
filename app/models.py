@@ -202,11 +202,21 @@ class AgentRecord(db.Model):
     type = db.Column(db.Integer, default=0)
     start_time = db.Column(db.DateTime(), default=datetime.now())
     record_time = db.Column(db.DateTime(), default=datetime.now())
-    time_long = db.Column(db.Integer)
-    game_id = db.Column(db.Integer)
-    device_id = db.Column(db.Integer)
-    user_id = db.Column(db.Integer)
+    time_long = db.Column(db.Integer, default=0)
+    game_id = db.Column(db.Integer, default=0)
+    device_id = db.Column(db.Integer, default=0)
+    user_id = db.Column(db.Integer, default=0)
     state = db.Column(db.Integer, default=1)
 
     def __repr__(self):
         return '<Record %r,%r,%r>' % self.user_id % self.game_id % self.device_id
+
+    def to_json(self):
+        json_deive = {
+            'id': self.id,
+            'start_id': self.start_id,
+            'device_id': self.device_id,
+            'user_id': self.user_id,
+            'game_id': self.game_id,
+        }
+        return json_deive

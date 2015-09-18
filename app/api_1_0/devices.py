@@ -157,15 +157,22 @@ def free_device():
 def user_device():
     try:
         user_id = g.current_user.id
+        start_ids = []
+        end_records = db.session.query(AgentRecord).filter(AgentRecord.start_id.notin_([0])).all()
 
-        # user_records = AgentRecord.query.filter(
-        #     and_(AgentRecord.user_id == user_id, AgentRecord.id.notin_(AgentRecord.start_id))).all()
-        idle_device = Device.query.filter_by(state=DEVICE_STATE_IDLE).first()
-        start_ids = AgentRecord.query.filter_by(start_id=0)
-        print(start_ids)
-        # user_records = AgentRecord.query.filter(AgentRecord.id.notin_(AgentRecord.start_id).subquery().all()).all()
+        for end_record in end_records:
+            start_ids.append(end_record.start_id)
 
-        # return jsonify(BaseApi.api_success([user_record.to_json() for user_record in user_records]))
+        user_records = AgentRecord.query.filter(
+            and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
+
+        device_ids = []
+        for user_record in user_records:
+            device_ids.append(user_record.device_id)
+
+        devices =  db.session.query(Device).filter(Device.id.in_(device_ids)).all()
+
+        return jsonify(BaseApi.api_success([device.to_json() for device in devices]))
     except Exception, e:
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
