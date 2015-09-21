@@ -132,17 +132,17 @@ class Device(db.Model):
     @staticmethod
     def test_conn(device):
         try:
-            url = 'http://yunphoneclient.shinegame.cn/' + device.device_name + '/'
+            url = 'http://yunphoneclient.shinegame.cn/' + device.device_name
 
             # proxy = urllib2.ProxyHandler({'http': 'proxy.tencent.com:8080'})
             # opener = urllib2.build_opener(proxy)
             # urllib2.install_opener(opener)
 
             req = urllib2.Request(url)
-            response = urllib2.urlopen(req, timeout=1)
+            response = urllib2.urlopen(req)
             the_page = response.read()
 
-            return 'You can always manage users on the phone.' in the_page
+            return not 'Phone is not in the database. Is it online?' in the_page
         except Exception:
             return False
 
