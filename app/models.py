@@ -152,7 +152,7 @@ class Device(db.Model):
     def to_json(self):
         json_deive = {
             'id': self.id,
-            'deivice_name': self.device_name,
+            'device_name': self.device_name,
             'random_code': self.random_code,
             'user_name': self.user_name,
             'password': self.password,
