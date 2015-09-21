@@ -134,9 +134,9 @@ class Device(db.Model):
         try:
             url = 'http://yunphoneclient.shinegame.cn/' + device.device_name + '/'
 
-            proxy = urllib2.ProxyHandler({'http': 'proxy.tencent.com:8080'})
-            opener = urllib2.build_opener(proxy)
-            urllib2.install_opener(opener)
+            # proxy = urllib2.ProxyHandler({'http': 'proxy.tencent.com:8080'})
+            # opener = urllib2.build_opener(proxy)
+            # urllib2.install_opener(opener)
 
             req = urllib2.Request(url)
             response = urllib2.urlopen(req, timeout=1)
