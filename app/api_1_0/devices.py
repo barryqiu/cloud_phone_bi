@@ -35,7 +35,11 @@ def get_device(name):
 def get_all_device():
     try:
         devices = Device.query.all()
-        return jsonify(BaseApi.api_success([device.to_json() for device in devices]))
+        available_device = []
+        for device in devices:
+            if Device.test_conn(device):
+                available_device.append(device)
+        return jsonify(BaseApi.api_success([device.to_json() for device in available_device]))
     except BaseException, e:
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
@@ -166,13 +170,14 @@ def user_device():
         user_records = AgentRecord.query.filter(
             and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
 
-        device_ids = []
+        ret = []
         for user_record in user_records:
-            device_ids.append(user_record.device_id)
+            device = Device.query.filter_by(id=user_record.device_id).first()
+            one = device.to_json()
+            one['game_id'] = user_record.game_id
+            ret.append(one)
 
-        devices =  db.session.query(Device).filter(Device.id.in_(device_ids)).all()
-
-        return jsonify(BaseApi.api_success([device.to_json() for device in devices]))
+        return jsonify(BaseApi.api_success(ret))
     except Exception, e:
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))

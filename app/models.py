@@ -1,5 +1,6 @@
 from datetime import datetime
 import hashlib
+import urllib2
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, request, url_for
@@ -127,6 +128,23 @@ class Device(db.Model):
     password = db.Column(db.String(50))
     collect_time = db.Column(db.DateTime(), default=datetime.now)
     state = db.Column(db.Integer, default=1)
+
+    @staticmethod
+    def test_conn(device):
+        try:
+            url = 'http://yunphoneclient.shinegame.cn/' + device.device_name
+
+            proxy = urllib2.ProxyHandler({'http': 'proxy.tencent.com:8080'})
+            opener = urllib2.build_opener(proxy)
+            urllib2.install_opener(opener)
+
+            req = urllib2.Request(url)
+            response = urllib2.urlopen(req)
+            the_page = response.read()
+
+            return not 'Phone is not in the database. Is it online?' in the_page
+        except Exception:
+            return False
 
     @staticmethod
     def from_json(json_device):
