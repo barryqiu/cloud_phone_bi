@@ -62,41 +62,41 @@ def new_device():
 
 @api.route('/device/allot', methods=['POST'])
 def allot_device():
-    try:
-        user_id = g.current_user.id
-        game_id = request.json.get('game_id')
+    # try:
+    user_id = g.current_user.id
+    game_id = request.json.get('game_id')
 
-        if user_id is None or user_id == '':
-            raise ValidationError('does not have a user id')
-        if game_id is None or game_id == '':
-            raise ValidationError('does not have a game id')
+    if user_id is None or user_id == '':
+        raise ValidationError('does not have a user id')
+    if game_id is None or game_id == '':
+        raise ValidationError('does not have a game id')
 
-        idle_device = Device.query.filter_by(state=DEVICE_STATE_IDLE).first()
+    idle_device = Device.query.filter_by(state=DEVICE_STATE_IDLE).first()
 
-        if idle_device is None:
-            return jsonify(BaseApi.api_success(""))
+    if idle_device is None:
+        return jsonify(BaseApi.api_success(""))
 
-        idle_device.state = DEVICE_STATE_BUSY
+    idle_device.state = DEVICE_STATE_BUSY
 
-        agent_rocord = AgentRecord()
-        agent_rocord.game_id = game_id
-        agent_rocord.user_id = user_id
-        agent_rocord.device_id = idle_device.id
-        agent_rocord.type = RECORD_TYPE_START
-        agent_rocord.record_time = datetime.now()
+    agent_rocord = AgentRecord()
+    agent_rocord.game_id = game_id
+    agent_rocord.user_id = user_id
+    agent_rocord.device_id = idle_device.id
+    agent_rocord.type = RECORD_TYPE_START
+    agent_rocord.record_time = datetime.now()
 
-        db.session.add(agent_rocord)
-        db.session.add(idle_device)
-        db.session.commit()
-        print jsonify(idle_device.to_json())
-        ret = {
-            "record_id": agent_rocord.id,
-            "game_id": game_id,
-            "device": idle_device.to_json()}
-        return jsonify(BaseApi.api_success(ret))
-    except BaseException, e:
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+    db.session.add(agent_rocord)
+    db.session.add(idle_device)
+    db.session.commit()
+    print jsonify(idle_device.to_json())
+    ret = {
+        "record_id": agent_rocord.id,
+        "game_id": game_id,
+        "device": idle_device.to_json()}
+    return jsonify(BaseApi.api_success(ret))
+    # except BaseException, e:
+    #     app.logger.error(e.message)
+    #     return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/device/free', methods=['POST'])
