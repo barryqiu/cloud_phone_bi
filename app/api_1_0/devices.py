@@ -175,6 +175,7 @@ def user_device():
             device = Device.query.filter_by(id=user_record.device_id).first()
             one = device.to_json()
             one['game_id'] = user_record.game_id
+            one['record_id'] = user_record.id
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
