@@ -84,6 +84,7 @@ def allot_device():
         agent_rocord.device_id = idle_device.id
         agent_rocord.type = RECORD_TYPE_START
         agent_rocord.record_time = datetime.now()
+        agent_rocord.start_time = datetime.now()
 
         db.session.add(agent_rocord)
         db.session.add(idle_device)

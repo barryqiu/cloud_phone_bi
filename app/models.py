@@ -1,11 +1,43 @@
 from datetime import datetime
 import hashlib
 import urllib2
+from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, request, url_for
 from app.exceptions import ValidationError
-from . import db
+from . import db, login_manager
+
+
+class Admin(UserMixin, db.Model):
+    __tablename__ = 'tb_admin'
+    id = db.Column(db.Integer, primary_key=True)
+    user_name = db.Column(db.String(50), unique=True, index=True)
+    password_hash = db.Column(db.String(128))
+    state = db.Column(db.Integer, default=1)
+    role = db.Column(db.Integer, default=1)
+
+    def __init__(self, **kwargs):
+        super(Admin, self).__init__(**kwargs)
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return '<Admin %r>' % self.user_name
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Admin.query.get(int(user_id))
 
 
 class User(db.Model):
@@ -116,7 +148,7 @@ class User(db.Model):
         return json_user
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.mobile_num
 
 
 class Device(db.Model):

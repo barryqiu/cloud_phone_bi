@@ -6,6 +6,9 @@ ERR_CODE_SUCCESS = 0
 
 
 class BaseApi:
+    def __init__(self):
+        pass
+
     @staticmethod
     def api_success(content):
         ret = {
