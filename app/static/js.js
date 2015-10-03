@@ -1,0 +1,35 @@
+/**
+ * Created by barryqiu on 2015/10/2.
+ */
+$('#checkAll').click(function () {
+        if (this.checked) {
+            $("[name='selectFlag']:checkbox").each(function () { //遍历所有的name为selectFlag的 checkbox
+                this.checked = true;
+                //console.log($(this));
+            })
+        } else {   //反之 取消全选
+            $("[name='selectFlag']:checkbox").each(function () { //遍历所有的name为selectFlag的 checkbox
+                $(this).removeAttr("checked");
+                //console.log($(this));
+            })
+        }
+    }
+);
+
+function del_all_game() {
+    event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
+    var str = "0";
+    $("[name='selectFlag']:checkbox").each(function () {
+        if (this.checked == true) {
+            str += "," + this.id ;
+        }
+    });
+    $.get("/game/del/" + str, function (result) {
+        self.location.reload();
+    });
+}
+
+function delete_confirm()
+{
+    event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
+}

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.login import LoginManager
@@ -16,6 +17,10 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
+    @app.template_filter('datetimeformat')
+    def format_datatime(value, format='%Y-%m-%d %H:%M'):
+        return value.strftime(format)
+
     bootstrap.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
@@ -28,6 +33,12 @@ def create_app(config_name):
 
     from .game import game as game_blueprint
     app.register_blueprint(game_blueprint, url_prefix='/game')
+
+    from .user import user as user_blueprint
+    app.register_blueprint(user_blueprint, url_prefix='/user')
+
+    from .device import device as device_blueprint
+    app.register_blueprint(device_blueprint, url_prefix='/device')
 
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/1.0')

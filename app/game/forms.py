@@ -1,11 +1,11 @@
+# -*- coding: utf-8 -*-
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FileField
-from wtforms.validators import Required, Length, Email, Regexp, EqualTo, DataRequired
-from wtforms import ValidationError
-from ..models import User, Admin
+from wtforms import StringField, SubmitField, FileField, HiddenField
+from wtforms.validators import Length, DataRequired
 
 
 class AddGameForm(Form):
     gamename = StringField('Game Name', validators=[DataRequired(), Length(1, 50)])
-    gameicon = FileField('ICON', validators=[DataRequired()])
-    submit = SubmitField('Log In')
+    gameicon = FileField('Game Icon')
+    id = HiddenField()
+    submit = SubmitField('submit')

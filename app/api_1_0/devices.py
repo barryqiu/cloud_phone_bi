@@ -56,6 +56,7 @@ def new_device():
         db.session.commit()
         return jsonify(BaseApi.api_success(device.to_json()))
     except BaseException, e:
+        db.session.rollback()
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
 
@@ -96,6 +97,7 @@ def allot_device():
             "device": idle_device.to_json()}
         return jsonify(BaseApi.api_success(ret))
     except BaseException, e:
+        db.session.rollback()
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
 
@@ -154,6 +156,7 @@ def free_device():
 
         return jsonify(BaseApi.api_success(ret))
     except BaseException, e:
+        db.session.rollback()
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
 
