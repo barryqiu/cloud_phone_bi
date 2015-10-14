@@ -1,4 +1,5 @@
 from datetime import datetime
+import urllib2
 
 from flask import jsonify, request, g, Session
 
@@ -67,7 +68,13 @@ def allot_device():
         if game_id is None or game_id == '':
             raise ValidationError('does not have a game id')
 
-        idle_device = Device.query.filter_by(state=DEVICE_STATE_IDLE).first()
+        idle_devices = Device.query.filter_by(state=DEVICE_STATE_IDLE).all()
+
+        idle_device = None
+        for device in idle_devices:
+            if device_available(device):
+                idle_device = device
+                break
 
         if idle_device is None:
             return jsonify(BaseApi.api_success(""))
@@ -176,3 +183,28 @@ def user_device():
     except Exception, e:
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
+
+
+def device_available(device):
+    url = "http://yunphoneclient.shinegame.cn/connlen/"+device.device_name+"/2"
+    url_top = "http://yunphoneclient.shinegame.cn"
+    url3 = "http://yunphoneclient.shinegame.cn/"+device.device_name+"/screenshot.jpg?vlfnnn"
+
+    username = device.user_name
+    password = device.password
+    realm = "Webkey"
+
+    auth = urllib2.HTTPDigestAuthHandler()
+    auth.add_password(realm,url_top,username,password)
+    opener = urllib2.build_opener(auth)
+    urllib2.install_opener(opener)
+    try:
+        res_data = urllib2.urlopen(url3)
+        if res_data.code == 200:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
