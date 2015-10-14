@@ -1,10 +1,43 @@
 from datetime import datetime
 import hashlib
+import urllib2
+from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, request, url_for
 from app.exceptions import ValidationError
-from . import db
+from . import db, login_manager
+
+
+class Admin(UserMixin, db.Model):
+    __tablename__ = 'tb_admin'
+    id = db.Column(db.Integer, primary_key=True)
+    user_name = db.Column(db.String(50), unique=True, index=True)
+    password_hash = db.Column(db.String(128))
+    state = db.Column(db.Integer, default=1)
+    role = db.Column(db.Integer, default=1)
+
+    def __init__(self, **kwargs):
+        super(Admin, self).__init__(**kwargs)
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return '<Admin %r>' % self.user_name
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Admin.query.get(int(user_id))
 
 
 class User(db.Model):
@@ -115,7 +148,7 @@ class User(db.Model):
         return json_user
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.mobile_num
 
 
 class Device(db.Model):
@@ -127,6 +160,23 @@ class Device(db.Model):
     password = db.Column(db.String(50))
     collect_time = db.Column(db.DateTime(), default=datetime.now)
     state = db.Column(db.Integer, default=1)
+
+    @staticmethod
+    def test_conn(device):
+        try:
+            url = 'http://yunphoneclient.shinegame.cn/' + device.device_name
+
+            # proxy = urllib2.ProxyHandler({'http': 'proxy.tencent.com:8080'})
+            # opener = urllib2.build_opener(proxy)
+            # urllib2.install_opener(opener)
+
+            req = urllib2.Request(url)
+            response = urllib2.urlopen(req)
+            the_page = response.read()
+
+            return not 'Phone is not in the database. Is it online?' in the_page
+        except Exception:
+            return False
 
     @staticmethod
     def from_json(json_device):
@@ -152,7 +202,7 @@ class Device(db.Model):
     def to_json(self):
         json_deive = {
             'id': self.id,
-            'deivice_name': self.device_name,
+            'device_name': self.device_name,
             'random_code': self.random_code,
             'user_name': self.user_name,
             'password': self.password,

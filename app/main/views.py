@@ -1,12 +1,9 @@
-from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app, make_response
+from flask import render_template, abort, request, \
+    current_app, send_from_directory
+from flask.ext.login import login_required
 from flask.ext.sqlalchemy import get_debug_queries
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
-    CommentForm
-from .. import db
-from ..models import User
-from ..decorators import permission_required
+from flask import current_app as app
 
 
 @main.after_app_request
@@ -32,7 +29,13 @@ def server_shutdown():
 
 
 @main.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
     return render_template('index.html')
 
+
+@main.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.root_path + '/' + app.config['UPLOAD_FOLDER'],
+                               filename)
 

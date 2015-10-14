@@ -1,1 +1,7 @@
-hello world
+{% extends "base.html" %}
+
+{% block page_content %}
+
+    welcome {{ current_user.user_name }} !
+
+{% endblock %}
