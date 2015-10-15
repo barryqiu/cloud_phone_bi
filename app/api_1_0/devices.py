@@ -196,25 +196,32 @@ def user_device():
 
 
 def device_available(device):
-    url = "http://yunphoneclient.shinegame.cn/connlen/"+device.device_name+"/2"
+    if not device.user_name or not device.password:
+        return False
+
+    url = "http://yunphoneclient.shinegame.cn/connlen/" + device.device_name + "/2"
     url_top = "http://yunphoneclient.shinegame.cn"
-    url3 = "http://yunphoneclient.shinegame.cn/"+device.device_name+"/screenshot.jpg?vlfnnn"
+    url3 = "http://yunphoneclient.shinegame.cn/" + device.device_name + "/screenshot.jpg?vlfnnn"
 
     username = device.user_name
     password = device.password
     realm = "Webkey"
 
     auth = urllib2.HTTPDigestAuthHandler()
-    auth.add_password(realm,url_top,username,password)
+    auth.add_password(realm, url_top, username, password)
     opener = urllib2.build_opener(auth)
     urllib2.install_opener(opener)
+
+    # proxy
+    proxy = urllib2.ProxyHandler({'http': 'proxy.tencent.com:8080'})
+    opener = urllib2.build_opener(proxy)
+    urllib2.install_opener(opener)
+
     try:
         res_data = urllib2.urlopen(url3)
         if res_data.code == 200:
             return True
         else:
             return False
-    except:
+    except Exception, e:
         return False
-
-
