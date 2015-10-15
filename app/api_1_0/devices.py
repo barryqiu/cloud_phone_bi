@@ -213,9 +213,9 @@ def device_available(device):
     urllib2.install_opener(opener)
 
     # proxy
-    proxy = urllib2.ProxyHandler({'http': 'proxy.tencent.com:8080'})
-    opener = urllib2.build_opener(proxy)
-    urllib2.install_opener(opener)
+    # proxy = urllib2.ProxyHandler({'http': 'proxy.tencent.com:8080'})
+    # opener = urllib2.build_opener(proxy)
+    # urllib2.install_opener(opener)
 
     try:
         res_data = urllib2.urlopen(url3)
