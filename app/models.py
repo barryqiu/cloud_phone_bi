@@ -200,7 +200,7 @@ class Device(db.Model):
         return device
 
     def to_json(self):
-        json_deive = {
+        json_device = {
             'id': self.id,
             'device_name': self.device_name,
             'random_code': self.random_code,
@@ -209,7 +209,7 @@ class Device(db.Model):
             'collect_time': self.collect_time,
             'state': self.state
         }
-        return json_deive
+        return json_device
 
     def __repr__(self):
         return '<Device %r>' % self.device_name
@@ -225,21 +225,21 @@ class Game(db.Model):
 
     @staticmethod
     def from_json(json_game):
-        game = Game();
+        game = Game()
         game.game_name = json_game.get('game_name')
         if game.game_name is None or game.game_name == '':
             raise ValidationError('game does not have a name')
         return game
 
     def to_json(self):
-        json_deive = {
+        json_game = {
             'id': self.id,
             'game_name': self.game_name,
             'icon_url': self.icon_url,
             'add_time': self.add_time,
             'state': self.state,
         }
-        return json_deive
+        return json_game
 
     def __repr__(self):
         return '<Game %r>' % self.game_name
@@ -262,11 +262,69 @@ class AgentRecord(db.Model):
         return '<Record %r,%r,%r>' % self.user_id % self.game_id % self.device_id
 
     def to_json(self):
-        json_deive = {
+        json_agent_record = {
             'id': self.id,
             'start_id': self.start_id,
             'device_id': self.device_id,
             'user_id': self.user_id,
             'game_id': self.game_id,
         }
-        return json_deive
+        return json_agent_record
+
+
+class UserNotice(db.Model):
+    __tablename__ = 'tb_user_notice'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50))
+    title = db.Column(db.String(150))
+    server_name = db.Column(db.String(150))
+    level_need = db.Column(db.String(150))
+    profession_need = db.Column(db.String(150))
+    other_need = db.Column(db.String(250))
+    game_id = db.Column(db.Integer, default=0, index=True)
+    publish_time = db.Column(db.DateTime(), default=datetime.now())
+
+    def __repr__(self):
+        return '<Record %r,%r,%r>' % self.id % self.user_id % self.game_id
+
+    @staticmethod
+    def from_json(json_user_notice):
+        user_notice = UserNotice()
+
+        user_notice.user_id = json_user_notice.get('user_id')
+        if not user_notice.user_id:
+            raise ValidationError('does not have a user_id')
+
+        user_notice.game_id = json_user_notice.get('game_id')
+        if not user_notice.game_id:
+            raise ValidationError('does not have a game_id')
+        game = Game.query.get(user_notice.game_id)
+        if game is None:
+            raise ValidationError('the game does not exist')
+
+        user_notice.title = json_user_notice.get('title')
+        if not user_notice.title:
+            raise ValidationError('does not have title')
+
+        user_notice.server_name = json_user_notice.get('server_name')
+        if not user_notice.server_name:
+            raise ValidationError('does not have server name')
+
+        user_notice.level_need = json_user_notice.get('level_need')
+        user_notice.profession_need = json_user_notice.get('profession_need')
+        user_notice.other_need = json_user_notice.get('other_need')
+
+        return user_notice
+
+    def to_json(self):
+        json_user_notice = {
+            'id': self.id,
+            'user_id': self.user_id,
+            'title': self.title,
+            'level_need': self.level_need,
+            'profession_need': self.profession_need,
+            'game_id': self.game_id,
+            'other_need': self.other_need,
+            'publish_time': self.publish_time,
+        }
+        return json_user_notice
