@@ -29,6 +29,20 @@ function del_all_game() {
     });
 }
 
+function del_all_game_task(game_id, page) {
+    event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
+    var str = "0";
+    $("[name='selectFlag']:checkbox").each(function () {
+        if (this.checked == true) {
+            str += "," + this.id ;
+        }
+    });
+
+    $.get("/game/task/"+ game_id + "/" + page +"/del/" + str, function (result) {
+        self.location.reload();
+    });
+}
+
 function delete_confirm()
 {
     event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");

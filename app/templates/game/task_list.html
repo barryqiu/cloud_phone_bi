@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}游戏任务列表{% endblock %}
+
+{% block page_content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>游戏任务列表</h1>
+        </div>
+        <table class="table table-striped">
+            <tr>
+                <th width="5%">
+                    <input type="checkbox" id="checkAll">
+                </th>
+                <th>ID</th>
+                <th>任务名</th>
+                <th>任务描述</th>
+                <th>日期</th>
+                <th><a class="btn btn-success" href="{{ url_for('game.game_task_add', game_id=game_id) }}"
+                       role="button">新增</a>
+                    <a class="btn btn-warning" href="#" role="button" onclick="del_all_game_task({{ game_id }},{{ pagination.page }})">删除</a>
+                </th>
+            </tr>
+            {% for task in gametasks %}
+                <tr>
+                    <td><input type="checkbox" id="{{ task.id }}" name="selectFlag"></td>
+                    <td>{{ task.id }}</td>
+                    <td>{{ task.task_name }}</td>
+                    <td>{{ task.task_des }}</td>
+                    <td>{{ task.add_time | datetimeformat("%Y-%m-%d") }}</td>
+                    <td>
+                        <a class="btn btn-info"
+                           href="{{ url_for('game.game_task_edit', game_id= game_id, task_id=task.id,page=pagination.page) }}"
+                           role="button">编辑</a>
+                        <a class="btn btn-warning"
+                           href="{{ url_for('game.game_task_del', game_id= game_id, task_id=task.id,page=pagination.page ) }}"
+                           role="button" onclick="delete_confirm()">
+                            删除
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination, 'game.game_task_list',game_id=game_id) }}
+    </div>
+{% endblock %}

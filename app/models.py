@@ -272,10 +272,31 @@ class AgentRecord(db.Model):
         return json_agent_record
 
 
+class GameTask(db.Model):
+    __tablename__ = 'tb_game_task'
+    id = db.Column(db.Integer, primary_key=True)
+    game_id = db.Column(db.Integer, default=0)
+    task_name = db.Column(db.String(50))
+    task_des = db.Column(db.Text)
+    add_time = db.Column(db.DateTime(), default=datetime.now())
+
+    def to_json(self):
+        json_game_task = {
+            'id': self.id,
+            'game_id': self.game_id,
+            'task_name': self.task_name,
+            'task_des': self.task_name,
+            'add_time': self.add_time,
+        }
+        return json_game_task
+
+
 class UserNotice(db.Model):
     __tablename__ = 'tb_user_notice'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(50))
+    task_name = db.Column(db.String(50))  # De-normalization Design
+    task_id = db.Column(db.Integer, default=0)
     title = db.Column(db.String(150))
     server_name = db.Column(db.String(150))
     level_need = db.Column(db.String(150))
@@ -283,6 +304,8 @@ class UserNotice(db.Model):
     other_need = db.Column(db.String(250))
     game_id = db.Column(db.Integer, default=0, index=True)
     publish_time = db.Column(db.DateTime(), default=datetime.now())
+    start_time = db.Column(db.Integer, default=0)
+    end_time = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return '<Record %r,%r,%r>' % self.id % self.user_id % self.game_id
@@ -302,6 +325,14 @@ class UserNotice(db.Model):
         if game is None:
             raise ValidationError('the game does not exist')
 
+        user_notice.task_id = json_user_notice.get('task_id')
+        if not user_notice.task_id:
+            raise ValidationError('does not have a task_id')
+        game_task = GameTask.query.get(user_notice.task_id)
+        if game_task is None or game_task.game_id != int(user_notice.game_id):
+            raise ValidationError('wrong task_id')
+        user_notice.task_name = game_task.task_name
+
         user_notice.title = json_user_notice.get('title')
         if not user_notice.title:
             raise ValidationError('does not have title')
@@ -313,6 +344,8 @@ class UserNotice(db.Model):
         user_notice.level_need = json_user_notice.get('level_need')
         user_notice.profession_need = json_user_notice.get('profession_need')
         user_notice.other_need = json_user_notice.get('other_need')
+        user_notice.start_time = json_user_notice.get('start_time')
+        user_notice.end_time = json_user_notice.get('end_time')
 
         return user_notice
 
@@ -326,5 +359,9 @@ class UserNotice(db.Model):
             'game_id': self.game_id,
             'other_need': self.other_need,
             'publish_time': self.publish_time,
+            'task_id': self.task_id,
+            'task_name': self.task_name,
+            'start_time': self.start_time,
+            'end_time': self.end_time
         }
         return json_user_notice

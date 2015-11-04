@@ -6,10 +6,12 @@ from ..models import User, UserNotice
 from .. import db
 
 
-@api.route('/user/notice')
-def get_notice():
+@api.route('/user/notice/<int:game_id>')
+def get_notice(game_id):
     try:
-        notices = UserNotice.query.all()
+        notices = UserNotice.query.filter_by(game_id=game_id).all()
+        if notices is None:
+            return jsonify(BaseApi.api_wrong_param())
         return jsonify(BaseApi.api_success([notice.to_json() for notice in notices]))
     except Exception, e:
         app.logger.error(e.message)
