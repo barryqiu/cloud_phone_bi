@@ -1,9 +1,8 @@
 from flask import jsonify, request, g
 from . import api
 from .base_api import BaseApi
-from manage import app
-from ..models import User, UserNotice, GameTask
-from .. import db
+from flask import current_app as app
+from ..models import GameTask
 
 
 @api.route('/game/task/<int:game_id>')
@@ -16,4 +15,3 @@ def get_tasks(game_id):
     except Exception, e:
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
-

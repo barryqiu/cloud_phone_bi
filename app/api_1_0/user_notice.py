@@ -1,8 +1,8 @@
 from flask import jsonify, request, g
 from . import api
 from .base_api import BaseApi
-from manage import app
-from ..models import User, UserNotice
+from flask import current_app as app
+from ..models import UserNotice
 from .. import db
 
 

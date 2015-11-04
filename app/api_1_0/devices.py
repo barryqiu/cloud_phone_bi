@@ -6,7 +6,7 @@ from flask import jsonify, request, g, Session
 from . import api
 from sqlalchemy import and_
 from .base_api import BaseApi
-from manage import app
+from flask import current_app as app
 from ..models import AgentRecord
 from ..models import Device
 from .. import db

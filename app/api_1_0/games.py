@@ -1,9 +1,8 @@
 from flask import jsonify, request
 from . import api
 from .base_api import BaseApi
-from manage import app
+from flask import current_app as app
 from ..models import Game
-from .. import db
 
 
 @api.route('/game')
