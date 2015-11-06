@@ -77,29 +77,31 @@ def allot_device():
 
         idle_device = None
         for device in idle_devices:
+            device = Device.query.get(device.id)
             if device_available(device):
+                if device.state != DEVICE_STATE_IDLE:
+                    continue
                 idle_device = device
+                device.state = DEVICE_STATE_BUSY
+                db.session.add(device)
+                db.session.commit()
                 break
 
         if idle_device is None:
             return jsonify(BaseApi.api_success(""))
 
-        idle_device.state = DEVICE_STATE_BUSY
+        agent_record = AgentRecord()
+        agent_record.game_id = game_id
+        agent_record.user_id = user_id
+        agent_record.device_id = idle_device.id
+        agent_record.type = RECORD_TYPE_START
+        agent_record.record_time = datetime.now()
+        agent_record.start_time = datetime.now()
 
-        agent_rocord = AgentRecord()
-        agent_rocord.game_id = game_id
-        agent_rocord.user_id = user_id
-        agent_rocord.device_id = idle_device.id
-        agent_rocord.type = RECORD_TYPE_START
-        agent_rocord.record_time = datetime.now()
-        agent_rocord.start_time = datetime.now()
-
-        db.session.add(agent_rocord)
-        db.session.add(idle_device)
+        db.session.add(agent_record)
         db.session.commit()
-        print jsonify(idle_device.to_json())
         ret = {
-            "record_id": agent_rocord.id,
+            "record_id": agent_record.id,
             "game_id": game_id,
             "device": idle_device.to_json()}
         return jsonify(BaseApi.api_success(ret))

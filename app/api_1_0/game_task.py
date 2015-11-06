@@ -1,4 +1,4 @@
-from flask import jsonify, request, g
+from flask import jsonify
 from . import api
 from .base_api import BaseApi
 from flask import current_app as app

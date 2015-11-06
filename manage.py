@@ -80,4 +80,4 @@ def deploy():
 if __name__ == '__main__':
     manager.run()
 
-# gunicron -w4 -b0.0.0.0:6000 manage:app
+# gunicorn -w4 -b0.0.0.0:6000 manage:app
