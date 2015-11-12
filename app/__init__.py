@@ -18,7 +18,7 @@ def create_app(config_name):
     config[config_name].init_app(app)
 
     @app.template_filter('datetimeformat')
-    def format_datatime(value, format='%Y-%m-%d %H:%M'):
+    def format_datetime(value, format='%Y-%m-%d %H:%M'):
         return value.strftime(format)
 
     bootstrap.init_app(app)

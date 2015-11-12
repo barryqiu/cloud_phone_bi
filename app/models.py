@@ -1,12 +1,23 @@
+import time
 from datetime import datetime
-import hashlib
 import urllib2
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app, request, url_for
+from flask import current_app
 from app.exceptions import ValidationError
 from . import db, login_manager
+
+
+def datetime_timestamp(dt):
+    # s = str(dt)
+    try:
+        v = int(time.mktime(time.strptime(str(dt), '%Y-%m-%d %H:%M:%S')))
+        return str(v)
+    except:
+            return 0
+
+
 
 
 class Admin(UserMixin, db.Model):
@@ -139,7 +150,7 @@ class User(db.Model):
             'imei': self.imei,
             'imsi': self.imsi,
             'model_number': self.model_number,
-            'collect_time': self.collect_time,
+            'collect_time': datetime_timestamp(self.collect_time),
             'android_id': self.android_id,
             'mac': self.mac,
             'state': self.state,
@@ -206,7 +217,7 @@ class Device(db.Model):
             'random_code': self.random_code,
             'user_name': self.user_name,
             'password': self.password,
-            'collect_time': self.collect_time,
+            'collect_time': datetime_timestamp(self.collect_time),
             'state': self.state
         }
         return json_device
@@ -236,7 +247,7 @@ class Game(db.Model):
             'id': self.id,
             'game_name': self.game_name,
             'icon_url': self.icon_url,
-            'add_time': self.add_time,
+            'add_time': datetime_timestamp(self.add_time),
             'state': self.state,
         }
         return json_game
@@ -286,7 +297,7 @@ class GameTask(db.Model):
             'game_id': self.game_id,
             'task_name': self.task_name,
             'task_des': self.task_name,
-            'add_time': self.add_time,
+            'add_time': datetime_timestamp(self.add_time),
         }
         return json_game_task
 
@@ -358,7 +369,7 @@ class UserNotice(db.Model):
             'profession_need': self.profession_need,
             'game_id': self.game_id,
             'other_need': self.other_need,
-            'publish_time': self.publish_time,
+            'publish_time': datetime_timestamp(self.publish_time),
             'task_id': self.task_id,
             'task_name': self.task_name,
             'start_time': self.start_time,
