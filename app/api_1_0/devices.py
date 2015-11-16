@@ -82,6 +82,8 @@ def allot_device():
         while True:
             if app.devices.qsize() > 0:
                 device_id = app.devices.get()
+                if not device_id:
+                    break
                 print "allot size %r, id %r" % app.devices.qsize() % device_id
             else:
                 break
