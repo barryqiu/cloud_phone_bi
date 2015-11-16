@@ -84,7 +84,6 @@ def allot_device():
                 device_id = app.devices.get()
                 if not device_id:
                     break
-                print "allot size %r, id %r" % (app.devices.qsize() , device_id)
             else:
                 break
             device = Device.query.get(device_id)
@@ -169,7 +168,6 @@ def free_device():
         db.session.commit()
 
         # add device into queue
-        print "free size %r, id %r" % (app.devices.qsize() , device.id)
         app.devices.put(device.id)
 
         ret = {

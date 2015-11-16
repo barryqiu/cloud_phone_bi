@@ -51,4 +51,3 @@ def init_queue():
     for device in idle_devices:
         q.put(device.id)
     app.devices = q
-    print "start queue size %r" % q.qsize()
