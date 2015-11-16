@@ -53,8 +53,13 @@ def new_device():
         now_device = Device.query.filter_by(device_name=device.device_name).first()
         if now_device:
             return jsonify(BaseApi.api_success(now_device.to_json()))
+
         db.session.add(device)
         db.session.commit()
+
+        # add device to queue
+        app.devices.put(device.id)
+
         return jsonify(BaseApi.api_success(device.to_json()))
     except BaseException, e:
         db.session.rollback()
@@ -73,18 +78,17 @@ def allot_device():
         if game_id is None or game_id == '':
             raise ValidationError('does not have a game id')
 
-        idle_devices = Device.query.filter_by(state=DEVICE_STATE_IDLE).all()
-
         idle_device = None
-        for device in idle_devices:
+        while True:
+            if app.devices.qsize() > 0:
+                device_id = app.devices.get()
+            else:
+                break
+            device = Device.query.get(device_id)
             if device_available(device):
-                device = Device.query.get(device.id)
                 if device.state != DEVICE_STATE_IDLE:
                     continue
                 idle_device = device
-                device.state = DEVICE_STATE_BUSY
-                db.session.add(device)
-                db.session.commit()
                 break
 
         if idle_device is None:
@@ -98,12 +102,15 @@ def allot_device():
         agent_record.record_time = datetime.now()
         agent_record.start_time = datetime.now()
 
+        idle_device.state = DEVICE_STATE_BUSY
+        db.session.add(idle_device)
         db.session.add(agent_record)
         db.session.commit()
         ret = {
             "record_id": agent_record.id,
             "game_id": game_id,
             "device": idle_device.to_json()}
+
         return jsonify(BaseApi.api_success(ret))
     except BaseException, e:
         db.session.rollback()
@@ -157,6 +164,9 @@ def free_device():
         db.session.add(device)
         db.session.add(agent_rocord)
         db.session.commit()
+
+        # add device into queue
+        app.devices.put(device.id)
 
         ret = {
             "device_id": device_id,
