@@ -15,9 +15,7 @@ def datetime_timestamp(dt):
         v = int(time.mktime(time.strptime(str(dt), '%Y-%m-%d %H:%M:%S')))
         return str(v)
     except:
-            return 0
-
-
+        return 0
 
 
 class Admin(UserMixin, db.Model):
@@ -376,3 +374,14 @@ class UserNotice(db.Model):
             'end_time': self.end_time
         }
         return json_user_notice
+
+
+class UserNoticeRel(db.Model):
+    __tablename__ = 'tb_user_notice_rel'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, default=0)
+    notice_id = db.Column(db.Integer, default=0)
+    add_time = db.Column(db.DateTime(), default=datetime.now())
+
+    def __repr__(self):
+        return '<Rel %r,%r,%r>' % self.id % self.user_id % self.notice_id
