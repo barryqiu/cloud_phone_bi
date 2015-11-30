@@ -32,6 +32,18 @@ def get_notice(game_id):
         return jsonify(BaseApi.api_system_error(e.message))
 
 
+@api.route('/user/notice/<int:game_id>/filter')
+def filter_notice(game_id):
+    try:
+        task_id = request.args.get('task_id')
+        start_time = request.args.get('start_time')
+        end_time = request.args.get('end_time')
+        server_name = request.args.get('server_name')
+    except Exception, e:
+        app.logger.error(e.message)
+        return jsonify(BaseApi.api_system_error(e.message))
+
+
 @api.route('/user/notice', methods=['POST'])
 def new_notice():
     try:
@@ -64,6 +76,24 @@ def join_notice(notice_id):
         db.session.add(user_notice_rel)
         db.session.commit()
         return jsonify(BaseApi.api_success('success'))
+    except BaseException, e:
+        db.session.rollback()
+        app.logger.error(e.message)
+        return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api.route('/user/notice')
+def user_notice_list():
+    try:
+        user_id = g.current_user.id
+        notices = db.session.query(UserNotice). \
+            filter(UserNotice.id == UserNoticeRel.notice_id, UserNoticeRel.user_id == user_id)
+        ret = []
+        for notice in notices:
+            one = notice.to_json()
+            one['isin'] = 1
+            ret.append(one)
+        return jsonify(BaseApi.api_success(ret))
     except BaseException, e:
         db.session.rollback()
         app.logger.error(e.message)

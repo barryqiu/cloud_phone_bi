@@ -365,6 +365,7 @@ class UserNotice(db.Model):
             'title': self.title,
             'level_need': self.level_need,
             'profession_need': self.profession_need,
+            'server_name': self.server_name,
             'game_id': self.game_id,
             'other_need': self.other_need,
             'publish_time': datetime_timestamp(self.publish_time),
