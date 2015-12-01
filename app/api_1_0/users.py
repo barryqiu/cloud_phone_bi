@@ -1,5 +1,6 @@
 from flask import jsonify, request, g
 from . import api
+from app.exceptions import ValidationError
 from app.sms.SmsUtil import send_smd
 from app.utils import generate_verification_code
 from .base_api import BaseApi
@@ -24,6 +25,11 @@ def get_verify_code(mobile):
 
         # store code into redis
         redis_key = ('YUNPHONE:VERIFYCODE:%s' % mobile).upper()
+        code = redis_store.get(redis_key)
+
+        if code:
+            return jsonify(BaseApi.api_success(code))
+
         redis_store.set(redis_key, code)
         redis_store.expire(redis_key, app.config['VERIFY_CODE_TTL'])
         send_smd(mobile, code, 300)
@@ -38,6 +44,15 @@ def get_verify_code(mobile):
 def new_user():
     try:
         user = User.from_json(request.json)
+
+        # verify code
+        code = request.json.get('code')
+        redis_key = ('YUNPHONE:VERIFYCODE:%s' % user.mobile_num).upper()
+        code_redis = redis_store.get(redis_key)
+
+        if not code_redis or code != code_redis:
+            raise ValidationError('wrong verify code')
+
         now_user = User.query.filter_by(mobile_num=user.mobile_num).first()
         if now_user:
             return jsonify(BaseApi.api_success(now_user.to_json()))
