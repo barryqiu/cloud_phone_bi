@@ -8,10 +8,12 @@ __author__ = 'barry'
 ERR_CODE_SYSTEM = 99
 ERR_CODE_WRONG_PARAM = 1
 ERR_CODE_SUCCESS = 0
+ERR_CODE_WRONG_VERIFY_CODE = 2
 
 DEVICE_STATE_DEL = 0
 DEVICE_STATE_IDLE = 1
 DEVICE_STATE_BUSY = 2
+
 
 class BaseApi:
     def __init__(self):
@@ -39,6 +41,14 @@ class BaseApi:
     def api_wrong_param():
         ret = {
             'err_code': ERR_CODE_WRONG_PARAM,
+            'content': 'wrong param',
+        }
+        return ret
+
+    @staticmethod
+    def api_wrong_verify_code():
+        ret = {
+            'err_code': ERR_CODE_WRONG_VERIFY_CODE,
             'content': 'wrong param',
         }
         return ret

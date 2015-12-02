@@ -53,7 +53,7 @@ def new_user():
         code_redis = redis_store.get(redis_key)
 
         if not code_redis or code != code_redis:
-            raise ValidationError('wrong verify code')
+            return jsonify(BaseApi.api_wrong_verify_code())
 
         now_user = User.query.filter_by(mobile_num=user.mobile_num).first()
         if now_user:
