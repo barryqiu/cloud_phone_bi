@@ -13,3 +13,12 @@ def get_games():
     except BaseException, e:
         app.logger.error(e.name+e.message)
         return jsonify(BaseApi.api_system_error(e.name+e.message))
+
+
+@api.route('/game/share')
+def get_games_share():
+    try:
+        return jsonify(BaseApi.api_success('1'))
+    except BaseException, e:
+        app.logger.error(e.name+e.message)
+        return jsonify(BaseApi.api_system_error(e.name+e.message))
