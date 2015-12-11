@@ -69,6 +69,7 @@ def new_device():
 
 @api.route('/device/allot', methods=['POST'])
 def allot_device():
+    restore_device_id = None
     try:
         user_id = g.current_user.id
         game_id = request.json.get('game_id')
@@ -80,15 +81,19 @@ def allot_device():
 
         idle_device = None
         while True:
-            device_id = Device.pop_redis_set()
+            restore_device_id = device_id = Device.pop_redis_set()
             if not device_id:
-                    break
+                break
             device = Device.query.get(device_id)
+            if device.state != DEVICE_STATE_IDLE:
+                restore_device_id = None
+                continue
             if device_available(device):
-                if device.state != DEVICE_STATE_IDLE:
-                    continue
                 idle_device = device
                 break
+            else:
+                # put device_id back
+                Device.push_redis_set(device_id)
 
         if idle_device is None:
             return jsonify(BaseApi.api_success(""))
@@ -113,6 +118,8 @@ def allot_device():
         return jsonify(BaseApi.api_success(ret))
     except BaseException, e:
         db.session.rollback()
+        if restore_device_id:
+            Device.push_redis_set(restore_device_id)
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
 
