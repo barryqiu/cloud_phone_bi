@@ -213,6 +213,23 @@ def user_device():
         return jsonify(BaseApi.api_system_error(e.message))
 
 
+@api.route('/device/num')
+def device_num():
+    try:
+        device_all_num = db.session.query(Device).count()
+        device_available_num = db.session.query(Device).filter_by(state=DEVICE_STATE_IDLE).count()
+
+        ret = {
+            "all": device_all_num,
+            "available": device_available_num
+        }
+
+        return jsonify(BaseApi.api_success(ret))
+    except Exception, e:
+        app.logger.error(e.message)
+        return jsonify(BaseApi.api_system_error(e.message))
+
+
 def device_available(device):
     if not device.user_name or not device.password:
         return False
