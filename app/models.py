@@ -232,6 +232,10 @@ class Device(db.Model):
     def pop_redis_set():
         redis_key = 'YUNPHONE:DEVICES'.upper()
         return redis_store.spop(redis_key)
+    @staticmethod
+    def available_num():
+        redis_key = 'YUNPHONE:DEVICES'.upper()
+        return redis_store.scard(redis_key)
 
 
 class Game(db.Model):

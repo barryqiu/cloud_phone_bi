@@ -217,7 +217,8 @@ def user_device():
 def device_num():
     try:
         device_all_num = db.session.query(Device).count()
-        device_available_num = db.session.query(Device).filter_by(state=DEVICE_STATE_IDLE).count()
+        # device_available_num = db.session.query(Device).filter_by(state=DEVICE_STATE_IDLE).count()
+        device_available_num = Device.available_num()
 
         ret = {
             "all": device_all_num,
