@@ -58,7 +58,7 @@ def new_device():
         db.session.commit()
 
         # add device to queue
-        app.devices.put(device.id)
+        Device.push_redis_set(device.id)
 
         return jsonify(BaseApi.api_success(device.to_json()))
     except BaseException, e:
@@ -80,12 +80,9 @@ def allot_device():
 
         idle_device = None
         while True:
-            if app.devices.qsize() > 0:
-                device_id = app.devices.get()
-                if not device_id:
+            device_id = Device.pop_redis_set()
+            if not device_id:
                     break
-            else:
-                break
             device = Device.query.get(device_id)
             if device_available(device):
                 if device.state != DEVICE_STATE_IDLE:
@@ -168,7 +165,7 @@ def free_device():
         db.session.commit()
 
         # add device into queue
-        app.devices.put(device.id)
+        Device.push_redis_set(device.id)
 
         ret = {
             "device_id": device_id,

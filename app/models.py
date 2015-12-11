@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from app.exceptions import ValidationError
-from . import db, login_manager
+from . import db, login_manager, redis_store
 
 
 def datetime_timestamp(dt):
@@ -222,6 +222,16 @@ class Device(db.Model):
 
     def __repr__(self):
         return '<Device %r>' % self.device_name
+
+    @staticmethod
+    def push_redis_set(device_id):
+        redis_key = 'YUNPHONE:DEVICES'.upper()
+        return redis_store.sadd(redis_key, device_id)
+
+    @staticmethod
+    def pop_redis_set():
+        redis_key = 'YUNPHONE:DEVICES'.upper()
+        return redis_store.spop(redis_key)
 
 
 class Game(db.Model):
