@@ -17,6 +17,9 @@ def get_notice(game_id):
         ret = []
         for notice in notices:
             one = notice.to_json()
+            if not hasattr(g, 'current_user'):
+                ret.append(one)
+                continue
             user_id = g.current_user.id
             notice_id = notice.id
             user_notice_rel = UserNoticeRel.query.filter(
