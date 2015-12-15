@@ -20,26 +20,26 @@ def get_user():
 
 @api.route('/user/code/<mobile>')
 def get_verify_code(mobile):
-    try:
+    # try:
         # store code into redis
-        redis_key_data = ('YUNPHONE:VERIFYCODE:%s' % mobile).upper()
-        redis_key_record = ('YUNPHONE:VERIFYCODE:RECORD:%s' % mobile).upper()
-        code = redis_store.get(redis_key_record)
+    redis_key_data = ('YUNPHONE:VERIFYCODE:%s' % mobile).upper()
+    redis_key_record = ('YUNPHONE:VERIFYCODE:RECORD:%s' % mobile).upper()
+    code = redis_store.get(redis_key_record)
 
-        if code:
-            return jsonify(BaseApi.api_success(code))
-
-        code = generate_verification_code()
-        redis_store.set(redis_key_data, code)
-        redis_store.expire(redis_key_data, app.config['VERIFY_CODE_DATA_TTL'])
-        redis_store.set(redis_key_record, code)
-        redis_store.expire(redis_key_record, app.config['VERIFY_CODE_RECORD_TTL'])
-        send_smd(mobile, code, app.config['VERIFY_CODE_DATA_TTL'])
-
+    if code:
         return jsonify(BaseApi.api_success(code))
-    except Exception, e:
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+
+    code = generate_verification_code()
+    redis_store.set(redis_key_data, code)
+    redis_store.expire(redis_key_data, app.config['VERIFY_CODE_DATA_TTL'])
+    redis_store.set(redis_key_record, code)
+    redis_store.expire(redis_key_record, app.config['VERIFY_CODE_RECORD_TTL'])
+    send_smd(mobile, code, app.config['VERIFY_CODE_DATA_TTL'])
+
+    return jsonify(BaseApi.api_success(code))
+    # except Exception, e:
+    #     app.logger.error(e.message)
+    #     return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/user', methods=['POST'])
