@@ -70,58 +70,58 @@ def new_device():
 @api.route('/device/allot', methods=['POST'])
 def allot_device():
     restore_device_id = None
-    try:
-        user_id = g.current_user.id
-        game_id = request.json.get('game_id')
+    # try:
+    user_id = g.current_user.id
+    game_id = request.json.get('game_id')
 
-        if user_id is None or user_id == '':
-            raise ValidationError('does not have a user id')
-        if game_id is None or game_id == '':
-            raise ValidationError('does not have a game id')
+    if user_id is None or user_id == '':
+        raise ValidationError('does not have a user id')
+    if game_id is None or game_id == '':
+        raise ValidationError('does not have a game id')
 
-        idle_device = None
-        while True:
-            restore_device_id = device_id = Device.pop_redis_set()
-            if not device_id:
-                break
-            device = Device.query.get(device_id)
-            if device.state != DEVICE_STATE_IDLE:
-                restore_device_id = None
-                continue
-            if device_available(device):
-                idle_device = device
-                break
-            else:
-                # put device_id back
-                Device.push_redis_set(device_id)
+    idle_device = None
+    while True:
+        restore_device_id = device_id = Device.pop_redis_set()
+        if not device_id:
+            break
+        device = Device.query.get(device_id)
+        if device.state != DEVICE_STATE_IDLE:
+            restore_device_id = None
+            continue
+        if device_available(device):
+            idle_device = device
+            break
+        else:
+            # put device_id back
+            Device.push_redis_set(device_id)
 
-        if idle_device is None:
-            return jsonify(BaseApi.api_success(""))
+    if idle_device is None:
+        return jsonify(BaseApi.api_success(""))
 
-        agent_record = AgentRecord()
-        agent_record.game_id = game_id
-        agent_record.user_id = user_id
-        agent_record.device_id = idle_device.id
-        agent_record.type = RECORD_TYPE_START
-        agent_record.record_time = datetime.now()
-        agent_record.start_time = datetime.now()
+    agent_record = AgentRecord()
+    agent_record.game_id = game_id
+    agent_record.user_id = user_id
+    agent_record.device_id = idle_device.id
+    agent_record.type = RECORD_TYPE_START
+    agent_record.record_time = datetime.now()
+    agent_record.start_time = datetime.now()
 
-        idle_device.state = DEVICE_STATE_BUSY
-        db.session.add(idle_device)
-        db.session.add(agent_record)
-        db.session.commit()
-        ret = {
-            "record_id": agent_record.id,
-            "game_id": game_id,
-            "device": idle_device.to_json()}
+    idle_device.state = DEVICE_STATE_BUSY
+    db.session.add(idle_device)
+    db.session.add(agent_record)
+    db.session.commit()
+    ret = {
+        "record_id": agent_record.id,
+        "game_id": game_id,
+        "device": idle_device.to_json()}
 
-        return jsonify(BaseApi.api_success(ret))
-    except BaseException, e:
-        db.session.rollback()
-        if restore_device_id:
-            Device.push_redis_set(restore_device_id)
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+    return jsonify(BaseApi.api_success(ret))
+    # except BaseException, e:
+    #     db.session.rollback()
+    #     if restore_device_id:
+    #         Device.push_redis_set(restore_device_id)
+    #     app.logger.error(e.message)
+    #     return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/device/free', methods=['POST'])
