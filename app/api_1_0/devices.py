@@ -85,7 +85,7 @@ def allot_device():
             if not device_id:
                 break
             device = Device.query.get(device_id)
-            if device.state != DEVICE_STATE_IDLE:
+            if not device or device.state != DEVICE_STATE_IDLE:
                 continue
             if device_available(device):
                 idle_device = device
