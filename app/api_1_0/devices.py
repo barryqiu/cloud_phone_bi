@@ -1,5 +1,4 @@
 from datetime import datetime
-import traceback
 import urllib2
 
 from flask import jsonify, request, g, Session
@@ -83,11 +82,9 @@ def allot_device():
         idle_device = None
         while True:
             device_id = Device.pop_redis_set()
-            print(device_id)
             if not device_id:
                 break
             device = Device.query.get(device_id)
-            print(device)
             if not device or device.state != DEVICE_STATE_IDLE:
                 continue
             if device_available(device):
@@ -126,7 +123,6 @@ def allot_device():
         db.session.rollback()
         for restore_device_id in restore_device_ids:
             Device.push_redis_set(restore_device_id)
-        traceback.print_exc()
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
 
@@ -248,7 +244,7 @@ def device_available(device):
 
     username = device.user_name
     password = device.password
-    realm = "Webkey"
+    realm = "CloudPhone"
 
     auth = urllib2.HTTPDigestAuthHandler()
     auth.add_password(realm, url_top, username, password)
