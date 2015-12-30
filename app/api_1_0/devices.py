@@ -148,7 +148,7 @@ def free_device():
         if device.state != DEVICE_STATE_BUSY:
             raise ValidationError('wrong device id')
             
-        end_record = AgentRecord.query.filter_by(start_id=record_id).first
+        end_record = AgentRecord.query.filter_by(start_id=record_id).first()
         if end_record is not None:
             raise ValidationError('already free')
 
