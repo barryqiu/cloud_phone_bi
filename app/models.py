@@ -400,3 +400,20 @@ class UserNoticeRel(db.Model):
 
     def __repr__(self):
         return '<Rel %r,%r,%r>' % self.id % self.user_id % self.notice_id
+
+
+class DevicePushMessage(db.Model):
+    __tablename__ = 'tb_device_push_message'
+    id = db.Column(db.Integer, primary_key=True)
+    message_type = db.Column(db.Integer, default=0)
+    content = db.Column(db.String(250))
+    ext1 = db.Column(db.Integer, default=0)
+    ext2 = db.Column(db.String(250))
+    ext3 = db.Column(db.Text)
+    add_time = db.Column(db.DateTime, default=datetime.now())
+    modify_time = db.Column(db.DateTime, default=datetime.now())
+    state = db.Column(db.Integer, default=0)
+
+    def __repr__(self):
+        return 'Message %r,%r,%r' % self.id % self.message_type % self.content
+
