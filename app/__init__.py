@@ -42,6 +42,9 @@ def create_app(config_name):
     from .device import device as device_blueprint
     app.register_blueprint(device_blueprint, url_prefix='/device')
 
+    from .push import push as push_blueprint
+    app.register_blueprint(push_blueprint, url_prefix='/push')
+
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/1.0')
 

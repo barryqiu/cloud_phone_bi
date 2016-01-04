@@ -13,7 +13,7 @@ class AddPushForm(Form):
                                                         ('4', 'web key reboot'),
                                                         ('5', 'clear game data')
                                                         ])
-    content = TextAreaField('audience')
+    content = TextAreaField('content')
 
     id = HiddenField()
     submit = SubmitField('submit')

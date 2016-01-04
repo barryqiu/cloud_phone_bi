@@ -13,6 +13,10 @@ def push_add():
     if form.validate_on_submit():
         try:
             push = DevicePushMessage()
+            push.platform = form.platform.data
+            push.audience = form.audience.data
+            push.message_type = form.message_type.data
+            push.content = form.content.data
             db.session.add(push)
             db.session.commit()
             flash('add push success')
