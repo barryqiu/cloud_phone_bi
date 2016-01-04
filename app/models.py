@@ -405,6 +405,8 @@ class UserNoticeRel(db.Model):
 class DevicePushMessage(db.Model):
     __tablename__ = 'tb_device_push_message'
     id = db.Column(db.Integer, primary_key=True)
+    platform = db.Column(db.String(120))
+    audience = db.Column(db.Text)
     message_type = db.Column(db.Integer, default=0)
     content = db.Column(db.String(250))
     ext1 = db.Column(db.Integer, default=0)
