@@ -1,7 +1,7 @@
-from json import dump
 from flask import render_template, redirect, url_for, flash
 from .. import db
 from . import push
+import jpush
 from ..models import DevicePushMessage
 from .forms import AddPushForm
 from flask import current_app as app
@@ -33,5 +33,14 @@ def push_list(page):
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
     pushes = pagination.items
     return render_template('push/list.html', pushes=pushes, pagination=pagination)
+
+
+def push_message():
+    _jpush = jpush.JPush(app.config['JPUSH_APP_KEY'], app.config['JPUSH_MASTER_SECRET'])
+    push = _jpush.create_push()
+    push.message()
+    push.audience = jpush.all_
+    push.send()
+
 
 
