@@ -1,5 +1,8 @@
 import random
 import time
+import jpush
+from flask import current_app as app
+
 
 __author__ = 'barryqiu'
 
@@ -20,5 +23,18 @@ def generate_verification_code():
     my_slice = random.sample(code_list, 6)
     verification_code = ''.join(my_slice)
     return verification_code
+
+
+def push_message_to_alias(message,  alias, platform='android'):
+    _jpush = jpush.JPush(app.config['JPUSH_APP_KEY'], app.config['JPUSH_MASTER_SECRET'])
+    push = _jpush.create_push()
+    push.message = jpush.message(message)
+    # push.audience = jpush.audience(jpush.alias(alias))
+    push.audience = jpush.audience(jpush.all_)
+    push.platform = jpush.platform(platform)
+    ret = push.send_validate()
+    return ret.payload['sendno'].encode('utf-8')
+
+
 
 

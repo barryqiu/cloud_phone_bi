@@ -33,15 +33,3 @@ def push_list(page):
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
     pushes = pagination.items
     return render_template('push/list.html', pushes=pushes, pagination=pagination)
-
-
-def push_message(message, message_type, platform, audience):
-    _jpush = jpush.JPush(app.config['JPUSH_APP_KEY'], app.config['JPUSH_MASTER_SECRET'])
-    push = _jpush.create_push()
-    push.message(msg_content=message, content_type=message_type)
-    push.audience = audience
-    push.platform = platform
-    push.send_validate()
-
-
-
