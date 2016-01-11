@@ -16,7 +16,7 @@ $('#checkAll').click(function () {
     }
 );
 
-function del_all_game() {
+function del_all_game(page) {
     event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
     var str = "0";
     $("[name='selectFlag']:checkbox").each(function () {
@@ -24,7 +24,7 @@ function del_all_game() {
             str += "," + this.id ;
         }
     });
-    $.get("/game/del/" + str, function (result) {
+    $.get("/game/del/" + page +"/" + str, function (result) {
         self.location.reload();
     });
 }

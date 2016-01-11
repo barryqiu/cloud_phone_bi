@@ -14,7 +14,7 @@ def game_add():
     form = AddGameForm()
     if form.validate_on_submit():
         try:
-            game = Game(game_name=form.gamename.data)
+            game = Game(game_name=form.gamename.data, package_name=form.packagename.data)
             filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
             form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
             game.icon_url = "/uploads/" + filename
@@ -22,6 +22,7 @@ def game_add():
             db.session.commit()
             flash('add game success')
         except Exception:
+            db.session.rollback()
             flash('add game fail', 'error')
         return redirect(url_for('game.game_list'))
     return render_template('game/add.html', form=form)
@@ -34,6 +35,7 @@ def game_edit(page, game_id):
     if form.validate_on_submit():
         try:
             game.game_name = form.gamename.data
+            game.package_name = form.packagename.data
             if form.gameicon.data.filename:
                 filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
                 form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
@@ -47,6 +49,7 @@ def game_edit(page, game_id):
             flash('update fail!')
         return redirect(url_for('game.game_list', page=page))
     form.gamename.data = game.game_name
+    form.packagename.data = game.package_name
     form.id.data = game.id
     return render_template('game/edit.html', form=form)
 

@@ -232,6 +232,7 @@ class Device(db.Model):
     def pop_redis_set():
         redis_key = 'YUNPHONE:DEVICES'.upper()
         return redis_store.spop(redis_key)
+
     @staticmethod
     def available_num():
         redis_key = 'YUNPHONE:DEVICES'.upper()
@@ -243,6 +244,7 @@ class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     game_name = db.Column(db.String(50), unique=True, index=True)
     icon_url = db.Column(db.String(150))
+    package_name = db.Column(db.String(250))
     add_time = db.Column(db.DateTime(), default=datetime.now)
     state = db.Column(db.Integer, default=1)
 
@@ -258,6 +260,7 @@ class Game(db.Model):
         json_game = {
             'id': self.id,
             'game_name': self.game_name,
+            'package_name': self.package_name,
             'icon_url': self.icon_url,
             'add_time': datetime_timestamp(self.add_time),
             'state': self.state,
@@ -418,4 +421,3 @@ class DevicePushMessage(db.Model):
 
     def __repr__(self):
         return 'Message %r,%r,%r' % self.id % self.message_type % self.content
-
