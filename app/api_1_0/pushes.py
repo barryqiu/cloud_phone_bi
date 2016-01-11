@@ -28,12 +28,6 @@ def new_push():
             'content': content
         }
 
-        audience = {
-            "audience": {
-                "alias": [device_id]
-            }
-        }
-
         ret = push_message_to_alias(json.dumps(msg), device_id.encode('utf-8'))
         # ret = push_message_to_alias(jsonify(msg), 'all')
 
