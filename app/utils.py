@@ -25,14 +25,14 @@ def generate_verification_code():
     return verification_code
 
 
-def push_message_to_alias(message,  alias, platform='android'):
+def push_message_to_alias(message, msg_type, alias, platform='android'):
     _jpush = jpush.JPush(app.config['JPUSH_APP_KEY'], app.config['JPUSH_MASTER_SECRET'])
     push = _jpush.create_push()
-    push.message = jpush.message(message)
+    push.message = jpush.message(message, content_type=msg_type)
     push.audience = jpush.audience(jpush.alias(alias))
     # push.audience = jpush.audience(jpush.all_)
     push.platform = jpush.platform(platform)
-    ret = push.send_validate()
+    ret = push.send()
     return ret.payload['sendno'].encode('utf-8')
 
 

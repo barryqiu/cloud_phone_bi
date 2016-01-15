@@ -28,7 +28,7 @@ def new_push():
         'content': content
     }
 
-    ret = push_message_to_alias(json.dumps(msg), device_id.encode('utf-8'))
+    ret = push_message_to_alias(content, msg_type, device_id.encode('utf-8'))
     # ret = push_message_to_alias(jsonify(msg), 'all')
 
     return jsonify(BaseApi.api_success(ret))
