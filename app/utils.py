@@ -26,7 +26,6 @@ def generate_verification_code():
 
 
 def push_message_to_alias(message,  alias, platform='android'):
-    return alias
     _jpush = jpush.JPush(app.config['JPUSH_APP_KEY'], app.config['JPUSH_MASTER_SECRET'])
     push = _jpush.create_push()
     push.message = jpush.message(message)
