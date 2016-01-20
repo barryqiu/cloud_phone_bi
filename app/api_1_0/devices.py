@@ -7,10 +7,11 @@ from . import api
 from sqlalchemy import and_
 from .base_api import BaseApi
 from flask import current_app as app
-from ..models import AgentRecord
+from ..models import AgentRecord, Game
 from ..models import Device
 from .. import db
 from app.exceptions import ValidationError
+from app.utils import push_message_to_alias
 
 DEVICE_STATE_DEL = 0
 DEVICE_STATE_IDLE = 1
@@ -79,6 +80,10 @@ def allot_device():
         if game_id is None or game_id == '':
             raise ValidationError('does not have a game id')
 
+        game = Game.query.get(game_id)
+        if not game:
+            raise ValidationError('game does not exists')
+
         idle_device = None
         while True:
             device_id = Device.pop_redis_set()
@@ -113,6 +118,10 @@ def allot_device():
         db.session.add(idle_device)
         db.session.add(agent_record)
         db.session.commit()
+
+        #push start game command to device
+        push_message_to_alias(game.package_name, 'startapp', idle_device.id)
+
         ret = {
             "record_id": agent_record.id,
             "game_id": game_id,
@@ -143,6 +152,9 @@ def free_device():
             raise ValidationError('does not have a device id')
         if record_id is None or record_id == '':
             raise ValidationError('does not have a record id')
+        game = Game.query.get(game_id)
+        if not game:
+            raise ValidationError('game does not exists')
 
         device = Device.query.filter_by(id=device_id).first()
         if device.state != DEVICE_STATE_BUSY:
@@ -177,6 +189,9 @@ def free_device():
         db.session.add(device)
         db.session.add(agent_rocord)
         db.session.commit()
+
+        #push start game command to device
+        push_message_to_alias(game.data_file_names, 'clear', device_id)
 
         # add device into queue
         Device.push_redis_set(device.id)
