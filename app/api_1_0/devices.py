@@ -195,29 +195,29 @@ def free_device():
 
 @api.route('/device/user')
 def user_device():
-    try:
-        user_id = g.current_user.id
-        start_ids = []
-        end_records = db.session.query(AgentRecord).filter(AgentRecord.start_id.notin_([0])).all()
+    # try:
+    user_id = g.current_user.id
+    start_ids = []
+    end_records = db.session.query(AgentRecord).filter(AgentRecord.start_id.notin_([0])).all()
 
-        for end_record in end_records:
-            start_ids.append(end_record.start_id)
+    for end_record in end_records:
+        start_ids.append(end_record.start_id)
 
-        user_records = AgentRecord.query.filter(
-            and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
+    user_records = AgentRecord.query.filter(
+        and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
 
-        ret = []
-        for user_record in user_records:
-            device = Device.query.filter_by(id=user_record.device_id).first()
-            one = device.to_json()
-            one['game_id'] = user_record.game_id
-            one['record_id'] = user_record.id
-            ret.append(one)
+    ret = []
+    for user_record in user_records:
+        device = Device.query.filter_by(id=user_record.device_id).first()
+        one = device.to_json()
+        one['game_id'] = user_record.game_id
+        one['record_id'] = user_record.id
+        ret.append(one)
 
-        return jsonify(BaseApi.api_success(ret))
-    except Exception, e:
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+    return jsonify(BaseApi.api_success(ret))
+    # except Exception, e:
+    #     app.logger.error(e.message)
+    #     return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/device/num')
