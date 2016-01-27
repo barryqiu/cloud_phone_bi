@@ -8,6 +8,7 @@ class AddGameForm(Form):
     gamename = StringField('Game Name', validators=[DataRequired(), Length(1, 50)])
     packagename = StringField('Package Name', validators=[DataRequired(), Length(1, 50)])
     gameicon = FileField('Game Icon')
+    datafilenames = TextAreaField('Data Files')
     id = HiddenField()
     submit = SubmitField('submit')
 
