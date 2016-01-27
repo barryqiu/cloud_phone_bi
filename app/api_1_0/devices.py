@@ -210,6 +210,7 @@ def free_device():
 
 @api.route('/device/user')
 def user_device():
+
     # try:
     user_id = g.current_user.id
     start_ids = []
