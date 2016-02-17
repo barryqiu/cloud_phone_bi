@@ -138,74 +138,74 @@ def allot_device():
 
 @api.route('/device/free', methods=['POST'])
 def free_device():
-    try:
-        user_id = g.current_user.id
-        game_id = request.json.get('game_id')
-        device_id = request.json.get('device_id')
-        record_id = request.json.get('record_id')
+    # try:
+    user_id = g.current_user.id
+    game_id = request.json.get('game_id')
+    device_id = request.json.get('device_id')
+    record_id = request.json.get('record_id')
 
-        if user_id is None or user_id == '':
-            raise ValidationError('does not have a user id')
-        if game_id is None or game_id == '':
-            raise ValidationError('does not have a game id')
-        if device_id is None or device_id == '':
-            raise ValidationError('does not have a device id')
-        if record_id is None or record_id == '':
-            raise ValidationError('does not have a record id')
-        game = Game.query.get(game_id)
-        if not game:
-            raise ValidationError('game does not exists')
+    if user_id is None or user_id == '':
+        raise ValidationError('does not have a user id')
+    if game_id is None or game_id == '':
+        raise ValidationError('does not have a game id')
+    if device_id is None or device_id == '':
+        raise ValidationError('does not have a device id')
+    if record_id is None or record_id == '':
+        raise ValidationError('does not have a record id')
+    game = Game.query.get(game_id)
+    if not game:
+        raise ValidationError('game does not exists')
 
-        device = Device.query.filter_by(id=device_id).first()
-        if device.state != DEVICE_STATE_BUSY:
-            raise ValidationError('wrong device id')
-            
-        end_record = AgentRecord.query.filter_by(start_id=record_id).first()
-        if end_record is not None:
-            raise ValidationError('already free')
+    device = Device.query.filter_by(id=device_id).first()
+    if device.state != DEVICE_STATE_BUSY:
+        raise ValidationError('wrong device id')
 
-        start_agent_record = AgentRecord.query.filter_by(
-            type=RECORD_TYPE_START,
-            user_id=user_id,
-            game_id=game_id,
-            device_id=device_id,
-            id=record_id).first()
+    end_record = AgentRecord.query.filter_by(start_id=record_id).first()
+    if end_record is not None:
+        raise ValidationError('already free')
 
-        if start_agent_record is None:
-            raise ValidationError('start record does not exists')
+    start_agent_record = AgentRecord.query.filter_by(
+        type=RECORD_TYPE_START,
+        user_id=user_id,
+        game_id=game_id,
+        device_id=device_id,
+        id=record_id).first()
 
-        agent_rocord = AgentRecord()
-        agent_rocord.start_id = record_id
-        agent_rocord.game_id = game_id
-        agent_rocord.user_id = user_id
-        agent_rocord.device_id = device_id
-        agent_rocord.type = RECORD_TYPE_END
-        agent_rocord.record_time = datetime.now()
-        agent_rocord.time_long = (agent_rocord.record_time - start_agent_record.record_time).seconds
-        agent_rocord.start_time = start_agent_record.record_time
+    if start_agent_record is None:
+        raise ValidationError('start record does not exists')
 
-        device.state = DEVICE_STATE_IDLE
+    agent_rocord = AgentRecord()
+    agent_rocord.start_id = record_id
+    agent_rocord.game_id = game_id
+    agent_rocord.user_id = user_id
+    agent_rocord.device_id = device_id
+    agent_rocord.type = RECORD_TYPE_END
+    agent_rocord.record_time = datetime.now()
+    agent_rocord.time_long = (agent_rocord.record_time - start_agent_record.record_time).seconds
+    agent_rocord.start_time = start_agent_record.record_time
 
-        db.session.add(device)
-        db.session.add(agent_rocord)
-        db.session.commit()
+    device.state = DEVICE_STATE_IDLE
 
-        #push start game command to device
-        push_message_to_alias(game.data_file_names, 'clear', device_id)
+    db.session.add(device)
+    db.session.add(agent_rocord)
+    db.session.commit()
 
-        # add device into queue
-        Device.push_redis_set(device.id)
+    #push start game command to device
+    push_message_to_alias(game.data_file_names, 'clear', device_id)
 
-        ret = {
-            "device_id": device_id,
-            "device_name": device.device_name
-        }
+    # add device into queue
+    Device.push_redis_set(device.id)
 
-        return jsonify(BaseApi.api_success(ret))
-    except BaseException, e:
-        db.session.rollback()
-        app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+    ret = {
+        "device_id": device_id,
+        "device_name": device.device_name
+    }
+
+    return jsonify(BaseApi.api_success(ret))
+    # except BaseException, e:
+    #     db.session.rollback()
+    #     app.logger.error(e.message)
+    #     return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/device/user')
