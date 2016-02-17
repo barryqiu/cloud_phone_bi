@@ -244,6 +244,7 @@ class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     game_name = db.Column(db.String(50), unique=True, index=True)
     icon_url = db.Column(db.String(150))
+    banner_url = db.Column(db.String(150))
     package_name = db.Column(db.String(250))
     data_file_names = db.Column(db.Text)
     add_time = db.Column(db.DateTime(), default=datetime.now)
@@ -264,6 +265,7 @@ class Game(db.Model):
             'package_name': self.package_name,
             'data_file_names': self.data_file_names,
             'icon_url': self.icon_url,
+            'banner_url': self.banner_url,
             'add_time': datetime_timestamp(self.add_time),
             'state': self.state,
         }
@@ -317,6 +319,25 @@ class GameTask(db.Model):
             'add_time': datetime_timestamp(self.add_time),
         }
         return json_game_task
+
+
+class GameServer(db.Model):
+    __tablename__ = 'tb_game_server'
+    id = db.Column(db.Integer, primary_key=True)
+    game_id = db.Column(db.Integer, default=0)
+    server_name = db.Column(db.String(50))
+    server_des = db.Column(db.Text)
+    add_time = db.Column(db.DateTime(), default=datetime.now())
+
+    def to_json(self):
+        json_game_server = {
+            'id': self.id,
+            'game_id': self.game_id,
+            'server_name': self.server_name,
+            'server_des': self.server_des,
+            'add_time': datetime_timestamp(self.add_time),
+        }
+        return json_game_server
 
 
 class UserNotice(db.Model):

@@ -14,10 +14,12 @@
                 </th>
                 <th>ID</th>
                 <th>图标</th>
+                <th>Banner</th>
                 <th>游戏名</th>
                 <th>包名</th>
                 <th>日期</th>
                 <th>任务</th>
+                <th>服务器</th>
                 <th><a class="btn btn-success" href="{{ url_for('game.game_add') }}" role="button">新增</a>
                     <a class="btn btn-warning" href="#" role="button" onclick="del_all_game({{ pagination.page }})">删除</a>
                 </th>
@@ -27,10 +29,12 @@
                     <td><input type="checkbox" id="{{ game.id }}" name="selectFlag"></td>
                     <td>{{ game.id }}</td>
                     <td><img src="{{ game.icon_url }}" class="img-circle" height="50px" width="50px"></td>
+                    <td><img src="{{ game.banner_url }}" height="50px" width="100px"></td>
                     <td>{{ game.game_name }}</td>
                     <td>{{ game.package_name }}</td>
                     <td>{{ game.add_time | datetimeformat("%Y-%m-%d") }}</td>
                     <td><a href="{{ url_for('game.game_task_list', game_id=game.id) }}">任务</a></td>
+                    <td><a href="{{ url_for('game.game_server_list', game_id=game.id) }}">服务器</a></td>
                     <td>
                         <a class="btn btn-info"
                            href="{{ url_for('game.game_edit', game_id= game.id, page=pagination.page) }}" role="button">编辑</a>

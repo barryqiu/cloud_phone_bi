@@ -9,6 +9,7 @@ ERR_CODE_SYSTEM = 99
 ERR_CODE_WRONG_PARAM = 1
 ERR_CODE_SUCCESS = 0
 ERR_CODE_WRONG_VERIFY_CODE = 2
+ERR_CODE_NO_DEVICE = 3
 
 DEVICE_STATE_DEL = 0
 DEVICE_STATE_IDLE = 1
@@ -50,6 +51,14 @@ class BaseApi:
         ret = {
             'err_code': ERR_CODE_WRONG_VERIFY_CODE,
             'content': 'wrong param',
+        }
+        return ret
+
+    @staticmethod
+    def api_no_device():
+        ret = {
+            'err_code': ERR_CODE_NO_DEVICE,
+            'content': 'no free device',
         }
         return ret
 

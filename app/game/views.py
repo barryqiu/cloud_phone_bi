@@ -4,8 +4,8 @@ from .. import db
 from . import game
 from werkzeug.utils import secure_filename
 from ..utils import TimeUtil
-from ..models import Game, GameTask
-from .forms import AddGameForm, AddGameTaskForm
+from ..models import Game, GameTask, GameServer
+from .forms import AddGameForm, AddGameTaskForm, AddGameServerForm
 from flask import current_app as app
 
 
@@ -18,6 +18,9 @@ def game_add():
             filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
             form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
             game.icon_url = "/uploads/" + filename
+            bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
+            form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
+            game.banner_url = "/uploads/" + bannerfilename
             db.session.add(game)
             db.session.commit()
             flash('add game success')
@@ -41,6 +44,10 @@ def game_edit(page, game_id):
                 filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
                 form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
                 game.icon_url = "/uploads/" + filename
+            if form.gamebanner.data.filename:
+                bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
+                form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
+                game.banner_url = "/uploads/" + bannerfilename
             db.session.add(game)
             db.session.commit()
             flash('update success!')
@@ -92,9 +99,9 @@ def game_task_add(game_id):
             game_task.task_des = form.task_des.data
             db.session.add(game_task)
             db.session.commit()
-            flash('add game success')
+            flash('add game task success')
         except Exception:
-            flash('add gametask fail', 'error')
+            flash('add game task fail', 'error')
         return redirect(url_for('game.game_task_list', game_id=game_id))
     return render_template('game/task_add.html', form=form)
 
@@ -102,10 +109,11 @@ def game_task_add(game_id):
 @game.route('/task/<game_id>/list', defaults={'page': 1})
 @game.route('/task/<game_id>/list/<int:page>')
 def game_task_list(game_id, page):
+    game = Game.query.get(game_id)
     pagination = GameTask.query.filter_by(game_id=game_id).order_by(GameTask.add_time.desc()).paginate(
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
     game_tasks = pagination.items
-    return render_template('game/task_list.html', gametasks=game_tasks, pagination=pagination, game_id=game_id)
+    return render_template('game/task_list.html', gametasks=game_tasks, pagination=pagination, game_id=game_id, game=game)
 
 
 @game.route('/task/<game_id>/<page>/edit/<task_id>', methods=['GET', 'POST'])
@@ -120,7 +128,7 @@ def game_task_edit(game_id, page, task_id):
             db.session.commit()
             flash('update success!')
         except Exception , e:
-            flash('edit gametask fail', 'error')
+            flash('edit game task fail', 'error')
         return redirect(url_for('game.game_task_list', game_id=game_id, page=page))
     form.task_name.data = task.task_name
     form.task_des.data = task.task_des
@@ -138,3 +146,63 @@ def game_task_del(page, game_id, task_id):
         db.session.rollback()
         flash('del fail.', 'error')
     return redirect(url_for('game.game_task_list', game_id=game_id, page=page))
+
+
+@game.route('/server/<game_id>/add', methods=['GET', 'POST'])
+def game_server_add(game_id):
+    form = AddGameServerForm()
+    if form.validate_on_submit():
+        try:
+            game_server = GameServer()
+            game_server.game_id = game_id
+            game_server.server_name = form.server_name.data
+            game_server.server_des = form.server_des.data
+            db.session.add(game_server)
+            db.session.commit()
+            flash('add game server success')
+        except Exception:
+            flash('add game server fail', 'error')
+        return redirect(url_for('game.game_server_list', game_id=game_id))
+    return render_template('game/server_add.html', form=form)
+
+
+@game.route('/server/<game_id>/list', defaults={'page': 1})
+@game.route('/server/<game_id>/list/<int:page>')
+def game_server_list(game_id, page):
+    game = Game.query.get(game_id)
+    pagination = GameServer.query.filter_by(game_id=game_id).order_by(GameServer.add_time.desc()).paginate(
+        page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
+    game_servers = pagination.items
+    return render_template('game/server_list.html', gameservers=game_servers, pagination=pagination, game_id=game_id, game=game)
+
+
+@game.route('/server/<game_id>/<page>/edit/<server_id>', methods=['GET', 'POST'])
+def game_server_edit(game_id, page, server_id):
+    form = AddGameServerForm()
+    server = GameServer.query.get(server_id)
+    if form.validate_on_submit():
+        try:
+            server.server_name = form.server_name.data
+            server.server_des = form.server_des.data
+            db.session.add(server)
+            db.session.commit()
+            flash('update success!')
+        except Exception , e:
+            flash('edit game server fail', 'error')
+        return redirect(url_for('game.game_server_list', game_id=game_id, page=page))
+    form.server_name.data = server.server_name
+    form.server_des.data = server.server_des
+    return render_template('game/server_edit.html', form=form)
+
+
+@game.route('/server/<game_id>/<page>/del/<server_id>')
+def game_server_del(page, game_id, server_id):
+    try:
+        server_ids = server_id.split(",")
+        GameServer.query.filter(GameServer.id.in_(server_ids)).delete(synchronize_session='fetch')
+        db.session.commit()
+        flash('del success.')
+    except Exception, e:
+        db.session.rollback()
+        flash('del fail.', 'error')
+    return redirect(url_for('game.game_server_list', game_id=game_id, page=page))

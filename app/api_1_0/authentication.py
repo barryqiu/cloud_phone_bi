@@ -10,7 +10,7 @@ auth = HTTPBasicAuth()
 @auth.verify_password
 def verify_password(mobile_num_or_token, password):
     # if register no verify
-    if request.endpoint == "api.new_user" or request.endpoint == "api.get_games" or request.endpoint == "api.get_verify_code" or request.endpoint == "api.get_games_share" or request.endpoint == "api.get_notice":
+    if request.endpoint == "api.new_user" or request.endpoint == "api.get_games" or request.endpoint == "api.get_verify_code" or request.endpoint == "api.get_games_share" or request.endpoint == "api.get_notice" or request.endpoint == "api.get_servers":
         return True
     if password == '':
         g.current_user = User.verify_auth_token(mobile_num_or_token)
@@ -33,7 +33,7 @@ def auth_error():
 @auth.login_required
 def before_request():
     # if register no verify
-    if request.endpoint != "api.get_games" and request.endpoint != "api.new_user" and request.endpoint != "api.get_verify_code" and request.endpoint != "api.get_games_share" and request.endpoint != "api.get_notice" and not g.current_user.confirmed:
+    if request.endpoint != "api.get_games" and request.endpoint != "api.new_user" and request.endpoint != "api.get_verify_code" and request.endpoint != "api.get_games_share" and request.endpoint != "api.get_notice" and request.endpoint != "api.get_servers" and not g.current_user.confirmed:
         return forbidden('Unconfirmed account')
 
 

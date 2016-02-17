@@ -104,7 +104,7 @@ def allot_device():
             Device.push_redis_set(restore_device_id)
 
         if idle_device is None:
-            return jsonify(BaseApi.api_success(""))
+            return jsonify(BaseApi.api_no_device())
 
         agent_record = AgentRecord()
         agent_record.game_id = game_id
@@ -119,7 +119,7 @@ def allot_device():
         db.session.add(agent_record)
         db.session.commit()
 
-        #push start game command to device
+        # push start game command to device
         push_message_to_alias(game.package_name, 'startapp', idle_device.id)
 
         ret = {
@@ -190,7 +190,7 @@ def free_device():
     db.session.add(agent_rocord)
     db.session.commit()
 
-    #push start game command to device
+    # push start game command to device
     push_message_to_alias(game.data_file_names, 'clear', device_id)
 
     # add device into queue
