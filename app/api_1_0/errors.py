@@ -19,7 +19,7 @@ def bad_request(message):
 
 def unauthorized(message):
     response = jsonify({'err_code': ERR_CODE_UNAUTHORIZED, 'content': message})
-    response.status_code = 401
+    response.status_code = 200
     return response
 
 
