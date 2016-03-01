@@ -133,142 +133,146 @@ def allot_device():
         for restore_device_id in restore_device_ids:
             Device.push_redis_set(restore_device_id)
         app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+        # return jsonify(BaseApi.api_system_error(e.message))
+        raise e
 
 
 @api.route('/device/free', methods=['POST'])
 def free_device():
-    # try:
-    user_id = g.current_user.id
-    game_id = request.json.get('game_id')
-    device_id = request.json.get('device_id')
-    record_id = request.json.get('record_id')
+    try:
+        user_id = g.current_user.id
+        game_id = request.json.get('game_id')
+        device_id = request.json.get('device_id')
+        record_id = request.json.get('record_id')
 
-    if user_id is None or user_id == '':
-        raise ValidationError('does not have a user id')
-    if game_id is None or game_id == '':
-        raise ValidationError('does not have a game id')
-    if device_id is None or device_id == '':
-        raise ValidationError('does not have a device id')
-    if record_id is None or record_id == '':
-        raise ValidationError('does not have a record id')
-    game = Game.query.get(game_id)
-    if not game:
-        raise ValidationError('game does not exists')
+        if user_id is None or user_id == '':
+            raise ValidationError('does not have a user id')
+        if game_id is None or game_id == '':
+            raise ValidationError('does not have a game id')
+        if device_id is None or device_id == '':
+            raise ValidationError('does not have a device id')
+        if record_id is None or record_id == '':
+            raise ValidationError('does not have a record id')
+        game = Game.query.get(game_id)
+        if not game:
+            raise ValidationError('game does not exists')
 
-    device = Device.query.filter_by(id=device_id).first()
-    if device.state != DEVICE_STATE_BUSY:
-        raise ValidationError('wrong device id')
+        device = Device.query.filter_by(id=device_id).first()
+        if not device or device.state != DEVICE_STATE_BUSY:
+            raise ValidationError('wrong device id')
 
-    end_record = AgentRecord.query.filter_by(start_id=record_id).first()
-    if end_record is not None:
-        raise ValidationError('already free')
+        end_record = AgentRecord.query.filter_by(start_id=record_id).first()
+        if end_record is not None:
+            raise ValidationError('already free')
 
-    start_agent_record = AgentRecord.query.filter_by(
-        type=RECORD_TYPE_START,
-        user_id=user_id,
-        game_id=game_id,
-        device_id=device_id,
-        id=record_id).first()
+        start_agent_record = AgentRecord.query.filter_by(
+            type=RECORD_TYPE_START,
+            user_id=user_id,
+            game_id=game_id,
+            device_id=device_id,
+            id=record_id).first()
 
-    if start_agent_record is None:
-        raise ValidationError('start record does not exists')
+        if start_agent_record is None:
+            raise ValidationError('start record does not exists')
 
-    agent_rocord = AgentRecord()
-    agent_rocord.start_id = record_id
-    agent_rocord.game_id = game_id
-    agent_rocord.user_id = user_id
-    agent_rocord.device_id = device_id
-    agent_rocord.type = RECORD_TYPE_END
-    agent_rocord.record_time = datetime.now()
-    agent_rocord.time_long = (agent_rocord.record_time - start_agent_record.record_time).seconds
-    agent_rocord.start_time = start_agent_record.record_time
+        agent_rocord = AgentRecord()
+        agent_rocord.start_id = record_id
+        agent_rocord.game_id = game_id
+        agent_rocord.user_id = user_id
+        agent_rocord.device_id = device_id
+        agent_rocord.type = RECORD_TYPE_END
+        agent_rocord.record_time = datetime.now()
+        agent_rocord.time_long = (agent_rocord.record_time - start_agent_record.record_time).seconds
+        agent_rocord.start_time = start_agent_record.record_time
 
-    device.state = DEVICE_STATE_IDLE
+        device.state = DEVICE_STATE_IDLE
 
-    db.session.add(device)
-    db.session.add(agent_rocord)
-    db.session.commit()
+        db.session.add(device)
+        db.session.add(agent_rocord)
+        db.session.commit()
 
-    # push start game command to device
-    push_message_to_alias(game.data_file_names, 'clear', device_id)
+        # push start game command to device
+        push_message_to_alias(game.data_file_names, 'clear', device_id)
 
-    # add device into queue
-    Device.push_redis_set(device.id)
+        # add device into queue
+        Device.push_redis_set(device.id)
 
-    ret = {
-        "device_id": device_id,
-        "device_name": device.device_name
-    }
+        ret = {
+            "device_id": device_id,
+            "device_name": device.device_name
+        }
 
-    return jsonify(BaseApi.api_success(ret))
-    # except BaseException, e:
-    #     db.session.rollback()
-    #     app.logger.error(e.message)
-    #     return jsonify(BaseApi.api_system_error(e.message))
+        return jsonify(BaseApi.api_success(ret))
+    except BaseException, e:
+        db.session.rollback()
+        app.logger.error(e.message)
+        # return jsonify(BaseApi.api_system_error(e.message))
+        raise e
 
 
 @api.route('/device/user')
 def user_device():
 
-    # try:
-    user_id = g.current_user.id
-    start_ids = []
-    end_records = db.session.query(AgentRecord).filter(and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
+    try:
+        user_id = g.current_user.id
+        start_ids = []
+        end_records = db.session.query(AgentRecord).filter(and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
 
-    for end_record in end_records:
-        start_ids.append(end_record.start_id)
+        for end_record in end_records:
+            start_ids.append(end_record.start_id)
 
-    user_records = AgentRecord.query.filter(
-        and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
+        user_records = AgentRecord.query.filter(
+            and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
 
-    ret = []
-    for user_record in user_records:
-        device = Device.query.filter_by(id=user_record.device_id).first()
-        one = device.to_json()
-        one['game_id'] = user_record.game_id
-        one['record_id'] = user_record.id
-        one['start_time'] = datetime_timestamp(user_record.start_time)
-        ret.append(one)
+        ret = []
+        for user_record in user_records:
+            device = Device.query.filter_by(id=user_record.device_id).first()
+            one = device.to_json()
+            one['game_id'] = user_record.game_id
+            one['record_id'] = user_record.id
+            one['start_time'] = datetime_timestamp(user_record.start_time)
+            ret.append(one)
 
-    return jsonify(BaseApi.api_success(ret))
-    # except Exception, e:
-    #     app.logger.error(e.message)
-    #     return jsonify(BaseApi.api_system_error(e.message))
+        return jsonify(BaseApi.api_success(ret))
+    except Exception, e:
+        app.logger.error(e.message)
+        raise e
+        # return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/device/user/web')
 def user_device_web():
 
-    # try:
-    user_id = g.current_user.id
-    start_ids = []
+    try:
+        user_id = g.current_user.id
+        start_ids = []
 
-    end_records = db.session.query(AgentRecord).filter(and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
+        end_records = db.session.query(AgentRecord).filter(and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
 
-    for end_record in end_records:
-        start_ids.append(end_record.start_id)
+        for end_record in end_records:
+            start_ids.append(end_record.start_id)
 
-    user_records = AgentRecord.query.filter(
-        and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
+        user_records = AgentRecord.query.filter(
+            and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
 
-    ret = []
-    for user_record in user_records:
-        device = Device.query.filter_by(id=user_record.device_id).first()
-        game = Game.query.get(user_record.game_id)
-        one = device.to_json()
-        one['game_id'] = user_record.game_id
-        one['game_name'] = game.game_name
-        one['game_icon'] = game.icon_url
-        one['game_banner'] = game.banner_url
-        one['record_id'] = user_record.id
-        one['start_time'] = datetime_timestamp(user_record.start_time)
-        ret.append(one)
+        ret = []
+        for user_record in user_records:
+            device = Device.query.filter_by(id=user_record.device_id).first()
+            game = Game.query.get(user_record.game_id)
+            one = device.to_json()
+            one['game_id'] = user_record.game_id
+            one['game_name'] = game.game_name
+            one['game_icon'] = game.icon_url
+            one['game_banner'] = game.banner_url
+            one['record_id'] = user_record.id
+            one['start_time'] = datetime_timestamp(user_record.start_time)
+            ret.append(one)
 
-    return jsonify(BaseApi.api_success(ret))
-    # except Exception, e:
-    #     app.logger.error(e.message)
-    #     return jsonify(BaseApi.api_system_error(e.message))
+        return jsonify(BaseApi.api_success(ret))
+    except Exception, e:
+        app.logger.error(e.message)
+        raise e
+        # return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/device/num')
@@ -286,7 +290,8 @@ def device_num():
         return jsonify(BaseApi.api_success(ret))
     except Exception, e:
         app.logger.error(e.message)
-        return jsonify(BaseApi.api_system_error(e.message))
+        raise e
+        # return jsonify(BaseApi.api_system_error(e.message))
 
 
 def device_available(device):
