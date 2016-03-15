@@ -212,10 +212,9 @@ def free_device():
 
 @api.route('/device/user')
 def user_device():
-
     try:
         user_id = g.current_user.id
-        game_id = request.args['game_id']
+        game_id = request.args.get('game_id')
         start_ids = []
         end_records = db.session.query(AgentRecord).filter(and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
 
@@ -223,7 +222,7 @@ def user_device():
             start_ids.append(end_record.start_id)
 
         user_records = None
-        if game_id:
+        if not game_id:
             user_records = AgentRecord.query.filter(
                 and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
         else:
@@ -252,14 +251,14 @@ def user_device_web():
     try:
         user_id = g.current_user.id
         start_ids = []
-        game_id = request.args['game_id']
+        game_id = request.args.get('game_id')
 
         end_records = db.session.query(AgentRecord).filter(and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
 
         for end_record in end_records:
             start_ids.append(end_record.start_id)
         user_records = None
-        if game_id:
+        if not game_id:
             user_records = AgentRecord.query.filter(
                 and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
         else:
