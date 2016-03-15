@@ -175,6 +175,9 @@ def free_device():
         if start_agent_record is None:
             raise ValidationError('start record does not exists')
 
+        # push start game command to device
+        push_message_to_alias(game.data_file_names, 'clear', device_id)
+
         agent_rocord = AgentRecord()
         agent_rocord.start_id = record_id
         agent_rocord.game_id = game_id
@@ -190,9 +193,6 @@ def free_device():
         db.session.add(device)
         db.session.add(agent_rocord)
         db.session.commit()
-
-        # push start game command to device
-        push_message_to_alias(game.data_file_names, 'clear', device_id)
 
         # add device into queue
         Device.push_redis_set(device.id)
