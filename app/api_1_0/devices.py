@@ -241,8 +241,8 @@ def user_device():
 
     return jsonify(BaseApi.api_success(ret))
     # except Exception, e:
-        app.logger.error(e.message)
-        raise e
+    #     app.logger.error(e.message)
+    #     raise e
         # return jsonify(BaseApi.api_system_error(e.message))
 
 
