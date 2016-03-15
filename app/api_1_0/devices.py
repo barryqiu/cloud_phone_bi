@@ -213,34 +213,34 @@ def free_device():
 @api.route('/device/user')
 def user_device():
 
-    try:
-        user_id = g.current_user.id
-        game_id = request.json.get('game_id')
-        start_ids = []
-        end_records = db.session.query(AgentRecord).filter(and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
+    # try:
+    user_id = g.current_user.id
+    game_id = request.json.get('game_id')
+    start_ids = []
+    end_records = db.session.query(AgentRecord).filter(and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
 
-        for end_record in end_records:
-            start_ids.append(end_record.start_id)
+    for end_record in end_records:
+        start_ids.append(end_record.start_id)
 
-        user_records = None
-        if game_id:
-            user_records = AgentRecord.query.filter(
-                and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
-        else:
-            user_records = AgentRecord.query.filter(
-                and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.game_id == game_id, AgentRecord.id.notin_(start_ids))).all()
+    user_records = None
+    if game_id:
+        user_records = AgentRecord.query.filter(
+            and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
+    else:
+        user_records = AgentRecord.query.filter(
+            and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.game_id == game_id, AgentRecord.id.notin_(start_ids))).all()
 
-        ret = []
-        for user_record in user_records:
-            device = Device.query.filter_by(id=user_record.device_id).first()
-            one = device.to_json()
-            one['game_id'] = user_record.game_id
-            one['record_id'] = user_record.id
-            one['start_time'] = datetime_timestamp(user_record.start_time)
-            ret.append(one)
+    ret = []
+    for user_record in user_records:
+        device = Device.query.filter_by(id=user_record.device_id).first()
+        one = device.to_json()
+        one['game_id'] = user_record.game_id
+        one['record_id'] = user_record.id
+        one['start_time'] = datetime_timestamp(user_record.start_time)
+        ret.append(one)
 
-        return jsonify(BaseApi.api_success(ret))
-    except Exception, e:
+    return jsonify(BaseApi.api_success(ret))
+    # except Exception, e:
         app.logger.error(e.message)
         raise e
         # return jsonify(BaseApi.api_system_error(e.message))
