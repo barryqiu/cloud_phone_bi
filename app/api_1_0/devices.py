@@ -215,14 +215,20 @@ def user_device():
 
     try:
         user_id = g.current_user.id
+        game_id = request.json.get('game_id')
         start_ids = []
         end_records = db.session.query(AgentRecord).filter(and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
 
         for end_record in end_records:
             start_ids.append(end_record.start_id)
 
-        user_records = AgentRecord.query.filter(
-            and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
+        user_records = None
+        if game_id:
+            user_records = AgentRecord.query.filter(
+                and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
+        else:
+            user_records = AgentRecord.query.filter(
+                and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.game_id == game_id, AgentRecord.id.notin_(start_ids))).all()
 
         ret = []
         for user_record in user_records:
@@ -246,15 +252,19 @@ def user_device_web():
     try:
         user_id = g.current_user.id
         start_ids = []
+        game_id = request.json.get('game_id')
 
         end_records = db.session.query(AgentRecord).filter(and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
 
         for end_record in end_records:
             start_ids.append(end_record.start_id)
-
-        user_records = AgentRecord.query.filter(
-            and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
-
+        user_records = None
+        if game_id:
+            user_records = AgentRecord.query.filter(
+                and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
+        else:
+            user_records = AgentRecord.query.filter(
+                and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.game_id == game_id, AgentRecord.id.notin_(start_ids))).all()
         ret = []
         for user_record in user_records:
             device = Device.query.filter_by(id=user_record.device_id).first()
