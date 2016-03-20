@@ -36,7 +36,7 @@ def get_verify_code(mobile):
         redis_store.expire(redis_key_record, app.config['VERIFY_CODE_RECORD_TTL'])
         send_smd(mobile, code, app.config['VERIFY_CODE_DATA_TTL'])
 
-        return jsonify(BaseApi.api_success(code))
+        return jsonify(BaseApi.api_success('success'))
     except Exception, e:
         app.logger.error(e.message)
         return jsonify(BaseApi.api_system_error(e.message))
