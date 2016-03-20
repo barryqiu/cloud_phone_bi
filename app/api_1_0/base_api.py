@@ -50,7 +50,7 @@ class BaseApi:
     def api_wrong_verify_code():
         ret = {
             'err_code': ERR_CODE_WRONG_VERIFY_CODE,
-            'content': 'wrong param',
+            'content': 'wrong verify code',
         }
         return ret
 
