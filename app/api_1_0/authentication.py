@@ -1,5 +1,6 @@
 from flask import g, jsonify, request
 from flask.ext.httpauth import HTTPBasicAuth
+from app.api_1_1 import api1_1
 from ..models import User
 from . import api
 from .errors import unauthorized, forbidden
@@ -32,6 +33,7 @@ def auth_error():
 
 
 @api.before_request
+@api1_1.before_request
 @auth.login_required
 def before_request():
     # if register no verify

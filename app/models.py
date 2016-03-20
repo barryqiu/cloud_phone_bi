@@ -284,6 +284,7 @@ class AgentRecord(db.Model):
     record_time = db.Column(db.DateTime(), default=datetime.now())
     time_long = db.Column(db.Integer, default=0)
     game_id = db.Column(db.Integer, default=0)
+    server_id = db.Column(db.Integer, default=0)
     device_id = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, default=0)
     state = db.Column(db.Integer, default=1)
@@ -298,6 +299,7 @@ class AgentRecord(db.Model):
             'device_id': self.device_id,
             'user_id': self.user_id,
             'game_id': self.game_id,
+            'server_id': self.server_id,
         }
         return json_agent_record
 
@@ -325,6 +327,9 @@ class GameServer(db.Model):
     __tablename__ = 'tb_game_server'
     id = db.Column(db.Integer, primary_key=True)
     game_id = db.Column(db.Integer, default=0)
+    icon_url = db.Column(db.String(150))
+    package_name = db.Column(db.String(250))
+    data_file_names = db.Column(db.Text)
     server_name = db.Column(db.String(50))
     server_des = db.Column(db.Text)
     add_time = db.Column(db.DateTime(), default=datetime.now())
@@ -333,6 +338,9 @@ class GameServer(db.Model):
         json_game_server = {
             'id': self.id,
             'game_id': self.game_id,
+            'icon_url': self.icon_url,
+            'package_name': self.package_name,
+            'data_file_names': self.data_file_names,
             'server_name': self.server_name,
             'server_des': self.server_des,
             'add_time': datetime_timestamp(self.add_time),

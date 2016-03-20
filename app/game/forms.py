@@ -22,5 +22,8 @@ class AddGameTaskForm(Form):
 
 class AddGameServerForm(Form):
     server_name = StringField('Server Name', validators=[DataRequired(), Length(1, 50)])
+    packagename = StringField('Package Name', validators=[DataRequired(), Length(1, 50)])
+    gameicon = FileField('Game Icon')
+    datafilenames = TextAreaField('Data Files')
     server_des = TextAreaField('Server Description')
     submit = SubmitField('submit')

@@ -157,6 +157,11 @@ def game_server_add(game_id):
             game_server.game_id = game_id
             game_server.server_name = form.server_name.data
             game_server.server_des = form.server_des.data
+            game_server.package_name = form.packagename.data
+            game_server.data_file_names = form.datafilenames.data
+            filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
+            form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+            game_server.icon_url = "/uploads/" + filename
             db.session.add(game_server)
             db.session.commit()
             flash('add game server success')
@@ -182,6 +187,12 @@ def game_server_edit(game_id, page, server_id):
     server = GameServer.query.get(server_id)
     if form.validate_on_submit():
         try:
+            server.package_name = form.packagename.data
+            server.data_file_names = form.datafilenames.data
+            if form.gameicon.data.filename:
+                filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
+                form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+                server.icon_url = "/uploads/" + filename
             server.server_name = form.server_name.data
             server.server_des = form.server_des.data
             db.session.add(server)
@@ -192,6 +203,8 @@ def game_server_edit(game_id, page, server_id):
         return redirect(url_for('game.game_server_list', game_id=game_id, page=page))
     form.server_name.data = server.server_name
     form.server_des.data = server.server_des
+    form.packagename.data = server.package_name
+    form.datafilenames.data = server.data_file_names
     return render_template('game/server_edit.html', form=form)
 
 
