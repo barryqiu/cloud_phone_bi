@@ -106,6 +106,9 @@ def allot_device():
         if idle_device is None:
             return jsonify(BaseApi.api_no_device())
 
+        # push start game command to device
+        push_message_to_alias(game.package_name, 'startapp', idle_device.id)
+
         agent_record = AgentRecord()
         agent_record.game_id = game_id
         agent_record.user_id = user_id
@@ -118,9 +121,6 @@ def allot_device():
         db.session.add(idle_device)
         db.session.add(agent_record)
         db.session.commit()
-
-        # push start game command to device
-        push_message_to_alias(game.package_name, 'startapp', idle_device.id)
 
         ret = {
             "record_id": agent_record.id,
@@ -176,7 +176,10 @@ def free_device():
             raise ValidationError('start record does not exists')
 
         # push start game command to device
-        push_message_to_alias(game.data_file_names, 'clear', device_id)
+        try:
+            push_message_to_alias(game.data_file_names, 'clear', device_id)
+        except BaseException, e:
+            return jsonify(BaseApi.api_jpush_error(e.message))
 
         agent_rocord = AgentRecord()
         agent_rocord.start_id = record_id
