@@ -107,7 +107,11 @@ def allot_device():
             return jsonify(BaseApi.api_no_device())
 
         # push start game command to device
-        push_message_to_alias(game.package_name, 'startapp', idle_device.id)
+        try:
+            push_message_to_alias(game.package_name, 'startapp', idle_device.id)
+        except BaseException, e:
+            Device.push_redis_set(idle_device.id)
+            raise e
 
         agent_record = AgentRecord()
         agent_record.game_id = game_id
