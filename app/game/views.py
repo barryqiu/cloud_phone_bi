@@ -13,22 +13,22 @@ from flask import current_app as app
 def game_add():
     form = AddGameForm()
     if form.validate_on_submit():
-        try:
-            game = Game(game_name=form.gamename.data, package_name=form.packagename.data, data_file_names=form.datafilenames.data)
-            filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
-            form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-            upload_to_cdn("/uploads/" + filename, form.gameicon.data)
-            game.icon_url = "/uploads/" + filename
-            bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
-            form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
-            game.banner_url = "/uploads/" + bannerfilename
-            db.session.add(game)
-            db.session.commit()
-            flash('add game success')
-        except Exception, e:
-            print e.message
-            db.session.rollback()
-            flash('add game fail', 'error')
+        # try:
+        game = Game(game_name=form.gamename.data, package_name=form.packagename.data, data_file_names=form.datafilenames.data)
+        filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
+        form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+        upload_to_cdn("/uploads/" + filename, form.gameicon.data)
+        game.icon_url = "/uploads/" + filename
+        bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
+        form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
+        game.banner_url = "/uploads/" + bannerfilename
+        db.session.add(game)
+        db.session.commit()
+        flash('add game success')
+        # except Exception, e:
+        #     print e.message
+        #     db.session.rollback()
+        #     flash('add game fail', 'error')
         return redirect(url_for('game.game_list'))
     return render_template('game/add.html', form=form)
 
