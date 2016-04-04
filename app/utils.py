@@ -47,6 +47,6 @@ def upload_to_cdn(path, file_path):
                          password=app.config['CDN_PASSWORD'])
         with open(file_path, 'rb') as f:
             up.put(path, f)
-        return app.config['CDN_HOST'] + "/" + path
+        return app.config['CDN_HOST'] + path
     except Exception:
         return ''

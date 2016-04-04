@@ -27,7 +27,7 @@ def game_add():
             bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
             form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
             game.banner_url = upload_to_cdn("/uploads/" + bannerfilename,
-                                            app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+                                            app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
             if not game.banner_url:
                 game.banner_url = "/uploads/" + bannerfilename
 
@@ -62,7 +62,7 @@ def game_edit(page, game_id):
                 bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
                 form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
                 game.banner_url = upload_to_cdn("/uploads/" + bannerfilename,
-                                                app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+                                                app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
                 if not game.banner_url:
                     game.banner_url = "/uploads/" + bannerfilename
             db.session.add(game)
