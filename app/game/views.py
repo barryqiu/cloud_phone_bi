@@ -17,7 +17,7 @@ def game_add():
         game = Game(game_name=form.gamename.data, package_name=form.packagename.data, data_file_names=form.datafilenames.data)
         filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
         form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-        upload_to_cdn("/uploads/" + filename, form.gameicon.data)
+        upload_to_cdn("/uploads/" + filename, app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
         game.icon_url = "/uploads/" + filename
         bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
         form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
