@@ -25,7 +25,8 @@ def game_add():
             db.session.add(game)
             db.session.commit()
             flash('add game success')
-        except Exception , e:
+        except Exception, e:
+            print e.message
             db.session.rollback()
             flash('add game fail', 'error')
         return redirect(url_for('game.game_list'))
