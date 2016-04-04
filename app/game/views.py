@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, flash
 from .. import db
 from . import game
 from werkzeug.utils import secure_filename
-from ..utils import TimeUtil
+from ..utils import TimeUtil, upload_to_cdn
 from ..models import Game, GameTask, GameServer
 from .forms import AddGameForm, AddGameTaskForm, AddGameServerForm
 from flask import current_app as app
@@ -17,6 +17,7 @@ def game_add():
             game = Game(game_name=form.gamename.data, package_name=form.packagename.data, data_file_names=form.datafilenames.data)
             filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
             form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+            upload_to_cdn("/uploads/" + filename, form.gameicon.data)
             game.icon_url = "/uploads/" + filename
             bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
             form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
@@ -24,7 +25,7 @@ def game_add():
             db.session.add(game)
             db.session.commit()
             flash('add game success')
-        except Exception:
+        except Exception , e:
             db.session.rollback()
             flash('add game fail', 'error')
         return redirect(url_for('game.game_list'))

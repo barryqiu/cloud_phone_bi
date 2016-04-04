@@ -3,7 +3,7 @@ import random
 import time
 import jpush
 from flask import current_app as app
-
+from upyun import upyun
 
 __author__ = 'barryqiu'
 
@@ -41,5 +41,8 @@ def push_message_to_alias(content, msg_type, alias, platform='android'):
     return ret.payload['sendno'].encode('utf-8')
 
 
-
-
+def upload_to_cdn(path, file):
+    up = upyun.UpYun(app.config['CDN_BUCKET'], username=app.config['CDN_USER_NAME'],
+                     password=app.config['CDN_PASSWORD'])
+    ret = up.put(path, file)
+    print ret
