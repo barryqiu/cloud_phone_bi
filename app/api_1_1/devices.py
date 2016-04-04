@@ -11,7 +11,7 @@ from ..models import AgentRecord, Game, datetime_timestamp, GameServer
 from ..models import Device
 from .. import db
 from app.exceptions import ValidationError
-from app.utils import push_message_to_alias
+from app.utils import push_message_to_alias, filter_upload_url
 
 DEVICE_STATE_DEL = 0
 DEVICE_STATE_IDLE = 1
@@ -219,3 +219,86 @@ def device_available(device):
             return False
     except Exception, e:
         return False
+
+
+@api1_1.route('/device/user')
+def user_device():
+    try:
+        user_id = g.current_user.id
+        game_id = request.args.get('game_id')
+        start_ids = []
+        end_records = db.session.query(AgentRecord).filter(
+            and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
+
+        for end_record in end_records:
+            start_ids.append(end_record.start_id)
+
+        user_records = None
+        if not game_id:
+            user_records = AgentRecord.query.filter(
+                and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
+        else:
+            user_records = AgentRecord.query.filter(
+                and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.game_id == game_id,
+                     AgentRecord.id.notin_(start_ids))).all()
+
+        ret = []
+        for user_record in user_records:
+            device = Device.query.filter_by(id=user_record.device_id).first()
+            one = device.to_json()
+            one['game_id'] = user_record.game_id
+            one['server_id'] = user_record.server_id
+            one['record_id'] = user_record.id
+            one['start_time'] = datetime_timestamp(user_record.start_time)
+            ret.append(one)
+
+        return jsonify(BaseApi.api_success(ret))
+    except Exception, e:
+        app.logger.error(e.message)
+        raise e
+        # return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api1_1.route('/device/user/web')
+def user_device_web():
+    try:
+        user_id = g.current_user.id
+        start_ids = []
+        game_id = request.args.get('game_id')
+
+        end_records = db.session.query(AgentRecord).filter(
+            and_(AgentRecord.start_id > 0, AgentRecord.user_id == user_id)).all()
+
+        for end_record in end_records:
+            start_ids.append(end_record.start_id)
+        user_records = None
+        if not game_id:
+            user_records = AgentRecord.query.filter(
+                and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.id.notin_(start_ids))).all()
+        else:
+            user_records = AgentRecord.query.filter(
+                and_(AgentRecord.type == 0, AgentRecord.user_id == user_id, AgentRecord.game_id == game_id,
+                     AgentRecord.id.notin_(start_ids))).all()
+        ret = []
+        for user_record in user_records:
+            device = Device.query.filter_by(id=user_record.device_id).first()
+            game = Game.query.get(user_record.game_id)
+            server = GameServer.query.get(user_record.server_id)
+            one = device.to_json()
+            one['game_id'] = user_record.game_id
+            one['game_name'] = game.game_name
+            one['game_icon'] = filter_upload_url(game.icon_url)
+            one['game_banner'] = filter_upload_url(game.banner_url)
+            one['record_id'] = user_record.id
+            one['start_time'] = datetime_timestamp(user_record.start_time)
+            one['server_id'] = user_record.server_id
+            if server:
+                one['server_name'] = server.server_name
+                one['game_icon'] = filter_upload_url(server.icon_url)
+            ret.append(one)
+
+        return jsonify(BaseApi.api_success(ret))
+    except Exception, e:
+        app.logger.error(e.message)
+        raise e
+        # return jsonify(BaseApi.api_system_error(e.message))

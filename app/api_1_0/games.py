@@ -11,8 +11,8 @@ def get_games():
         games = Game.query.filter_by(state=1).all()
         return jsonify(BaseApi.api_success([game.to_json() for game in games]))
     except BaseException, e:
-        app.logger.error(e.name+e.message)
-        return jsonify(BaseApi.api_system_error(e.name+e.message))
+        app.logger.error(e.message)
+        return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/game/share')

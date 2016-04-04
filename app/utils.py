@@ -50,3 +50,11 @@ def upload_to_cdn(path, file_path):
         return app.config['CDN_HOST'] + path
     except Exception:
         return ''
+
+
+def filter_upload_url(url):
+    if not url:
+        return ''
+    if url.startswith('http:'):
+        return url
+    return app.config['UPLOAD_HOST'] + url

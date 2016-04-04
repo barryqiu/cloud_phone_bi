@@ -7,6 +7,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from app.exceptions import ValidationError
 from . import db, login_manager, redis_store
+from app.utils import filter_upload_url
 
 
 def datetime_timestamp(dt):
@@ -264,8 +265,8 @@ class Game(db.Model):
             'game_name': self.game_name,
             'package_name': self.package_name,
             'data_file_names': self.data_file_names,
-            'icon_url': self.icon_url,
-            'banner_url': self.banner_url,
+            'icon_url': filter_upload_url(self.icon_url),
+            'banner_url': filter_upload_url(self.banner_url),
             'add_time': datetime_timestamp(self.add_time),
             'state': self.state,
         }
@@ -338,7 +339,7 @@ class GameServer(db.Model):
         json_game_server = {
             'id': self.id,
             'game_id': self.game_id,
-            'icon_url': self.icon_url,
+            'icon_url': filter_upload_url(self.icon_url),
             'package_name': self.package_name,
             'data_file_names': self.data_file_names,
             'server_name': self.server_name,
