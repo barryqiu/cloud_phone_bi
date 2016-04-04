@@ -13,22 +13,31 @@ from flask import current_app as app
 def game_add():
     form = AddGameForm()
     if form.validate_on_submit():
-        # try:
-        game = Game(game_name=form.gamename.data, package_name=form.packagename.data, data_file_names=form.datafilenames.data)
-        filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
-        form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-        upload_to_cdn("/uploads/" + filename, app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-        game.icon_url = "/uploads/" + filename
-        bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
-        form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
-        game.banner_url = "/uploads/" + bannerfilename
-        db.session.add(game)
-        db.session.commit()
-        flash('add game success')
-        # except Exception, e:
-        #     print e.message
-        #     db.session.rollback()
-        #     flash('add game fail', 'error')
+        try:
+            game = Game(game_name=form.gamename.data, package_name=form.packagename.data,
+                        data_file_names=form.datafilenames.data)
+
+            filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
+            form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+            game.icon_url = upload_to_cdn("/uploads/" + filename,
+                                          app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+            if not game.icon_url:
+                game.icon_url = "/uploads/" + filename
+
+            bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
+            form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
+            game.banner_url = upload_to_cdn("/uploads/" + bannerfilename,
+                                            app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+            if not game.banner_url:
+                game.banner_url = "/uploads/" + bannerfilename
+
+            db.session.add(game)
+            db.session.commit()
+            flash('add game success')
+        except Exception, e:
+            print e.message
+            db.session.rollback()
+            flash('add game fail', 'error')
         return redirect(url_for('game.game_list'))
     return render_template('game/add.html', form=form)
 
@@ -45,11 +54,17 @@ def game_edit(page, game_id):
             if form.gameicon.data.filename:
                 filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
                 form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-                game.icon_url = "/uploads/" + filename
+                game.icon_url = upload_to_cdn("/uploads/" + filename,
+                                          app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+                if not game.icon_url:
+                    game.icon_url = "/uploads/" + filename
             if form.gamebanner.data.filename:
                 bannerfilename = TimeUtil.get_time_stamp() + secure_filename(form.gamebanner.data.filename)
                 form.gamebanner.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannerfilename)
-                game.banner_url = "/uploads/" + bannerfilename
+                game.banner_url = upload_to_cdn("/uploads/" + bannerfilename,
+                                                app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+                if not game.banner_url:
+                    game.banner_url = "/uploads/" + bannerfilename
             db.session.add(game)
             db.session.commit()
             flash('update success!')
@@ -115,7 +130,8 @@ def game_task_list(game_id, page):
     pagination = GameTask.query.filter_by(game_id=game_id).order_by(GameTask.add_time.desc()).paginate(
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
     game_tasks = pagination.items
-    return render_template('game/task_list.html', gametasks=game_tasks, pagination=pagination, game_id=game_id, game=game)
+    return render_template('game/task_list.html', gametasks=game_tasks, pagination=pagination, game_id=game_id,
+                           game=game)
 
 
 @game.route('/task/<game_id>/<page>/edit/<task_id>', methods=['GET', 'POST'])
@@ -129,7 +145,7 @@ def game_task_edit(game_id, page, task_id):
             db.session.add(task)
             db.session.commit()
             flash('update success!')
-        except Exception , e:
+        except Exception, e:
             flash('edit game task fail', 'error')
         return redirect(url_for('game.game_task_list', game_id=game_id, page=page))
     form.task_name.data = task.task_name
@@ -161,9 +177,14 @@ def game_server_add(game_id):
             game_server.server_des = form.server_des.data
             game_server.package_name = form.packagename.data
             game_server.data_file_names = form.datafilenames.data
+
             filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
             form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-            game_server.icon_url = "/uploads/" + filename
+            game_server.icon_url = upload_to_cdn("/uploads/" + filename,
+                                          app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+            if not game.icon_url:
+                game_server.icon_url = "/uploads/" + filename
+
             db.session.add(game_server)
             db.session.commit()
             flash('add game server success')
@@ -180,7 +201,8 @@ def game_server_list(game_id, page):
     pagination = GameServer.query.filter_by(game_id=game_id).order_by(GameServer.add_time.desc()).paginate(
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
     game_servers = pagination.items
-    return render_template('game/server_list.html', gameservers=game_servers, pagination=pagination, game_id=game_id, game=game)
+    return render_template('game/server_list.html', gameservers=game_servers, pagination=pagination, game_id=game_id,
+                           game=game)
 
 
 @game.route('/server/<game_id>/<page>/edit/<server_id>', methods=['GET', 'POST'])
@@ -194,13 +216,16 @@ def game_server_edit(game_id, page, server_id):
             if form.gameicon.data.filename:
                 filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
                 form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-                server.icon_url = "/uploads/" + filename
+                server.icon_url = upload_to_cdn("/uploads/" + filename,
+                                              app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+                if not game.icon_url:
+                    server.icon_url = "/uploads/" + filename
             server.server_name = form.server_name.data
             server.server_des = form.server_des.data
             db.session.add(server)
             db.session.commit()
             flash('update success!')
-        except Exception , e:
+        except Exception, e:
             flash('edit game server fail', 'error')
         return redirect(url_for('game.game_server_list', game_id=game_id, page=page))
     form.server_name.data = server.server_name

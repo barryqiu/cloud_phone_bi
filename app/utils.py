@@ -42,8 +42,11 @@ def push_message_to_alias(content, msg_type, alias, platform='android'):
 
 
 def upload_to_cdn(path, file_path):
-    up = upyun.UpYun(app.config['CDN_BUCKET'], username=app.config['CDN_USER_NAME'],
-                     password=app.config['CDN_PASSWORD'])
-    with open(file_path, 'rb') as f:
-        res = up.put(path, f)
-    print res
+    try:
+        up = upyun.UpYun(app.config['CDN_BUCKET'], username=app.config['CDN_USER_NAME'],
+                         password=app.config['CDN_PASSWORD'])
+        with open(file_path, 'rb') as f:
+            up.put(path, f)
+        return app.config['CDN_HOST'] + "/" + path
+    except Exception:
+        return ''
