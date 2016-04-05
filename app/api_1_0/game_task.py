@@ -12,6 +12,6 @@ def get_tasks(game_id):
         if tasks is None:
             return jsonify(BaseApi.api_wrong_param())
         return jsonify(BaseApi.api_success([task.to_json() for task in tasks]))
-    except Exception, e:
-        app.logger.error(e.message)
+    except Exception as e:
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))

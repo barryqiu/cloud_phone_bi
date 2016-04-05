@@ -26,7 +26,7 @@ def new_push():
         ret = push_message_to_alias(content, msg_type, device_id.encode('utf-8'))
 
         return jsonify(BaseApi.api_success(ret))
-    except BaseException, e:
+    except Exception as e:
         db.session.rollback()
-        app.logger.error(e.message)
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))

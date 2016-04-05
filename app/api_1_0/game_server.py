@@ -12,6 +12,6 @@ def get_servers(game_id):
         if servers is None:
             return jsonify(BaseApi.api_wrong_param())
         return jsonify(BaseApi.api_success([server.to_json() for server in servers]))
-    except Exception, e:
-        app.logger.error(e.message)
+    except Exception as e:
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))

@@ -10,8 +10,8 @@ def get_games():
     try:
         games = Game.query.filter_by(state=1).all()
         return jsonify(BaseApi.api_success([game.to_json() for game in games]))
-    except BaseException, e:
-        app.logger.error(e.message)
+    except Exception as e:
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 
@@ -19,6 +19,6 @@ def get_games():
 def get_games_share():
     try:
         return jsonify(BaseApi.api_success('1'))
-    except BaseException, e:
-        app.logger.error(e.name+e.message)
+    except Exception as e:
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.name+e.message))

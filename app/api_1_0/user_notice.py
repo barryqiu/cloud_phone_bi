@@ -30,8 +30,8 @@ def get_notice(game_id):
                 one['isin'] = 0
             ret.append(one)
         return jsonify(BaseApi.api_success(ret))
-    except Exception, e:
-        app.logger.error(e.message)
+    except Exception as e:
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 
@@ -42,8 +42,8 @@ def filter_notice(game_id):
         start_time = request.args.get('start_time')
         end_time = request.args.get('end_time')
         server_name = request.args.get('server_name')
-    except Exception, e:
-        app.logger.error(e.message)
+    except Exception as e:
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 
@@ -54,9 +54,9 @@ def new_notice():
         db.session.add(user_notice)
         db.session.commit()
         return jsonify(BaseApi.api_success(user_notice.to_json()))
-    except BaseException, e:
+    except Exception as e:
         db.session.rollback()
-        app.logger.error(e.message)
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 
@@ -79,9 +79,9 @@ def join_notice(notice_id):
         db.session.add(user_notice_rel)
         db.session.commit()
         return jsonify(BaseApi.api_success('success'))
-    except BaseException, e:
+    except Exception as e:
         db.session.rollback()
-        app.logger.error(e.message)
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 
@@ -97,7 +97,7 @@ def user_notice_list():
             one['isin'] = 1
             ret.append(one)
         return jsonify(BaseApi.api_success(ret))
-    except BaseException, e:
+    except Exception as e:
         db.session.rollback()
-        app.logger.error(e.message)
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))

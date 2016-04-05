@@ -13,8 +13,8 @@ from .. import db, redis_store
 def get_user():
     try:
         return jsonify(BaseApi.api_success(g.current_user.to_json()))
-    except Exception, e:
-        app.logger.error(e.message)
+    except Exception as e:
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 
@@ -37,8 +37,8 @@ def get_verify_code(mobile):
         send_smd(mobile, code, app.config['VERIFY_CODE_DATA_TTL'])
 
         return jsonify(BaseApi.api_success('success'))
-    except Exception, e:
-        app.logger.error(e.message)
+    except Exception as e:
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 
@@ -61,9 +61,9 @@ def new_user():
         db.session.add(user)
         db.session.commit()
         return jsonify(BaseApi.api_success(user.to_json()))
-    except BaseException, e:
+    except Exception as e:
         db.session.rollback()
-        app.logger.error(e.message)
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 

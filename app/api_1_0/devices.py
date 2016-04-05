@@ -28,8 +28,8 @@ def get_device(name):
         if device is None:
             return jsonify(BaseApi.api_wrong_param())
         return jsonify(BaseApi.api_success(device.to_json()))
-    except Exception, e:
-        app.logger.error(e.message)
+    except Exception as e:
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 
@@ -42,8 +42,8 @@ def get_all_device():
             if Device.test_conn(device):
                 available_device.append(device)
         return jsonify(BaseApi.api_success([device.to_json() for device in available_device]))
-    except BaseException, e:
-        app.logger.error(e.message)
+    except Exception as e:
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 
@@ -62,9 +62,9 @@ def new_device():
         Device.push_redis_set(device.id)
 
         return jsonify(BaseApi.api_success(device.to_json()))
-    except BaseException, e:
+    except Exception as e:
         db.session.rollback()
-        app.logger.error(e.message)
+        app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
 
@@ -132,13 +132,12 @@ def allot_device():
             "device": idle_device.to_json()}
 
         return jsonify(BaseApi.api_success(ret))
-    except BaseException, e:
+    except Exception as e:
         db.session.rollback()
         for restore_device_id in restore_device_ids:
             Device.push_redis_set(restore_device_id)
-        app.logger.error(e.message)
-        # return jsonify(BaseApi.api_system_error(e.message))
-        raise e
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/device/free', methods=['POST'])
@@ -210,11 +209,10 @@ def free_device():
         }
 
         return jsonify(BaseApi.api_success(ret))
-    except BaseException, e:
+    except Exception as e:
         db.session.rollback()
-        app.logger.error(e.message)
-        # return jsonify(BaseApi.api_system_error(e.message))
-        raise e
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/device/user')
@@ -246,10 +244,9 @@ def user_device():
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
-    except Exception, e:
-        app.logger.error(e.message)
-        raise e
-        # return jsonify(BaseApi.api_system_error(e.message))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/device/user/web')
@@ -285,10 +282,9 @@ def user_device_web():
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
-    except Exception, e:
-        app.logger.error(e.message)
-        raise e
-        # return jsonify(BaseApi.api_system_error(e.message))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api.route('/device/num')
@@ -304,10 +300,9 @@ def device_num():
         }
 
         return jsonify(BaseApi.api_success(ret))
-    except Exception, e:
-        app.logger.error(e.message)
-        raise e
-        # return jsonify(BaseApi.api_system_error(e.message))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
 
 
 def device_available(device):
