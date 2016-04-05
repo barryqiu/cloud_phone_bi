@@ -92,7 +92,7 @@ def edit_password():
         db.session.add(now_user)
         db.session.commit()
         return jsonify(BaseApi.api_success(now_user.to_json()))
-    except Exception:
+    except Exception as e:
         db.session.rollback()
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
