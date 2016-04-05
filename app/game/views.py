@@ -169,26 +169,26 @@ def game_task_del(page, game_id, task_id):
 def game_server_add(game_id):
     form = AddGameServerForm()
     if form.validate_on_submit():
-        try:
-            game_server = GameServer()
-            game_server.game_id = game_id
-            game_server.server_name = form.server_name.data
-            game_server.server_des = form.server_des.data
-            game_server.package_name = form.packagename.data
-            game_server.data_file_names = form.datafilenames.data
+        # try:
+        game_server = GameServer()
+        game_server.game_id = game_id
+        game_server.server_name = form.server_name.data
+        game_server.server_des = form.server_des.data
+        game_server.package_name = form.packagename.data
+        game_server.data_file_names = form.datafilenames.data
 
-            filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
-            form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-            game_server.icon_url = upload_to_cdn("/uploads/" + filename,
-                                          app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-            if not game.icon_url:
-                game_server.icon_url = "/uploads/" + filename
+        filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
+        form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+        game_server.icon_url = upload_to_cdn("/uploads/" + filename,
+                                      app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
+        if not game.icon_url:
+            game_server.icon_url = "/uploads/" + filename
 
-            db.session.add(game_server)
-            db.session.commit()
-            flash('add game server success')
-        except Exception:
-            flash('add game server fail', 'error')
+        db.session.add(game_server)
+        db.session.commit()
+        flash('add game server success')
+        # except Exception:
+        #     flash('add game server fail', 'error')
         return redirect(url_for('game.game_server_list', game_id=game_id))
     return render_template('game/server_add.html', form=form)
 
