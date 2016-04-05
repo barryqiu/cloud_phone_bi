@@ -94,5 +94,5 @@ def edit_password():
         return jsonify(BaseApi.api_success(now_user.to_json()))
     except BaseException, e:
         db.session.rollback()
-        app.logger.error(e.message)
+        app.logger.error(e)
         return jsonify(BaseApi.api_system_error(e.message))
