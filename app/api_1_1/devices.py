@@ -69,9 +69,10 @@ def allot_device():
         # push start game command to device
         try:
             push_message_to_alias(game.package_name, 'startapp', idle_device.id)
-        except BaseException, e:
+        except Exception:
             Device.push_redis_set(idle_device.id)
-            return jsonify(BaseApi.api_jpush_error(e.message))
+            app.logger.exception('info')
+            return jsonify(BaseApi.api_jpush_error())
 
         agent_record = AgentRecord()
         agent_record.game_id = game_id
@@ -94,13 +95,12 @@ def allot_device():
             "device": idle_device.to_json()}
 
         return jsonify(BaseApi.api_success(ret))
-    except BaseException, e:
+    except Exception as e:
+        app.logger.exception('info')
         db.session.rollback()
         for restore_device_id in restore_device_ids:
             Device.push_redis_set(restore_device_id)
-        app.logger.error(e.message)
-        # return jsonify(BaseApi.api_system_error(e.message))
-        raise e
+        return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api1_1.route('/device/free', methods=['POST'])
@@ -153,8 +153,9 @@ def free_device():
         # push start game command to device
         try:
             push_message_to_alias(game.data_file_names, 'clear', device_id)
-        except BaseException, e:
-            return jsonify(BaseApi.api_jpush_error(e.message))
+        except Exception as e:
+            app.logger.exception('info')
+            return jsonify(BaseApi.api_jpush_error())
 
         agent_rocord = AgentRecord()
         agent_rocord.start_id = record_id
@@ -182,11 +183,10 @@ def free_device():
         }
 
         return jsonify(BaseApi.api_success(ret))
-    except BaseException, e:
+    except Exception as e:
+        app.logger.exception('info')
         db.session.rollback()
-        app.logger.error(e.message)
-        # return jsonify(BaseApi.api_system_error(e.message))
-        raise e
+        return jsonify(BaseApi.api_system_error(e.message))
 
 
 def device_available(device):
@@ -253,10 +253,9 @@ def user_device():
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
-    except Exception, e:
-        app.logger.error(e.message)
-        raise e
-        # return jsonify(BaseApi.api_system_error(e.message))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
 
 
 @api1_1.route('/device/user/web')
@@ -298,7 +297,6 @@ def user_device_web():
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
-    except Exception, e:
-        app.logger.error(e.message)
-        raise e
-        # return jsonify(BaseApi.api_system_error(e.message))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
