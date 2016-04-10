@@ -160,6 +160,16 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.mobile_num
 
+    @staticmethod
+    def redis_incr_ext_info(user_id, key, num):
+        redis_key = ('YUNPHONE:USER_EXT:%s' % user_id).upper()
+        return redis_store.hincrby(redis_key, key, num)
+
+    @staticmethod
+    def redis_get_ext_info(user_id, key):
+        redis_key = ('YUNPHONE:USER_EXT:%s' % user_id).upper()
+        return redis_store.hget(redis_key, key)
+
 
 class Device(db.Model):
     __tablename__ = 'tb_device'

@@ -7,7 +7,7 @@ from . import api1_1
 from sqlalchemy import and_
 from flask import current_app as app
 from app.api_1_0.base_api import BaseApi
-from ..models import AgentRecord, Game, datetime_timestamp, GameServer
+from ..models import AgentRecord, Game, datetime_timestamp, GameServer, User
 from ..models import Device
 from .. import db
 from app.exceptions import ValidationError
@@ -31,6 +31,12 @@ def allot_device():
 
         if user_id is None or user_id == '':
             raise ValidationError('does not have a user id')
+
+        # judge whether bigger than the max allot num
+        allot_num = User.redis_get_ext_info(user_id, app.config['ALLOT_NUM_NAME'])
+        if allot_num >= app.config['MAX_ALLOT_NUM']:
+            return jsonify(BaseApi.api_exceed_allot_num_error())
+
         if game_id is None or game_id == '':
             raise ValidationError('does not have a game id')
         if server_id is None or server_id == '':
@@ -87,6 +93,9 @@ def allot_device():
         db.session.add(idle_device)
         db.session.add(agent_record)
         db.session.commit()
+
+        # increase user's allot device num
+        User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_NAME'], 1)
 
         ret = {
             "record_id": agent_record.id,
@@ -176,6 +185,9 @@ def free_device():
 
         # add device into queue
         Device.push_redis_set(device.id)
+
+        # decrease user's allot device num
+        User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_NAME'], -1)
 
         ret = {
             "device_id": device_id,

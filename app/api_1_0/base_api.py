@@ -11,6 +11,7 @@ ERR_CODE_SUCCESS = 0
 ERR_CODE_WRONG_VERIFY_CODE = 2
 ERR_CODE_NO_DEVICE = 3
 ERR_CODE_JPUSH_ERROR = 4
+ERR_CODE_EXCEED_ALLOT_NUM_ERROR = 5
 
 DEVICE_STATE_DEL = 0
 DEVICE_STATE_IDLE = 1
@@ -68,6 +69,14 @@ class BaseApi:
         ret = {
             'err_code': ERR_CODE_JPUSH_ERROR,
             'content': 'jpush error',
+        }
+        return ret
+
+    @staticmethod
+    def api_exceed_allot_num_error():
+        ret = {
+            'err_code': ERR_CODE_EXCEED_ALLOT_NUM_ERROR,
+            'content': 'exceed the max allot num error',
         }
         return ret
 
