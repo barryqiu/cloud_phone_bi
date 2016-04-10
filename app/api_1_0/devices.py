@@ -60,7 +60,7 @@ def new_device():
 
         # add device to queue
         ret = Device.push_redis_set(device.id)
-        print "add device_id: %s to redis set return %s" % device.id, ret
+        print "add device_id: %s to redis set return %s" % device.id % ret
 
         return jsonify(BaseApi.api_success(device.to_json()))
     except Exception as e:
