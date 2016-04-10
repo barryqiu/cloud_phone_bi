@@ -58,8 +58,10 @@ def new_device():
         db.session.add(device)
         db.session.commit()
 
+        app.logger.info("new device id %s " % device.id)
         # add device to queue
-        Device.push_redis_set(device.id)
+        ret = Device.push_redis_set(device.id)
+        app.logger.info("add to redis set ret %s" % ret)
 
         return jsonify(BaseApi.api_success(device.to_json()))
     except Exception as e:
