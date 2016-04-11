@@ -129,16 +129,16 @@ def free_device():
             raise ValidationError('does not have a device id')
         if record_id is None or record_id == '':
             raise ValidationError('does not have a record id')
-        if server_id is None or server_id == '':
-            raise ValidationError('does not have a server id')
+        # if server_id is None or server_id == '':
+        #     raise ValidationError('does not have a server id')
 
         game = Game.query.get(game_id)
         if not game:
             raise ValidationError('game does not exists')
 
-        server = GameServer.query.get(server_id)
-        if not server:
-            raise ValidationError('server does not exists')
+        # server = GameServer.query.get(server_id)
+        # if not server:
+        #     raise ValidationError('server does not exists')
 
         device = Device.query.filter_by(id=device_id).first()
         if not device or device.state != DEVICE_STATE_BUSY:
