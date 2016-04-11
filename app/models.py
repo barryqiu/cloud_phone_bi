@@ -251,8 +251,8 @@ class Device(db.Model):
 
     @staticmethod
     def set_device_info(device_id, info_type, content):
-        redis_key = ('YUNPHONE:DEVICE:INFO:%s' % (device_id, info_type)).upper()
-        return redis_store.hset(redis_key, info_type, content)
+        redis_key = ('YUNPHONE:DEVICE:INFO:%s' % device_id).upper()
+        return redis_store.hset(redis_key, ("%s" % info_type), content)
 
 
 class Game(db.Model):
