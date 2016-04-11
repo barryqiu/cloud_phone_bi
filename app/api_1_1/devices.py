@@ -153,7 +153,7 @@ def free_device():
             user_id=user_id,
             game_id=game_id,
             device_id=device_id,
-            server_id=server_id,
+            # server_id=server_id,
             id=record_id).first()
 
         if start_agent_record is None:
