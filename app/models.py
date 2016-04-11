@@ -249,6 +249,11 @@ class Device(db.Model):
         redis_key = 'YUNPHONE:DEVICES'.upper()
         return redis_store.scard(redis_key)
 
+    @staticmethod
+    def set_device_info(device_id, info_type, content):
+        redis_key = ('YUNPHONE:DEVICE:INFO:%s:%s' % (device_id, info_type)).upper()
+        return redis_store.set(redis_key, content)
+
 
 class Game(db.Model):
     __tablename__ = 'tb_game'

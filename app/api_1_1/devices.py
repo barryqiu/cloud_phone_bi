@@ -312,3 +312,27 @@ def user_device_web():
     except Exception as e:
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api1_1.route('/device/info', methods=['POST'])
+def device_info():
+    try:
+        device_id = request.json.get('device_id')
+        info_type = request.json.get('type')
+        content = request.json.get('content')
+
+        if device_id is None or device_id == '':
+            raise ValidationError('does not have a device id')
+        if info_type is None or info_type == '':
+            raise ValidationError('does not have type')
+        if content is None or content == '':
+            raise ValidationError('does not have type')
+
+        Device.set_device_info(device_id, info_type, content)
+
+        return jsonify(BaseApi.api_success('sucess'))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
+
+
