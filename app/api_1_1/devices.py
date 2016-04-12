@@ -34,9 +34,11 @@ def allot_device():
             raise ValidationError('does not have a user id')
 
         # judge whether bigger than the max allot num
-        allot_num = int(User.redis_get_ext_info(user_id, app.config['ALLOT_NUM_NAME']))
-        if allot_num >= int(app.config['MAX_ALLOT_NUM']):
-            return jsonify(BaseApi.api_exceed_allot_num_error())
+        allot_num = User.redis_get_ext_info(user_id, app.config['ALLOT_NUM_NAME'])
+        if allot_num:
+            allot_num = int(allot_num)
+            if allot_num >= int(app.config['MAX_ALLOT_NUM']):
+                return jsonify(BaseApi.api_exceed_allot_num_error())
 
         if game_id is None or game_id == '':
             raise ValidationError('does not have a game id')
