@@ -34,12 +34,12 @@ def allot_device():
             raise ValidationError('does not have a user id')
 
         # judge whether bigger than the max allot num
-        allot_num = User.redis_get_ext_info(user_id, app.config['ALLOT_NUM_NAME'])
+        allot_num = int(User.redis_get_ext_info(user_id, app.config['ALLOT_NUM_NAME']))
         f = open('allotnum.log', 'a')
         f.write(("%s: user_id: %s, allot_num: %s, max: %s \n" % (
             time.strftime("%Y-%m-%d %H:%M:%S"), user_id, allot_num, app.config['MAX_ALLOT_NUM'])))
         f.close()
-        if allot_num >= app.config['MAX_ALLOT_NUM']:
+        if allot_num >= int(app.config['MAX_ALLOT_NUM']):
             return jsonify(BaseApi.api_exceed_allot_num_error())
 
         if game_id is None or game_id == '':
