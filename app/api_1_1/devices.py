@@ -294,7 +294,6 @@ def user_device_web():
         for user_record in user_records:
             device = Device.query.filter_by(id=user_record.device_id).first()
             game = Game.query.get(user_record.game_id)
-            server = GameServer.query.get(user_record.server_id)
             one = device.to_json()
             one['game_id'] = user_record.game_id
             one['game_name'] = game.game_name
@@ -303,9 +302,11 @@ def user_device_web():
             one['record_id'] = user_record.id
             one['start_time'] = datetime_timestamp(user_record.start_time)
             one['server_id'] = user_record.server_id
-            if server:
-                one['server_name'] = server.server_name
-                one['game_icon'] = filter_upload_url(server.icon_url)
+            if user_record.server_id:
+                server = GameServer.query.get(user_record.server_id)
+                if server:
+                    one['server_name'] = server.server_name
+                    one['game_icon'] = filter_upload_url(server.icon_url)
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
