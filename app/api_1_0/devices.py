@@ -187,7 +187,7 @@ def free_device():
         try:
             push_message_to_alias(game.data_file_names, 'clear', device_id)
         except BaseException, e:
-            return jsonify(BaseApi.api_jpush_error(e.message))
+            return jsonify(BaseApi.api_jpush_error())
 
         agent_rocord = AgentRecord()
         agent_rocord.start_id = record_id
