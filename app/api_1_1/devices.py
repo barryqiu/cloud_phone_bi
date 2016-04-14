@@ -319,7 +319,6 @@ def user_device_web():
                 server = GameServer.query.get(user_record.server_id)
                 if server:
                     one['server_name'] = server.server_name
-                    one['game_icon'] = filter_upload_url(server.icon_url)
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
