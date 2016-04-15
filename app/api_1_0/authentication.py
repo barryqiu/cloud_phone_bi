@@ -13,7 +13,8 @@ def verify_password(mobile_num_or_token, password):
     # if register no verify
     if request.endpoint == "api.new_user" or request.endpoint == "api.get_games" or request.endpoint == "api.get_verify_code" or \
                     request.endpoint == "api.get_games_share" or request.endpoint == "api.get_notice" or \
-                    request.endpoint == "api.get_servers" or request.endpoint == "api.edit_password":
+                    request.endpoint == "api.get_servers" or request.endpoint == "api.edit_password" or \
+                    request.endpoint == "api1_1.get_servers":
         return True
     if password == '':
         g.current_user = User.verify_auth_token(mobile_num_or_token)
@@ -39,7 +40,7 @@ def before_request():
     # if register no verify
     if request.endpoint != "api.get_games" and request.endpoint != "api.new_user" and request.endpoint != "api.get_verify_code" \
             and request.endpoint != "api.get_games_share" and request.endpoint != "api.get_notice" and request.endpoint != "api.get_servers" \
-            and request.endpoint != "api.edit_password" and not g.current_user.confirmed:
+            and request.endpoint != "api.edit_password" and request.endpoint != "api1_1.get_servers" and not g.current_user.confirmed:
         return forbidden('Unconfirmed account')
 
 

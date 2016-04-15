@@ -1,6 +1,6 @@
 5# -*- coding: utf-8 -*-
 from flask.ext.wtf import Form
-from wtforms import StringField, SubmitField, FileField, HiddenField, TextAreaField
+from wtforms import StringField, SubmitField, FileField, HiddenField, TextAreaField, SelectField
 from wtforms.validators import Length, DataRequired
 
 
@@ -21,9 +21,8 @@ class AddGameTaskForm(Form):
 
 
 class AddGameServerForm(Form):
-    server_name = StringField('Server Name', validators=[DataRequired(), Length(1, 50)])
+    server_name = SelectField('message_type', choices=[('android', 'android'), ('iphone', 'iphone')])
     packagename = StringField('Package Name', validators=[DataRequired(), Length(1, 50)])
-    gameicon = FileField('Game Icon')
     datafilenames = TextAreaField('Data Files')
     server_des = TextAreaField('Server Description')
     submit = SubmitField('submit')

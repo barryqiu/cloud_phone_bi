@@ -4,7 +4,7 @@ from .. import db
 from . import game
 from werkzeug.utils import secure_filename
 from ..utils import TimeUtil, upload_to_cdn
-from ..models import Game, GameTask, GameServer
+from ..models import Game, GameTask, GameServer, Server
 from .forms import AddGameForm, AddGameTaskForm, AddGameServerForm
 from flask import current_app as app
 
@@ -168,6 +168,11 @@ def game_task_del(page, game_id, task_id):
 @game.route('/server/<game_id>/add', methods=['GET', 'POST'])
 def game_server_add(game_id):
     form = AddGameServerForm()
+    servers = Server.query.filter_by().all()
+    server_names = []
+    for server in servers:
+        server_names.append((server.server_name,server.server_name))
+    form.server_name.choices = server_names
     if form.validate_on_submit():
         try:
             game_server = GameServer()
@@ -176,14 +181,6 @@ def game_server_add(game_id):
             game_server.server_des = form.server_des.data
             game_server.package_name = form.packagename.data
             game_server.data_file_names = form.datafilenames.data
-
-            filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
-            form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-            game_server.icon_url = upload_to_cdn("/uploads/" + filename,
-                                          app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-            if not game_server.icon_url:
-                game_server.icon_url = "/uploads/" + filename
-
             db.session.add(game_server)
             db.session.commit()
             flash('add game server success')
@@ -207,18 +204,16 @@ def game_server_list(game_id, page):
 @game.route('/server/<game_id>/<page>/edit/<server_id>', methods=['GET', 'POST'])
 def game_server_edit(game_id, page, server_id):
     form = AddGameServerForm()
+    servers = Server.query.filter_by().all()
+    server_names = []
+    for server in servers:
+        server_names.append((server.server_name,server.server_name))
+    form.server_name.choices = server_names
     server = GameServer.query.get(server_id)
     if form.validate_on_submit():
         try:
             server.package_name = form.packagename.data
             server.data_file_names = form.datafilenames.data
-            if form.gameicon.data.filename:
-                filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
-                form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-                server.icon_url = upload_to_cdn("/uploads/" + filename,
-                                              app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
-                if not server.icon_url:
-                    server.icon_url = "/uploads/" + filename
             server.server_name = form.server_name.data
             server.server_des = form.server_des.data
             db.session.add(server)
@@ -245,3 +240,5 @@ def game_server_del(page, game_id, server_id):
         db.session.rollback()
         flash('del fail.', 'error')
     return redirect(url_for('game.game_server_list', game_id=game_id, page=page))
+
+

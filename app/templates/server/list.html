@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}服务器列表{% endblock %}
+
+{% block page_content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>服务器列表</h1>
+        </div>
+        <table class="table table-striped">
+            <tr>
+                <th width="40%">服务器名称</th>
+                <th width="40%">服务器图标</th>
+                <th><a class="btn btn-success" href="{{ url_for('server.server_add') }}" role="button">新增</a>
+                </th>
+            </tr>
+            {% for server in servers %}
+                <tr>
+                    <td>{{ server.server_name }}</td>
+                    <td><img src="{{ server.icon_url }}" class="img-circle" height="50px" width="50px"></td>
+                    <td>
+                        <a class="btn btn-warning"
+                           href="{{ url_for('server.server_del', server_name= server.server_name, page=pagination.page ) }}"
+                           role="button" onclick="delete_confirm()">
+                            删除
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination, 'server.server_list') }}
+    </div>
+{% endblock %}
