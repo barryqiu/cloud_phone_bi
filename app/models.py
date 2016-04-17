@@ -239,7 +239,7 @@ class Device(db.Model):
         user_id = g.current_user.id
         redis_key = 'YUNPHONE:DEVICES'.upper()
         f = open('device.log', 'a')
-        f.write(("%s POP DEVICE %s \n" % (user_id, device_id)))
+        f.write(("%s PUSH DEVICE %s \n" % (user_id, device_id)))
         f.close()
         return redis_store.sadd(redis_key, device_id)
 
