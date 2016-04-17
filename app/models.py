@@ -267,7 +267,7 @@ class Device(db.Model):
 class Game(db.Model):
     __tablename__ = 'tb_game'
     id = db.Column(db.Integer, primary_key=True)
-    game_name = db.Column(db.String(50), unique=True, index=True)
+    game_name = db.Column(db.String(50), index=True)
     icon_url = db.Column(db.String(150))
     banner_url = db.Column(db.String(150))
     package_name = db.Column(db.String(250))
