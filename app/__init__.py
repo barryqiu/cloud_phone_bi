@@ -54,4 +54,7 @@ def create_app(config_name):
     from .server import server as server_blueprint
     app.register_blueprint(server_blueprint, url_prefix='/server')
 
+    from .trial_game import trial_game as trial_game_blueprint
+    app.register_blueprint(trial_game_blueprint, url_prefix='/trial/game')
+
     return app

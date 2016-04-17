@@ -24,11 +24,11 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('game.game_list') }}">游戏管理</a></li>
+                    <li><a href="{{ url_for('game.game_list') }}">挂机游戏</a></li>
+                    <li><a href="{{ url_for('trial_game.game_list') }}">体验游戏</a></li>
                     <li><a href="{{ url_for('device.device_list') }}">设备管理</a></li>
                     <li><a href="{{ url_for('user.user_list') }}">用户管理</a></li>
-                    <li><a href="{{ url_for('main.index') }}">数据管理</a></li>
-                    <li><a href="{{ url_for('push.push_list') }}">推送管理</a></li>
+{#                    <li><a href="{{ url_for('push.push_list') }}">推送管理</a></li>#}
                     <li><a href="{{ url_for('server.server_list') }}">服务器管理</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

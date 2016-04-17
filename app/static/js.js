@@ -29,6 +29,19 @@ function del_all_game(page) {
     });
 }
 
+function del_all_trial_game(page) {
+    event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
+    var str = "0";
+    $("[name='selectFlag']:checkbox").each(function () {
+        if (this.checked == true) {
+            str += "," + this.id ;
+        }
+    });
+    $.get("/trial/game/del/" + page +"/" + str, function (result) {
+        self.location.reload();
+    });
+}
+
 function del_all_game_task(game_id, page) {
     event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
     var str = "0";
@@ -54,20 +67,6 @@ function del_all_game_server(game_id, page) {
     });
 
     $.get("/game/server/"+ game_id + "/" + page +"/del/" + str, function (result) {
-        self.location.reload();
-    });
-}
-
-function del_all_server(server_name, page) {
-    event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
-    var str = "0";
-    $("[name='selectFlag']:checkbox").each(function () {
-        if (this.checked == true) {
-            str += "," + this.id ;
-        }
-    });
-
-    $.get("/server/"+ server_name + "/" + page +"/del/" + str, function (result) {
         self.location.reload();
     });
 }
