@@ -4,7 +4,7 @@ import urllib2
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app
+from flask import current_app, g
 from app.exceptions import ValidationError
 from . import db, login_manager, redis_store
 from app.utils import filter_upload_url
@@ -236,13 +236,22 @@ class Device(db.Model):
 
     @staticmethod
     def push_redis_set(device_id):
+        user_id = g.current_user.id
         redis_key = 'YUNPHONE:DEVICES'.upper()
+        f = open('device.log', 'a')
+        f.write(("%s PUSH DEVICE %s \n" % (user_id, device_id)))
+        f.close()
         return redis_store.sadd(redis_key, device_id)
 
     @staticmethod
     def pop_redis_set():
         redis_key = 'YUNPHONE:DEVICES'.upper()
-        return redis_store.spop(redis_key)
+        device_id = redis_store.spop(redis_key)
+        user_id = g.current_user.id
+        f = open('device.log', 'a')
+        f.write(("%s POP DEVICE %s \n" % (user_id, device_id)))
+        f.close()
+        return device_id
 
     @staticmethod
     def available_num():
@@ -258,7 +267,7 @@ class Device(db.Model):
 class Game(db.Model):
     __tablename__ = 'tb_game'
     id = db.Column(db.Integer, primary_key=True)
-    game_name = db.Column(db.String(50), unique=True, index=True)
+    game_name = db.Column(db.String(50), index=True)
     icon_url = db.Column(db.String(150))
     banner_url = db.Column(db.String(150))
     package_name = db.Column(db.String(250))

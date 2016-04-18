@@ -237,12 +237,13 @@ def device_available(device):
     # urllib2.install_opener(opener)
 
     try:
-        res_data = urllib2.urlopen(url3)
+        res_data = urllib2.urlopen(url3, timeout=1)
         if res_data.code == 200:
             return True
         else:
             return False
-    except Exception, e:
+    except Exception:
+        app.logger.exception('info')
         return False
 
 
