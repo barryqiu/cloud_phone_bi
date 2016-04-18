@@ -236,21 +236,21 @@ class Device(db.Model):
 
     @staticmethod
     def push_redis_set(device_id):
-        user_id = g.current_user.id
+        # user_id = g.current_user.id
         redis_key = 'YUNPHONE:DEVICES'.upper()
-        f = open('device.log', 'a')
-        f.write(("%s PUSH DEVICE %s \n" % (user_id, device_id)))
-        f.close()
+        # f = open('device.log', 'a')
+        # f.write(("%s PUSH DEVICE %s \n" % (user_id, device_id)))
+        # f.close()
         return redis_store.sadd(redis_key, device_id)
 
     @staticmethod
     def pop_redis_set():
         redis_key = 'YUNPHONE:DEVICES'.upper()
         device_id = redis_store.spop(redis_key)
-        user_id = g.current_user.id
-        f = open('device.log', 'a')
-        f.write(("%s POP DEVICE %s \n" % (user_id, device_id)))
-        f.close()
+        # user_id = g.current_user.id
+        # f = open('device.log', 'a')
+        # f.write(("%s POP DEVICE %s \n" % (user_id, device_id)))
+        # f.close()
         return device_id
 
     @staticmethod
