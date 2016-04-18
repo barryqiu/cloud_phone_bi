@@ -346,5 +346,5 @@ def device_info():
 
         return jsonify(BaseApi.api_success('sucess'))
     except Exception as e:
-        app.logger.exception('info')
+        # app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
