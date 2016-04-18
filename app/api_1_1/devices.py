@@ -61,15 +61,15 @@ def allot_device():
             device = Device.query.get(device_id)
             if not device or device.state != DEVICE_STATE_IDLE:
                 continue
-            time1 = time.time()
+            # time1 = time.time()
             is_available = device_available(device)
-            time2 = time.time()
-            time_cost = time2 - time1
-
-            f = open('time.log', 'a')
-            f.write(("%s:device_id: %s time cost %s\n" % (
-                time.strftime("%Y-%m-%d %H:%M:%S"), device_id, time_cost)))
-            f.close()
+            # time2 = time.time()
+            # time_cost = time2 - time1
+            #
+            # f = open('time.log', 'a')
+            # f.write(("%s:device_id: %s time cost %s\n" % (
+            #     time.strftime("%Y-%m-%d %H:%M:%S"), device_id, time_cost)))
+            # f.close()
 
             if is_available:
                 idle_device = device
