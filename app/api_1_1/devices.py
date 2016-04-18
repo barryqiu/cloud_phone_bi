@@ -243,7 +243,7 @@ def device_available(device):
         else:
             return False
     except Exception:
-        app.logger.exception('info')
+        app.logger.exception(device.device_name)
         return False
 
 
