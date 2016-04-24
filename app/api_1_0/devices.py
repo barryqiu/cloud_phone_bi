@@ -338,6 +338,6 @@ def device_available(device):
             return True
         else:
             return False
-    except Exception:
-        app.logger.exception(device.device_name)
+    except Exception as e:
+        app.logger.error(device.device_name + "   " + e.message)
         return False
