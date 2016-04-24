@@ -316,7 +316,7 @@ def device_available(device):
 
     url = "http://yunphoneclient.shinegame.cn/connlen/" + device.device_name + "/2"
     url_top = "http://yunphoneclient.shinegame.cn"
-    url3 = "http://yunphoneclient.shinegame.cn/" + device.device_name + "/screenshot.jpg?vlfnnn"
+    url3 = "http://yunphoneclient.shinegame.cn/" + device.device_name + "/testconn"
 
     username = device.user_name
     password = device.password
