@@ -1,4 +1,3 @@
-from json import dump
 from flask import render_template, redirect, url_for, flash
 from .. import db
 from . import game

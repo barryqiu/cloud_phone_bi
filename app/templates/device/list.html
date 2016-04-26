@@ -14,6 +14,7 @@
                 <th>密码</th>
                 <th>状态</th>
                 <th>时间</th>
+                <th>操作</th>
             </tr>
             {% for device in devices %}
                 <tr>
@@ -34,6 +35,16 @@
                         {% endif %}
                     </td>
                     <td>{{ device.collect_time | datetimeformat("%Y-%m-%d") }}</td>
+                    <td> <a class="btn btn-warning"
+                           href="{{ url_for('device.free_device', device_id= device.id, page=pagination.page ) }}"
+                           role="button" onclick="delete_confirm()"
+                            {% if device.state == 1 %}
+                                disabled = true
+                            {% endif %}
+                            >
+                            强制释放
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
         </table>
