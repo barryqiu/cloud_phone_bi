@@ -163,13 +163,13 @@ class User(db.Model):
     @staticmethod
     def redis_incr_ext_info(user_id, key, num):
         # if current num <= 0, restore to or keep 0
-        if num < 0:
-            curr_num = User.redis_get_ext_info(user_id, key)
-            if curr_num is None or curr_num == 0:
-                return
-            if curr_num < 0:
-                User.redis_incr_ext_info(user_id, key, -curr_num)
-                return
+        # if num < 0:
+        #     curr_num = User.redis_get_ext_info(user_id, key)
+        #     if curr_num is None or curr_num == 0:
+        #         return
+        #     if curr_num < 0:
+        #         User.redis_incr_ext_info(user_id, key, -curr_num)
+        #         return
         redis_key = ('YUNPHONE:USER_EXT:%s' % user_id).upper()
         return redis_store.hincrby(redis_key, key, num)
 
