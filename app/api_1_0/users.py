@@ -1,3 +1,4 @@
+import random
 from flask import jsonify, request, g
 from . import api
 from app.exceptions import ValidationError
@@ -65,6 +66,39 @@ def new_user():
         db.session.rollback()
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api.route('/user/random/<int:num>')
+def random_user(num):
+    x = 1
+    ret = []
+    while True:
+        if x > num:
+            break
+        user = User()
+        user.mobile_num = int(random.random() * 100000000) + 100000000
+        pd = int(random.random() * 100000) + 100000
+        user.password = "%s" % pd
+        user.confirmed = True
+        user.system_version = 'random'
+        user.model_number = 'random'
+        user.imei = 'random'
+        user.imsi = 'random'
+        user.android_id = 'random'
+        user.mac = 'random'
+        now_user = User.query.filter_by(mobile_num=user.mobile_num).first()
+        if now_user:
+            continue
+        db.session.add(user)
+        db.session.commit()
+        json_user = {
+            'id': user.id,
+            'mobile_num': user.mobile_num,
+            'password': pd
+        }
+        ret.append(json_user)
+        x += 1
+    return jsonify(BaseApi.api_success(ret))
 
 
 @api.route('/user/password', methods=['POST'])
