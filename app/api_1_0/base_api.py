@@ -12,6 +12,7 @@ ERR_CODE_WRONG_VERIFY_CODE = 2
 ERR_CODE_NO_DEVICE = 3
 ERR_CODE_JPUSH_ERROR = 4
 ERR_CODE_EXCEED_ALLOT_NUM_ERROR = 5
+ERR_CODE_ALREADY_REG = 6
 
 DEVICE_STATE_DEL = 0
 DEVICE_STATE_IDLE = 1
@@ -77,6 +78,14 @@ class BaseApi:
         ret = {
             'err_code': ERR_CODE_EXCEED_ALLOT_NUM_ERROR,
             'content': 'exceed the max allot num error',
+        }
+        return ret
+
+    @staticmethod
+    def api_already_reg_error():
+        ret = {
+            'err_code': ERR_CODE_ALREADY_REG,
+            'content': 'the user already exists',
         }
         return ret
 

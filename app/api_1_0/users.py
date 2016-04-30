@@ -57,7 +57,7 @@ def new_user():
 
         now_user = User.query.filter_by(mobile_num=user.mobile_num).first()
         if now_user:
-            return jsonify(BaseApi.api_success(now_user.to_json()))
+            return jsonify(BaseApi.api_already_reg_error())
         db.session.add(user)
         db.session.commit()
         return jsonify(BaseApi.api_success(user.to_json()))

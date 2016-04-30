@@ -243,23 +243,39 @@ class Device(db.Model):
         return '<Device %r>' % self.device_name
 
     @staticmethod
-    def push_redis_set(device_id):
+    def push_redis_set(device_id, set_type=0):
         # user_id = g.current_user.id
         redis_key = 'YUNPHONE:DEVICES'.upper()
+        if set_type:
+            redis_key += "%s" % set_type
         # f = open('device.log', 'a')
         # f.write(("%s PUSH DEVICE %s \n" % (user_id, device_id)))
         # f.close()
         return redis_store.sadd(redis_key, device_id)
 
     @staticmethod
-    def pop_redis_set():
+    def pop_redis_set(set_type=0):
         redis_key = 'YUNPHONE:DEVICES'.upper()
+        if set_type:
+            redis_key += "%s" % set_type
         device_id = redis_store.spop(redis_key)
         # user_id = g.current_user.id
         # f = open('device.log', 'a')
         # f.write(("%s POP DEVICE %s \n" % (user_id, device_id)))
         # f.close()
         return device_id
+
+    @staticmethod
+    def rem_redis_set(device_id, set_type=0):
+        redis_key = 'YUNPHONE:DEVICES'.upper()
+        if set_type:
+            redis_key += "%s" % set_type
+        count = redis_store.srem(redis_key, device_id)
+        # user_id = g.current_user.id
+        # f = open('device.log', 'a')
+        # f.write(("%s POP DEVICE %s \n" % (user_id, device_id)))
+        # f.close()
+        return count
 
     @staticmethod
     def available_num():
