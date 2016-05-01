@@ -42,6 +42,20 @@ class BaseApi:
         return ret
 
     @staticmethod
+    def api_except_error(e):
+        msg = "system error"
+        err_code = ERR_CODE_SYSTEM
+        if e and hasattr(e, 'message') and e.message:
+            msg = e.message
+        if e and hasattr(e, 'code') and e.code:
+            err_code = e.code
+        ret = {
+            'err_code': err_code,
+            'content': msg,
+        }
+        return ret
+
+    @staticmethod
     def api_wrong_param():
         ret = {
             'err_code': ERR_CODE_WRONG_PARAM,

@@ -53,14 +53,16 @@ def new_user():
         redis_key = ('YUNPHONE:VERIFYCODE:%s' % user.mobile_num).upper()
         code_redis = redis_store.get(redis_key)
 
-        if not code_redis or code != code_redis:
-            return jsonify(BaseApi.api_wrong_verify_code())
+        if not app.config['DEBUG']:
+            if not code_redis or code != code_redis:
+                return jsonify(BaseApi.api_wrong_verify_code())
 
         now_user = User.query.filter_by(mobile_num=user.mobile_num).first()
         if now_user:
             return jsonify(BaseApi.api_already_reg_error())
         db.session.add(user)
         db.session.commit()
+        User.redis_incr_ext_info(user.id, app.config['ALLOT_NUM_LIMIT_NAME'], app.config['MAX_ALLOT_NUM'])
         return jsonify(BaseApi.api_success(user.to_json()))
     except Exception as e:
         db.session.rollback()
@@ -116,8 +118,9 @@ def edit_password():
         redis_key = ('YUNPHONE:VERIFYCODE:%s' % mobile_num).upper()
         code_redis = redis_store.get(redis_key)
 
-        if not code_redis or code != code_redis:
-            return jsonify(BaseApi.api_wrong_verify_code())
+        if not app.config['DEBUG']:
+            if not code_redis or code != code_redis:
+                return jsonify(BaseApi.api_wrong_verify_code())
 
         now_user = User.query.filter_by(mobile_num=mobile_num).first()
         if not now_user:

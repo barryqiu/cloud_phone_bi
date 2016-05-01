@@ -41,6 +41,10 @@ def get_agent_record_by_device_id(device_id):
 
 
 def device_available(device):
+
+    if app.config['DEBUG']:
+        return True
+
     if not device.user_name or not device.password:
         return False
 

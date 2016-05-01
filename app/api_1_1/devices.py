@@ -2,12 +2,12 @@ from datetime import datetime
 from flask import jsonify, request, g
 from . import api1_1
 from flask import current_app as app
-from app.api_1_0.base_api import BaseApi
+from app.api_1_0.base_api import BaseApi, ERR_CODE_EXCEED_ALLOT_NUM_ERROR, ERR_CODE_NO_DEVICE, ERR_CODE_JPUSH_ERROR
 from app.device.device_api import device_available, get_agent_record_by_user_id
 from ..models import AgentRecord, Game, datetime_timestamp, GameServer, User
 from ..models import Device
 from .. import db
-from app.exceptions import ValidationError
+from app.exceptions import ValidationError, MyException
 from app.utils import push_message_to_alias, filter_upload_url
 
 DEVICE_STATE_DEL = 0
@@ -21,20 +21,18 @@ RECORD_TYPE_END = 1
 @api1_1.route('/device/allot', methods=['POST'])
 def allot_device():
     restore_device_ids = []
+    idle_device = None
     try:
         user_id = g.current_user.id
         game_id = request.json.get('game_id')
         server_id = request.json.get('server_id')
 
+        num_left = User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_LIMIT_NAME'], -1)
+        if num_left < 0:
+            raise MyException(message='exceed the max allot num error', code=ERR_CODE_EXCEED_ALLOT_NUM_ERROR)
+
         if user_id is None or user_id == '':
             raise ValidationError('does not have a user id')
-
-        # judge whether bigger than the max allot num
-        allot_num = User.redis_get_ext_info(user_id, app.config['ALLOT_NUM_NAME'])
-        if allot_num:
-            allot_num = int(allot_num)
-            if allot_num >= int(app.config['MAX_ALLOT_NUM']):
-                return jsonify(BaseApi.api_exceed_allot_num_error())
 
         if game_id is None or game_id == '':
             raise ValidationError('does not have a game id')
@@ -57,15 +55,7 @@ def allot_device():
             device = Device.query.get(device_id)
             if not device or device.state != DEVICE_STATE_IDLE:
                 continue
-            # time1 = time.time()
             is_available = device_available(device)
-            # time2 = time.time()
-            # time_cost = time2 - time1
-            #
-            # f = open('time.log', 'a')
-            # f.write(("%s:device_id: %s time cost %s\n" % (
-            #     time.strftime("%Y-%m-%d %H:%M:%S"), device_id, time_cost)))
-            # f.close()
 
             if is_available:
                 idle_device = device
@@ -74,20 +64,16 @@ def allot_device():
                 # put device_id back
                 restore_device_ids.append(device_id)
 
-        # restore device ids
-        for restore_device_id in restore_device_ids:
-            Device.push_redis_set(restore_device_id)
-
         if idle_device is None:
-            return jsonify(BaseApi.api_no_device())
+            raise MyException(message='no free device', code=ERR_CODE_NO_DEVICE)
 
         # push start game command to device
         try:
-            push_message_to_alias(game.package_name, 'startapp', idle_device.id)
+            if not app.config['DEBUG']:
+                push_message_to_alias(game.package_name, 'startapp', idle_device.id)
         except Exception:
-            Device.push_redis_set(idle_device.id)
             app.logger.exception('info')
-            return jsonify(BaseApi.api_jpush_error())
+            raise MyException(message='jpush error', code=ERR_CODE_JPUSH_ERROR)
 
         agent_record = AgentRecord()
         agent_record.game_id = game_id
@@ -103,6 +89,10 @@ def allot_device():
         db.session.add(agent_record)
         db.session.commit()
 
+        # restore device ids
+        for restore_device_id in restore_device_ids:
+            Device.push_redis_set(restore_device_id)
+
         # increase user's allot device num
         User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_NAME'], 1)
 
@@ -110,15 +100,19 @@ def allot_device():
             "record_id": agent_record.id,
             "game_id": game_id,
             "server_id": server_id,
-            "device": idle_device.to_json()}
+            "device": idle_device.to_json()
+        }
 
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
+        User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_LIMIT_NAME'], 1)
         app.logger.exception('info')
         db.session.rollback()
+        if idle_device:
+            restore_device_ids.append(idle_device)
         for restore_device_id in restore_device_ids:
             Device.push_redis_set(restore_device_id)
-        return jsonify(BaseApi.api_system_error(e.message))
+        return jsonify(BaseApi.api_except_error(e))
 
 
 @api1_1.route('/device/free', methods=['POST'])
@@ -170,7 +164,8 @@ def free_device():
 
         # push start game command to device
         try:
-            push_message_to_alias(game.data_file_names, 'clear', device_id)
+            if not app.config['DEBUG']:
+                push_message_to_alias(game.data_file_names, 'clear', device_id)
         except Exception as e:
             app.logger.exception('info')
             return jsonify(BaseApi.api_jpush_error())
@@ -197,6 +192,8 @@ def free_device():
 
         # decrease user's allot device num
         User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_NAME'], -1)
+        # increase user's allot device num limit
+        User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_LIMIT_NAME'], 1)
 
         ret = {
             "device_id": device_id,

@@ -114,7 +114,8 @@ def allot_device():
 
         # push start game command to device
         try:
-            push_message_to_alias(game.package_name, 'startapp', idle_device.id)
+            if not app.config['DEBUG']:
+                push_message_to_alias(game.package_name, 'startapp', idle_device.id)
         except BaseException, e:
             Device.push_redis_set(idle_device.id)
             raise e
@@ -186,7 +187,8 @@ def free_device():
 
         # push start game command to device
         try:
-            push_message_to_alias(game.data_file_names, 'clear', device_id)
+            if not app.config['DEBUG']:
+                push_message_to_alias(game.data_file_names, 'clear', device_id)
         except BaseException, e:
             return jsonify(BaseApi.api_jpush_error())
 
