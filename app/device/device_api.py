@@ -68,7 +68,7 @@ def device_available(device):
     # urllib2.install_opener(opener)
 
     try:
-        res_data = urllib2.urlopen(url3, timeout=1)
+        # res_data = urllib2.urlopen(url3, timeout=1)
         headers = {'Host': 'yunphoneclient.shinegame.cn'}
         req = urllib2.Request(url3, headers=headers)
         res_data = urllib2.urlopen(req, timeout=1)
