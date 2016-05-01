@@ -41,7 +41,6 @@ def get_agent_record_by_device_id(device_id):
 
 
 def device_available(device):
-
     if app.config['DEBUG']:
         return True
 
@@ -50,6 +49,9 @@ def device_available(device):
 
     url_top = "http://yunphoneclient.shinegame.cn"
     url3 = "http://yunphoneclient.shinegame.cn/" + device.device_name + "/testconn"
+
+    if app.config['TESTING']:
+        url3 = "http://101.201.37.72/" + device.device_name + "/testconn"
 
     username = device.user_name
     password = device.password
@@ -67,6 +69,9 @@ def device_available(device):
 
     try:
         res_data = urllib2.urlopen(url3, timeout=1)
+        headers = {'Host': 'yunphoneclient.shinegame.cn'}
+        req = urllib2.Request(url3, headers=headers)
+        res_data = urllib2.urlopen(req, timeout=1)
         app.logger.error("%s:%s" % (device.device_name, res_data.code))
         if res_data.code == 200:
             return True
