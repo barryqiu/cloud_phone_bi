@@ -1,11 +1,6 @@
-import time
 from datetime import datetime
-import urllib2
-
-from flask import jsonify, request, g, Session
-
+from flask import jsonify, request, g
 from . import api
-from sqlalchemy import and_
 from app.device.device_api import device_available, get_agent_record_by_user_id
 from .base_api import BaseApi
 from flask import current_app as app
