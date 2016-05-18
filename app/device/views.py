@@ -4,6 +4,7 @@ from flask import current_app as app
 from .. import db
 
 from . import device
+from flask.ext.login import login_required
 from app.device.device_api import get_agent_record_by_device_id
 from app.exceptions import ValidationError
 from app.utils import push_message_to_alias
@@ -19,6 +20,7 @@ RECORD_TYPE_END = 1
 
 @device.route('/list', defaults={'page': 1})
 @device.route('/list/<int:page>')
+@login_required
 def device_list(page):
     pagination = Device.query.order_by(Device.collect_time.desc()).paginate(
         page, per_page=app.config['DEVICE_NUM_PER_PAGE'], error_out=False)
@@ -27,6 +29,7 @@ def device_list(page):
 
 
 @device.route('/free/<page>/<device_id>')
+@login_required
 def free_device(page, device_id):
     try:
         start_record = get_agent_record_by_device_id(device_id)

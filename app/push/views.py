@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for, flash
 from .. import db
 from . import push
+from flask.ext.login import login_required
 import jpush
 from ..models import DevicePushMessage
 from .forms import AddPushForm
@@ -8,6 +9,7 @@ from flask import current_app as app
 
 
 @push.route('/add', methods=['GET', 'POST'])
+@login_required
 def push_add():
     form = AddPushForm()
     if form.validate_on_submit():
@@ -28,6 +30,7 @@ def push_add():
 
 @push.route('/list', defaults={'page': 1})
 @push.route('/list/<int:page>')
+@login_required
 def push_list(page):
     pagination = DevicePushMessage.query.order_by(DevicePushMessage.add_time.desc()).paginate(
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)

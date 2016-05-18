@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for, flash
 from .. import db
 from . import game
+from flask.ext.login import login_required
 from werkzeug.utils import secure_filename
 from ..utils import TimeUtil, upload_to_cdn
 from ..models import Game, GameTask, GameServer, Server
@@ -9,6 +10,7 @@ from flask import current_app as app
 
 
 @game.route('/add', methods=['GET', 'POST'])
+@login_required
 def game_add():
     form = AddGameForm()
     if form.validate_on_submit():
@@ -41,6 +43,7 @@ def game_add():
 
 
 @game.route('/edit/<page>/<game_id>', methods=['GET', 'POST'])
+@login_required
 def game_edit(page, game_id):
     form = AddGameForm()
     game = Game.query.get(game_id)
@@ -80,6 +83,7 @@ def game_edit(page, game_id):
 
 @game.route('/list', defaults={'page': 1})
 @game.route('/list/<int:page>')
+@login_required
 def game_list(page):
     pagination = Game.query.filter_by(state=1).order_by(Game.add_time.desc()).paginate(
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
@@ -88,6 +92,7 @@ def game_list(page):
 
 
 @game.route('/del/<page>/<game_id>')
+@login_required
 def game_del(page, game_id):
     try:
         gameids = game_id.split(",")
@@ -104,6 +109,7 @@ def game_del(page, game_id):
 
 
 @game.route('/task/<game_id>/add', methods=['GET', 'POST'])
+@login_required
 def game_task_add(game_id):
     form = AddGameTaskForm()
     if form.validate_on_submit():
@@ -123,6 +129,7 @@ def game_task_add(game_id):
 
 @game.route('/task/<game_id>/list', defaults={'page': 1})
 @game.route('/task/<game_id>/list/<int:page>')
+@login_required
 def game_task_list(game_id, page):
     game = Game.query.get(game_id)
     pagination = GameTask.query.filter_by(game_id=game_id).order_by(GameTask.add_time.desc()).paginate(
@@ -133,6 +140,7 @@ def game_task_list(game_id, page):
 
 
 @game.route('/task/<game_id>/<page>/edit/<task_id>', methods=['GET', 'POST'])
+@login_required
 def game_task_edit(game_id, page, task_id):
     form = AddGameTaskForm()
     task = GameTask.query.get(task_id)
@@ -152,6 +160,7 @@ def game_task_edit(game_id, page, task_id):
 
 
 @game.route('/task/<game_id>/<page>/del/<task_id>')
+@login_required
 def game_task_del(page, game_id, task_id):
     try:
         task_ids = task_id.split(",")
@@ -165,6 +174,7 @@ def game_task_del(page, game_id, task_id):
 
 
 @game.route('/server/<game_id>/add', methods=['GET', 'POST'])
+@login_required
 def game_server_add(game_id):
     form = AddGameServerForm()
     servers = Server.query.filter_by().all()
@@ -191,6 +201,7 @@ def game_server_add(game_id):
 
 @game.route('/server/<game_id>/list', defaults={'page': 1})
 @game.route('/server/<game_id>/list/<int:page>')
+@login_required
 def game_server_list(game_id, page):
     game = Game.query.get(game_id)
     pagination = GameServer.query.filter_by(game_id=game_id).order_by(GameServer.add_time.desc()).paginate(
@@ -201,6 +212,7 @@ def game_server_list(game_id, page):
 
 
 @game.route('/server/<game_id>/<page>/edit/<server_id>', methods=['GET', 'POST'])
+@login_required
 def game_server_edit(game_id, page, server_id):
     form = AddGameServerForm()
     servers = Server.query.filter_by().all()
@@ -229,6 +241,7 @@ def game_server_edit(game_id, page, server_id):
 
 
 @game.route('/server/<game_id>/<page>/del/<server_id>')
+@login_required
 def game_server_del(page, game_id, server_id):
     try:
         server_ids = server_id.split(",")

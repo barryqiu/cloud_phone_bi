@@ -2,6 +2,7 @@ from json import dump
 from flask import render_template, redirect, url_for, flash
 from .. import db
 from . import trial_game
+from flask.ext.login import login_required
 from werkzeug.utils import secure_filename
 from ..utils import TimeUtil, upload_to_cdn
 from ..models import Game, GameTask, GameServer, Server
@@ -12,6 +13,7 @@ TRIAL_GAME_STATE = 2
 
 
 @trial_game.route('/add', methods=['GET', 'POST'])
+@login_required
 def game_add():
     form = AddGameForm()
     if form.validate_on_submit():
@@ -46,6 +48,7 @@ def game_add():
 
 
 @trial_game.route('/edit/<page>/<game_id>', methods=['GET', 'POST'])
+@login_required
 def game_edit(page, game_id):
     form = AddGameForm()
     game = Game.query.get(game_id)
@@ -85,6 +88,7 @@ def game_edit(page, game_id):
 
 @trial_game.route('/list', defaults={'page': 1})
 @trial_game.route('/list/<int:page>')
+@login_required
 def game_list(page):
     pagination = Game.query.filter_by(state=app.config['TRIAL_GAME_STATE']).order_by(Game.add_time.desc()).paginate(
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
@@ -93,6 +97,7 @@ def game_list(page):
 
 
 @trial_game.route('/del/<page>/<game_id>')
+@login_required
 def game_del(page, game_id):
     try:
         gameids = game_id.split(",")

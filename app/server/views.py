@@ -2,6 +2,7 @@ from json import dump
 from flask import render_template, redirect, url_for, flash
 from .. import db
 from . import server
+from flask.ext.login import login_required
 from werkzeug.utils import secure_filename
 from ..utils import TimeUtil, upload_to_cdn
 from ..models import Server
@@ -10,6 +11,7 @@ from flask import current_app as app
 
 
 @server.route('/add', methods=['GET', 'POST'])
+@login_required
 def server_add():
     form = AddServerForm()
     if form.validate_on_submit():
@@ -34,6 +36,7 @@ def server_add():
 
 @server.route('/list', defaults={'page': 1})
 @server.route('/list/<int:page>')
+@login_required
 def server_list(page):
     pagination = Server.query.filter_by().order_by(Server.add_time.desc()).paginate(
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
@@ -42,6 +45,7 @@ def server_list(page):
 
 
 @server.route('/del/<page>/<server_name>')
+@login_required
 def server_del(page, server_name):
     try:
         server_names = server_name.split(",")
