@@ -56,7 +56,7 @@ def new_device():
         db.session.commit()
 
         # add device to queue
-        ret = Device.push_redis_set(device.id)
+        # ret = Device.push_redis_set(device.id)
         # f = open('newdevice.log', 'a')
         # f.write(("%s:add device_name: %s, device_id: %s to redis set return %s\n" % (
         #     time.strftime("%Y-%m-%d %H:%M:%S"), device.device_name, device.id, ret)))
