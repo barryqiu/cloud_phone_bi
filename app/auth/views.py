@@ -7,16 +7,16 @@ from ..models import Admin
 from .forms import LoginForm, ChangePasswordForm, RegistrationForm
 
 
-@auth.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = Admin(user_name=form.username.data,
-                     password=form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        return redirect(url_for('auth.login'))
-    return render_template('auth/register.html', form=form)
+# @auth.route('/register', methods=['GET', 'POST'])
+# def register():
+#     form = RegistrationForm()
+#     if form.validate_on_submit():
+#         user = Admin(user_name=form.username.data,
+#                      password=form.password.data)
+#         db.session.add(user)
+#         db.session.commit()
+#         return redirect(url_for('auth.login'))
+#     return render_template('auth/register.html', form=form)
 
 
 @auth.route('/login', methods=['GET', 'POST'])
