@@ -72,6 +72,7 @@ def new_device():
 @api.route('/device/allot', methods=['POST'])
 def allot_device():
     restore_device_ids = []
+    idle_device = None
     try:
         user_id = g.current_user.id
         game_id = request.json.get('game_id')
@@ -89,7 +90,6 @@ def allot_device():
         if not game:
             raise ValidationError('game does not exists')
 
-        idle_device = None
         while True:
             device_id = Device.pop_redis_set()
             if not device_id:
