@@ -119,7 +119,7 @@ def timeout(seconds):
     return timeout_decorator
 
 
-@timeout(2)
+# @timeout(2)
 def push_message_to_alias(content, msg_type, alias, platform='android'):
     msg = {
         'msg_type': msg_type,
@@ -135,7 +135,7 @@ def push_message_to_alias(content, msg_type, alias, platform='android'):
     return ret.payload['sendno'].encode('utf-8')
 
 
-@timeout(2)
+# @timeout(2)
 def upload_to_cdn(path, file_path):
     try:
         up = upyun.UpYun(app.config['CDN_BUCKET'], username=app.config['CDN_USER_NAME'],
