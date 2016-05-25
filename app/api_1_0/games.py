@@ -1,4 +1,6 @@
 from flask import jsonify, request
+
+from app.utils import test_time_out
 from . import api
 from .base_api import BaseApi
 from flask import current_app as app
@@ -9,6 +11,7 @@ from ..models import Game
 def get_games():
     try:
         games = Game.query.filter_by(state=1).all()
+        test_time_out()
         return jsonify(BaseApi.api_success([game.to_json() for game in games]))
     except Exception as e:
         app.logger.exception('info')
