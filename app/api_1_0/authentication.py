@@ -36,6 +36,7 @@ def auth_error():
 
 @api.before_request
 @api1_1.before_request
+@auth.login_required
 def before_request():
     # if register no verify
     if request.endpoint != "api.get_games" and request.endpoint != "api.new_user" and request.endpoint != "api.get_verify_code" \
