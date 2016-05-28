@@ -236,13 +236,18 @@ class Device(db.Model):
 
     @staticmethod
     def push_redis_set(device_id, set_type=0):
-        # user_id = g.current_user.id
+        # judge whether the device id is legal
+        try:
+            device_id = int(device_id)
+        except Exception:
+            return 0
+
+        if device_id <= 0:
+            return 0
+
         redis_key = 'YUNPHONE:DEVICES'.upper()
         if set_type:
             redis_key += "%s" % set_type
-        # f = open('device.log', 'a')
-        # f.write(("%s PUSH DEVICE %s \n" % (user_id, device_id)))
-        # f.close()
         return redis_store.sadd(redis_key, device_id)
 
     @staticmethod

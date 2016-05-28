@@ -39,36 +39,6 @@ def filter_upload_url(url):
     return app.config['UPLOAD_HOST'] + url
 
 
-class TimeoutError(Exception): pass
-
-
-def timeout(seconds, error_message="Timeout Error: the cmd 30s have not finished."):
-    def decorated(func):
-        result = ""
-
-        def _handle_timeout(signum, frame):
-            global result
-            result = error_message
-            raise TimeoutError(error_message)
-
-        def wrapper(*args, **kwargs):
-            global result
-            signal.signal(signal.SIGTERM, _handle_timeout)
-            signal.alarm(seconds)
-
-            try:
-                result = func(*args, **kwargs)
-            finally:
-                signal.alarm(0)
-                return result
-            return result
-
-        return functools.wraps(func)(wrapper)
-
-    return decorated
-
-
-@timeout(2)
 def push_message_to_alias(content, msg_type, alias, platform='android'):
     msg = {
         'msg_type': msg_type,
@@ -84,7 +54,6 @@ def push_message_to_alias(content, msg_type, alias, platform='android'):
     return ret.payload['sendno'].encode('utf-8')
 
 
-@timeout(2)
 def upload_to_cdn(path, file_path):
     try:
         up = upyun.UpYun(app.config['CDN_BUCKET'], username=app.config['CDN_USER_NAME'],
@@ -94,8 +63,3 @@ def upload_to_cdn(path, file_path):
         return app.config['CDN_HOST'] + path
     except Exception:
         return ''
-
-
-@timeout(2)
-def test_time_out():
-    time.sleep(6)
