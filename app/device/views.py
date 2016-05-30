@@ -64,6 +64,7 @@ def free_device(page, device_id):
 
         # decrease user's allot device num
         User.redis_incr_ext_info(start_record.user_id, app.config['ALLOT_NUM_NAME'], -1)
+        User.redis_incr_ext_info(start_record.user_id, app.config['ALLOT_NUM_LIMIT_NAME'], 1)
         flash("free device %s success." % device_id)
     except Exception as e:
         db.session.rollback()

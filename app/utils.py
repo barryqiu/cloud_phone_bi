@@ -53,7 +53,7 @@ def timeout(seconds, error_message="Timeout Error: the cmd 30s have not finished
 
         def wrapper(*args, **kwargs):
             global result
-            signal.signal(signal.SIGTERM, _handle_timeout)
+            signal.signal(signal.SIGALRM, _handle_timeout)
             signal.alarm(seconds)
 
             try:
