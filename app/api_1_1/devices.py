@@ -283,3 +283,16 @@ def device_info():
     except Exception as e:
         # app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api1_1.route('/device/ids')
+def device_ids():
+    try:
+        ids = db.session.query(Device.id).all()
+        ret = []
+        for one_id in ids:
+            ret.append(one_id[0])
+        return jsonify(BaseApi.api_success(ret))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
