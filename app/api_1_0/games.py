@@ -16,6 +16,16 @@ def get_games():
         return jsonify(BaseApi.api_system_error(e.message))
 
 
+@api.route('/game/<int:game_id>')
+def get_game(game_id):
+    try:
+        game = Game.query.get(game_id)
+        return jsonify(BaseApi.api_success(game.to_json()))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
+
+
 @api.route('/game/trial')
 def get_trial_games():
     try:
@@ -32,4 +42,4 @@ def get_games_share():
         return jsonify(BaseApi.api_success('1'))
     except Exception as e:
         app.logger.exception('info')
-        return jsonify(BaseApi.api_system_error(e.name+e.message))
+        return jsonify(BaseApi.api_system_error(e.name + e.message))
