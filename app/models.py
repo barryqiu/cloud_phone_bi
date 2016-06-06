@@ -293,6 +293,8 @@ class Game(db.Model):
     banner_url = db.Column(db.String(150))
     package_name = db.Column(db.String(250))
     data_file_names = db.Column(db.Text)
+    game_desc = db.Column(db.Text)
+    gift_desc = db.Column(db.Text)
     add_time = db.Column(db.DateTime(), default=datetime.now)
     state = db.Column(db.Integer, default=1)
 
@@ -313,6 +315,8 @@ class Game(db.Model):
             'icon_url': filter_upload_url(self.icon_url),
             'banner_url': filter_upload_url(self.banner_url),
             'add_time': datetime_timestamp(self.add_time),
+            'game_desc': self.game_desc,
+            'gift_desc': self.gift_desc,
             'state': self.state,
         }
         return json_game
@@ -511,3 +515,38 @@ class DevicePushMessage(db.Model):
 
     def __repr__(self):
         return 'Message %r,%r,%r' % self.id % self.message_type % self.content
+
+
+class GameGift(db.Model):
+    __tablename__ = 'tb_game_gift'
+    id = db.Column(db.Integer, primary_key=True)
+    game_id = db.Column(db.Integer)
+    code = db.Column(db.String(120))
+    type = db.Column(db.Integer, default=0)
+    ext1 = db.Column(db.Integer, default=0)
+    ext2 = db.Column(db.String(250))
+    ext3 = db.Column(db.Text)
+    add_time = db.Column(db.DateTime, default=datetime.now())
+    modify_time = db.Column(db.DateTime, default=datetime.now())
+    state = db.Column(db.Integer, default=0)
+
+    def __repr__(self):
+        return 'Message %r,%r,%r' % self.id % self.game_id % self.code
+
+
+class GiftRecord(db.Model):
+    __tablename__ = 'tb_gift_record'
+    id = db.Column(db.Integer, primary_key=True)
+    game_id = db.Column(db.Integer)
+    gift_id = db.Column(db.Integer)
+    mobile = db.Column(db.String(16))
+    type = db.Column(db.Integer, default=0)
+    ext1 = db.Column(db.Integer, default=0)
+    ext2 = db.Column(db.String(250))
+    ext3 = db.Column(db.Text)
+    add_time = db.Column(db.DateTime, default=datetime.now())
+    modify_time = db.Column(db.DateTime, default=datetime.now())
+    state = db.Column(db.Integer, default=1)
+
+    def __repr__(self):
+        return 'Message %r,%r,%r' % self.id % self.game_id % self.gift_id

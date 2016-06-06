@@ -19,7 +19,8 @@ def game_add():
     if form.validate_on_submit():
         try:
             game = Game(game_name=form.gamename.data, package_name=form.packagename.data,
-                        data_file_names=form.datafilenames.data)
+                        data_file_names=form.datafilenames.data, game_desc=form.gamedesc.data,
+                        gift_desc = form.giftdesc.data)
 
             filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
             form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
@@ -57,6 +58,8 @@ def game_edit(page, game_id):
             game.game_name = form.gamename.data
             game.package_name = form.packagename.data
             game.data_file_names = form.datafilenames.data
+            game.game_desc = form.gamedesc.data
+            game.gift_desc = form.giftdesc.data
             if form.gameicon.data.filename:
                 filename = TimeUtil.get_time_stamp() + secure_filename(form.gameicon.data.filename)
                 form.gameicon.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + filename)
@@ -83,6 +86,8 @@ def game_edit(page, game_id):
     form.packagename.data = game.package_name
     form.id.data = game.id
     form.datafilenames.data = game.data_file_names
+    form.gamedesc.data = game.game_desc
+    form.giftdesc.data = game.gift_desc
     return render_template('game/edit.html', form=form)
 
 
