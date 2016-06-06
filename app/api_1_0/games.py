@@ -56,7 +56,8 @@ def get_game_gift(game_id):
             and_(GiftRecord.game_id == game_id, GiftRecord.mobile == mobile)).first()
 
         if gift_record:
-            return jsonify(BaseApi.api_success(""))
+            gift = GameGift.query.get(gift_record.gift_id)
+            return jsonify(BaseApi.api_success(gift.code))
 
         gift = db.session.query(GameGift).filter(
             and_(GameGift.game_id == game_id, GameGift.state == 0)).with_for_update(read=True).first()
