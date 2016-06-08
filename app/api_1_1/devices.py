@@ -288,7 +288,7 @@ def device_info():
 @api1_1.route('/device/ids')
 def device_ids():
     try:
-        ids = db.session.query(Device.id).all()
+        ids = db.session.query(Device.id).filter(Device.user_name == 'a').all()
         ret = []
         for one_id in ids:
             ret.append(one_id[0])
