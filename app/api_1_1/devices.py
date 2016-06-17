@@ -23,9 +23,6 @@ def allot_device():
     restore_device_ids = []
     idle_device = None
     try:
-
-        raise MyException(message='exceed the max allot num error', code=ERR_CODE_EXCEED_ALLOT_NUM_ERROR)
-
         user_id = g.current_user.id
         game_id = request.json.get('game_id')
         server_id = request.json.get('server_id')
