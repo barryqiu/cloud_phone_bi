@@ -24,7 +24,7 @@ def allot_device():
     idle_device = None
     try:
 
-        raise MyException(message='exceed the max allot num error', code=ERR_CODE_EXCEED_ALLOT_NUM_ERROR)
+        # raise MyException(message='exceed the max allot num error', code=ERR_CODE_EXCEED_ALLOT_NUM_ERROR)
 
         user_id = g.current_user.id
         game_id = request.json.get('game_id')
