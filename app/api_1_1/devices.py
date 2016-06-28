@@ -17,6 +17,8 @@ DEVICE_STATE_BUSY = 2
 RECORD_TYPE_START = 0
 RECORD_TYPE_END = 1
 
+ALLOT_RETRY = 3
+
 
 @api1_1.route('/device/allot', methods=['POST'])
 def allot_device():
@@ -51,6 +53,7 @@ def allot_device():
             raise ValidationError('server does not exists')
 
         idle_device = None
+        retry_times = 0
         while True:
             device_id = Device.pop_redis_set()
             if not device_id:
@@ -66,6 +69,9 @@ def allot_device():
             else:
                 # put device_id back
                 restore_device_ids.append(device_id)
+                retry_times += 1
+            if retry_times > ALLOT_RETRY:
+                break
 
         if idle_device is None:
             raise MyException(message='no free device', code=ERR_CODE_NO_DEVICE)

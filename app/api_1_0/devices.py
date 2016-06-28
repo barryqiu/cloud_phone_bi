@@ -17,6 +17,8 @@ DEVICE_STATE_BUSY = 2
 RECORD_TYPE_START = 0
 RECORD_TYPE_END = 1
 
+ALLOT_RETRY = 3
+
 
 @api.route('/device/<string:name>')
 def get_device(name):
@@ -90,6 +92,7 @@ def allot_device():
         if not game:
             raise ValidationError('game does not exists')
 
+        retry_times = 0
         while True:
             device_id = Device.pop_redis_set()
             if not device_id:
@@ -103,6 +106,9 @@ def allot_device():
             else:
                 # put device_id back
                 restore_device_ids.append(device_id)
+                retry_times += 1
+            if retry_times > ALLOT_RETRY:
+                break
 
         # restore device ids
         for restore_device_id in restore_device_ids:
