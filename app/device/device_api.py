@@ -74,9 +74,11 @@ def device_available(device):
         res_data = urllib2.urlopen(req, timeout=1)
         app.logger.error("%s:%s" % (device.device_name, res_data.code))
         if res_data.code == 200:
-            return True
-        else:
-            return False
+            the_page = res_data.read()
+            content = str.strip(the_page)
+            if content.startswith("Phone is OK"):
+                return True
+        return False
     except Exception as e:
         app.logger.error(device.device_name + "   " + e.message)
         return False
