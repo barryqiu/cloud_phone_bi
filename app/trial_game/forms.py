@@ -9,6 +9,7 @@ class AddGameForm(Form):
     packagename = StringField('Package Name', validators=[DataRequired(), Length(1, 50)])
     gameicon = FileField('Game Icon')
     gamebanner = FileField('Game Banner')
+    music = FileField('Music File')
     datafilenames = TextAreaField('Data Files')
     gamedesc = TextAreaField('Game Desc')
     giftdesc = TextAreaField('Gift Desc')

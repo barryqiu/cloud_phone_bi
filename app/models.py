@@ -291,6 +291,7 @@ class Game(db.Model):
     game_name = db.Column(db.String(50), index=True)
     icon_url = db.Column(db.String(150))
     banner_url = db.Column(db.String(150))
+    music_url = db.Column(db.String(150))
     package_name = db.Column(db.String(250))
     data_file_names = db.Column(db.Text)
     game_desc = db.Column(db.Text)
@@ -314,6 +315,7 @@ class Game(db.Model):
             'data_file_names': self.data_file_names,
             'icon_url': filter_upload_url(self.icon_url),
             'banner_url': filter_upload_url(self.banner_url),
+            'music_url': filter_upload_url(self.music_url),
             'add_time': datetime_timestamp(self.add_time),
             'game_desc': self.game_desc,
             'gift_desc': self.gift_desc,
