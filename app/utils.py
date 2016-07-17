@@ -9,6 +9,7 @@ import jpush
 import signal
 from flask import current_app as app
 from upyun import upyun
+import hashlib
 
 __author__ = 'barryqiu'
 
@@ -63,3 +64,10 @@ def upload_to_cdn(path, file_path):
         return app.config['CDN_HOST'] + path
     except Exception:
         return ''
+
+
+def gen_random_string():
+    time_now = "%f" % time.time()
+    m5 = hashlib.md5()
+    m5.update(time_now)
+    return m5.hexdigest()

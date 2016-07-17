@@ -7,7 +7,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, g
 from app.exceptions import ValidationError
 from . import db, login_manager, redis_store
-from app.utils import filter_upload_url
+from app.utils import filter_upload_url, gen_random_string
 
 
 def datetime_timestamp(dt):
@@ -180,6 +180,7 @@ class Device(db.Model):
     password = db.Column(db.String(50))
     collect_time = db.Column(db.DateTime(), default=datetime.now)
     state = db.Column(db.Integer, default=1)
+    lan_ip = db.Column(db.String(30))
 
     @staticmethod
     def test_conn(device):
@@ -227,7 +228,8 @@ class Device(db.Model):
             'user_name': self.user_name,
             'password': self.password,
             'collect_time': datetime_timestamp(self.collect_time),
-            'state': self.state
+            'state': self.state,
+            'lan_ip': self.lan_ip
         }
         return json_device
 
@@ -284,6 +286,18 @@ class Device(db.Model):
         redis_key = ('YUNPHONE:DEVICE:INFO:%s' % device_id).upper()
         return redis_store.hset(redis_key, ("%s" % info_type), content)
 
+    @staticmethod
+    def set_device_map(device_name):
+        random_str = gen_random_string()
+        redis_key = ('YUNPHONE:DEVICE:MAP:%s' % random_str).upper()
+        redis_store.set(redis_key, device_name)
+        return random_str
+
+    @staticmethod
+    def del_device_map(random_str):
+        redis_key = ('YUNPHONE:DEVICE:MAP:%s' % random_str).upper()
+        return redis_store.delete(redis_key)
+
 
 class Game(db.Model):
     __tablename__ = 'tb_game'
@@ -339,6 +353,7 @@ class AgentRecord(db.Model):
     server_id = db.Column(db.Integer, default=0)
     device_id = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, default=0)
+    address_map = db.Column(db.String(40), default='')
     state = db.Column(db.Integer, default=1)
 
     def __repr__(self):
@@ -352,6 +367,7 @@ class AgentRecord(db.Model):
             'user_id': self.user_id,
             'game_id': self.game_id,
             'server_id': self.server_id,
+            'address_map': self.address_map,
         }
         return json_agent_record
 

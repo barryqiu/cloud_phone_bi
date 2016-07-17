@@ -84,7 +84,10 @@ def allot_device():
             app.logger.exception('info')
             raise MyException(message='jpush error', code=ERR_CODE_JPUSH_ERROR)
 
+        address_map = Device.set_device_map(idle_device.device_name)
+
         agent_record = AgentRecord()
+        agent_record.address_map = address_map
         agent_record.game_id = game_id
         agent_record.user_id = user_id
         agent_record.server_id = server_id
@@ -109,6 +112,7 @@ def allot_device():
             "record_id": agent_record.id,
             "game_id": game_id,
             "server_id": server_id,
+            "address": address_map,
             "device": idle_device.to_json()
         }
 
@@ -171,6 +175,9 @@ def free_device():
         if start_agent_record is None:
             raise ValidationError('start record does not exists')
 
+        if start_agent_record.address_map:
+            Device.del_device_map(start_agent_record.address_map)
+
         # push start game command to device
         try:
             if not app.config['DEBUG']:
@@ -230,6 +237,7 @@ def user_device():
             one['game_id'] = user_record.game_id
             one['server_id'] = user_record.server_id
             one['record_id'] = user_record.id
+            one['address'] = user_record.address_map
             one['start_time'] = datetime_timestamp(user_record.start_time)
             ret.append(one)
 
@@ -257,6 +265,7 @@ def user_device_web():
             one['record_id'] = user_record.id
             one['start_time'] = datetime_timestamp(user_record.start_time)
             one['server_id'] = user_record.server_id
+            one['address'] = user_record.address_map
             if user_record.server_id:
                 server = GameServer.query.get(user_record.server_id)
                 if server:
@@ -294,10 +303,14 @@ def device_info():
 @api1_1.route('/device/ids')
 def device_ids():
     try:
-        ids = db.session.query(Device.id).filter(Device.user_name == 'a').all()
+        devices = db.session.query(Device).filter(Device.user_name == 'a').all()
         ret = []
-        for one_id in ids:
-            ret.append(one_id[0])
+        for device in devices:
+            one = {
+                "id": device.id,
+                "lan_ip": device.lan_ip
+            }
+            ret.append(one)
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
         app.logger.exception('info')

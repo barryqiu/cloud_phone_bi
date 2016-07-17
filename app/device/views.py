@@ -36,6 +36,9 @@ def free_device(page, device_id):
         if start_record is None:
             raise ValidationError('already free')
 
+        if start_record.address_map:
+            Device.del_device_map(start_record.address_map)
+
         game = Game.query.get(start_record.game_id)
         agent_device = Device.query.get(device_id)
 

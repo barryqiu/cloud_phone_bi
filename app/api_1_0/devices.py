@@ -125,7 +125,10 @@ def allot_device():
             Device.push_redis_set(idle_device.id)
             raise e
 
+        address_map = Device.set_device_map(idle_device.device_name)
+
         agent_record = AgentRecord()
+        agent_record.address_map = address_map
         agent_record.game_id = game_id
         agent_record.user_id = user_id
         agent_record.device_id = idle_device.id
@@ -144,6 +147,7 @@ def allot_device():
         ret = {
             "record_id": agent_record.id,
             "game_id": game_id,
+            "address": address_map,
             "device": idle_device.to_json()}
 
         return jsonify(BaseApi.api_success(ret))
@@ -195,6 +199,10 @@ def free_device():
 
         if start_agent_record is None:
             raise ValidationError('start record does not exists')
+
+        # del map
+        if start_agent_record.address_map:
+            Device.del_device_map(start_agent_record.address_map)
 
         # push start game command to device
         try:
@@ -253,6 +261,7 @@ def user_device():
             one['game_id'] = user_record.game_id
             one['record_id'] = user_record.id
             one['start_time'] = datetime_timestamp(user_record.start_time)
+            one['address'] = user_record.address_map
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
@@ -279,6 +288,7 @@ def user_device_web():
             one['game_banner'] = game.banner_url
             one['record_id'] = user_record.id
             one['start_time'] = datetime_timestamp(user_record.start_time)
+            one['address'] = user_record.address_map
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
