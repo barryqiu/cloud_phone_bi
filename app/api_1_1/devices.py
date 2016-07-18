@@ -308,7 +308,9 @@ def device_ids():
         for device in devices:
             one = {
                 "id": device.id,
-                "lan_ip": device.lan_ip
+                "lan_ip": device.lan_ip,
+                "device_name": device.device_name,
+                "state": device.state,
             }
             ret.append(one)
         return jsonify(BaseApi.api_success(ret))
