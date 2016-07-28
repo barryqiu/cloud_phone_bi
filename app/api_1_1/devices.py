@@ -81,8 +81,9 @@ def allot_device():
             if not app.config['DEBUG']:
                 push_message_to_alias(game.package_name, 'startapp', idle_device.id)
         except Exception:
-            app.logger.exception('info')
-            raise MyException(message='jpush error', code=ERR_CODE_JPUSH_ERROR)
+            pass
+            # app.logger.exception('info')
+            # raise MyException(message='jpush error', code=ERR_CODE_JPUSH_ERROR)
 
         address_map = Device.set_device_map(idle_device.device_name)
 
@@ -183,8 +184,9 @@ def free_device():
             if not app.config['DEBUG']:
                 push_message_to_alias(game.data_file_names, 'clear', device_id)
         except Exception as e:
-            app.logger.exception('info')
-            return jsonify(BaseApi.api_jpush_error())
+            pass
+            # app.logger.exception('info')
+            # return jsonify(BaseApi.api_jpush_error())
 
         agent_rocord = AgentRecord()
         agent_rocord.start_id = record_id
