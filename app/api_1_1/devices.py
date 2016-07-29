@@ -114,6 +114,7 @@ def allot_device():
             "game_id": game_id,
             "server_id": server_id,
             "address": address_map,
+            "music_url": game.music_url,
             "device": idle_device.to_json()
         }
 

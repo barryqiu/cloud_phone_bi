@@ -149,6 +149,7 @@ def allot_device():
             "record_id": agent_record.id,
             "game_id": game_id,
             "address": address_map,
+            "music_url": game.music_url,
             "device": idle_device.to_json()}
 
         return jsonify(BaseApi.api_success(ret))
