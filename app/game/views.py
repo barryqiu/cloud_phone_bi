@@ -39,6 +39,14 @@ def game_add():
             if not game.music_url:
                 game.music_url = "/uploads/" + musicfilename
 
+            if form.giftimg.data.filename:
+                giftimgfilename = TimeUtil.get_time_stamp() + secure_filename(form.giftimg.data.filename)
+                form.giftimg.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + giftimgfilename)
+                game.gift_url = upload_to_cdn("/uploads/" + giftimgfilename,
+                                               app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + giftimgfilename)
+                if not game.gift_url:
+                    game.gift_url = "/uploads/" + giftimgfilename
+
             db.session.add(game)
             db.session.commit()
             flash('add game success')
@@ -81,6 +89,15 @@ def game_edit(page, game_id):
                                                app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + musicfilename)
                 if not game.music_url:
                     game.music_url = "/uploads/" + musicfilename
+
+            if form.giftimg.data.filename:
+                giftimgfilename = TimeUtil.get_time_stamp() + secure_filename(form.giftimg.data.filename)
+                form.giftimg.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + giftimgfilename)
+                game.gift_url = upload_to_cdn("/uploads/" + giftimgfilename,
+                                              app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + giftimgfilename)
+                if not game.gift_url:
+                    game.gift_url = "/uploads/" + giftimgfilename
+
             db.session.add(game)
             db.session.commit()
             flash('update success!')

@@ -10,6 +10,7 @@ class AddGameForm(Form):
     gameicon = FileField('Game Icon')
     gamebanner = FileField('Game Banner')
     music = FileField('Music File')
+    giftimg = FileField('Gift Image')
     datafilenames = TextAreaField('Data Files')
     gamedesc = TextAreaField('Game Desc')
     giftdesc = TextAreaField('Gift Desc')
