@@ -311,6 +311,8 @@ class Game(db.Model):
     game_desc = db.Column(db.Text)
     gift_desc = db.Column(db.Text)
     gift_url = db.Column(db.String(150))
+    qr_url = db.Column(db.String(150))
+    apk_url = db.Column(db.String(150))
     add_time = db.Column(db.DateTime(), default=datetime.now)
     state = db.Column(db.Integer, default=1)
 
@@ -335,6 +337,8 @@ class Game(db.Model):
             'game_desc': self.game_desc,
             'gift_desc': self.gift_desc,
             'gift_url': self.gift_url,
+            'qr_url': self.qr_url,
+            'apk_url': self.apk_url,
             'state': self.state,
         }
         return json_game

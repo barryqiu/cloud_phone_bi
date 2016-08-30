@@ -14,5 +14,7 @@ class AddGameForm(Form):
     datafilenames = TextAreaField('Data Files')
     gamedesc = TextAreaField('Game Desc')
     giftdesc = TextAreaField('Gift Desc')
+    apk = FileField('Apk File')
+    qr = FileField('QR File')
     id = HiddenField()
     submit = SubmitField('submit')

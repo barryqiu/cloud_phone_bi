@@ -51,6 +51,22 @@ def game_add():
                 if not game.gift_url:
                     game.gift_url = "/uploads/" + giftimgfilename
 
+            if form.apk.data.filename:
+                apkfilename = TimeUtil.get_time_stamp() + secure_filename(form.apk.data.filename)
+                form.apk.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + apkfilename)
+                game.apk_url = upload_to_cdn("/uploads/" + apkfilename,
+                                             app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + apkfilename)
+                if not game.apk_url:
+                    game.apk_url = "/uploads/" + apkfilename
+
+            if form.qr.data.filename:
+                qrfilename = TimeUtil.get_time_stamp() + secure_filename(form.qr.data.filename)
+                form.qr.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + qrfilename)
+                game.qr_url = upload_to_cdn("/uploads/" + qrfilename,
+                                            app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + qrfilename)
+                if not game.qr_url:
+                    game.qr_url = "/uploads/" + qrfilename
+
             game.state = app.config['TRIAL_GAME_STATE']
 
             db.session.add(game)
@@ -105,6 +121,22 @@ def game_edit(page, game_id):
                                               app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + giftimgfilename)
                 if not game.gift_url:
                     game.gift_url = "/uploads/" + giftimgfilename
+
+            if form.apk.data.filename:
+                apkfilename = TimeUtil.get_time_stamp() + secure_filename(form.apk.data.filename)
+                form.apk.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + apkfilename)
+                game.apk_url = upload_to_cdn("/uploads/" + apkfilename,
+                                             app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + apkfilename)
+                if not game.apk_url:
+                    game.apk_url = "/uploads/" + apkfilename
+
+            if form.qr.data.filename:
+                qrfilename = TimeUtil.get_time_stamp() + secure_filename(form.qr.data.filename)
+                form.qr.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + qrfilename)
+                game.qr_url = upload_to_cdn("/uploads/" + qrfilename,
+                                            app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + qrfilename)
+                if not game.qr_url:
+                    game.qr_url = "/uploads/" + qrfilename
 
             db.session.add(game)
             db.session.commit()

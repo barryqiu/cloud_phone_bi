@@ -11,6 +11,8 @@ class AddGameForm(Form):
     gamebanner = FileField('Game Banner')
     giftimg = FileField('Gift Image')
     music = FileField('Music File')
+    apk = FileField('Apk File')
+    qr = FileField('QR File')
     datafilenames = TextAreaField('Data Files')
     id = HiddenField()
     submit = SubmitField('submit')
