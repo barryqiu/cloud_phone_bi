@@ -361,6 +361,7 @@ class AgentRecord(db.Model):
     user_id = db.Column(db.Integer, default=0)
     address_map = db.Column(db.String(40), default='')
     state = db.Column(db.Integer, default=1)
+    business_id = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return '<Record %r,%r,%r>' % self.user_id % self.game_id % self.device_id
@@ -420,6 +421,8 @@ class GameServer(db.Model):
     package_name = db.Column(db.String(250))
     data_file_names = db.Column(db.Text)
     server_des = db.Column(db.Text)
+    qr_url = db.Column(db.String(150))
+    apk_url = db.Column(db.String(150))
     add_time = db.Column(db.DateTime(), default=datetime.now())
 
     def to_json(self):
@@ -574,3 +577,41 @@ class GiftRecord(db.Model):
 
     def __repr__(self):
         return 'Message %r,%r,%r' % self.id % self.game_id % self.gift_id
+
+
+class Business(db.Model):
+    __tablename__ = 'tb_business'
+    id = db.Column(db.Integer, primary_key=True)
+    business_name = db.Column(db.String(50))
+    business_desc = db.Column(db.Text)
+    allot_limit_type = db.Column(db.Integer, default=0)
+    allot_limit_num = db.Column(db.Integer, default=0)
+    add_time = db.Column(db.DateTime, default=datetime.now())
+
+    def __repr__(self):
+        return 'Business %r, %r, %r' % self.id % self.business_name % self.business_desc %\
+               self.allot_limit_type % self.allot_limit_num
+
+    def to_json(self):
+        json_business = {
+            'id': self.id,
+            'business_name': self.business_name,
+            'business_desc': self.business_desc,
+            'allot_limit_type': self.allot_limit_type,
+            'allot_limit_num': self.allot_limit_num,
+            'add_time': self.add_time,
+        }
+        return json_business
+
+
+class DeviceQueue(db.Model):
+    __tablename__ = 'tb_device_queue'
+    device_id = db.Column(db.Integer, primary_key=True)
+    game_id = db.Column(db.Integer, default=0)
+    server_id = db.Column(db.Integer, default=0)
+    business_id = db.Column(db.Integer, default=0)
+    add_time = db.Column(db.DateTime, default=datetime.now())
+
+    def __repr__(self):
+        return 'DeviceQueue %r, %r, %r' % self.device_id % self.game_id % self.server_id % self.business_id
+

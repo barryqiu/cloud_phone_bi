@@ -1,13 +1,13 @@
 Table：
 
-* Business
-* Game: 
-* GameServer
-* Device
-* AgentRecord
-* DeviceQueue
+* Business tb_business
+* Game tb_game
+* GameServer tb_game_server
+* Device tb_device
+* AgentRecord tb_agent_record
+* DeviceQueue tb_device_queue
 
-Business
+Business tb_business
 
 ```
 id
@@ -18,7 +18,7 @@ allot_limit_num
 add_time
 ```
 
-Game：
+Game： tb_game
 
 ```
 id
@@ -37,7 +37,7 @@ add_time
 state
 ```
 
-GameServer
+GameServer tb_game_server
 
 ```
 id
@@ -52,18 +52,18 @@ add_time
 ```
 
 
-Device
+Device tb_device
 
 ```
 不变
 ```
 
-AgentRecord
+AgentRecord tb_agent_record
 ```
 新增 bussiness_id，其他不变
 ```
 
-DeviceQueue
+DeviceQueue tb_device_queue
 ```
 business_id
 game_id
