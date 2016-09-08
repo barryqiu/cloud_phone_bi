@@ -1,10 +1,12 @@
 from flask import render_template, redirect, url_for, flash
+
+from .game_db import Game
 from .. import db
 from . import game
 from flask.ext.login import login_required
 from werkzeug.utils import secure_filename
 from ..utils import TimeUtil, upload_to_cdn
-from ..models import Game, GameTask, GameServer, Server
+from ..models import GameTask, GameServer, Server
 from .forms import AddGameForm, AddGameTaskForm, AddGameServerForm
 from flask import current_app as app
 

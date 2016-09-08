@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+from app import create_app, db
+from app.models import User
+from flask.ext.script import Manager, Shell
+from flask.ext.migrate import Migrate, MigrateCommand
 
 COV = None
 if os.environ.get('FLASK_COVERAGE'):
@@ -15,10 +19,6 @@ if os.path.exists('.env'):
         if len(var) == 2:
             os.environ[var[0]] = var[1]
 
-from app import create_app, db
-from app.models import User
-from flask.ext.script import Manager, Shell
-from flask.ext.migrate import Migrate, MigrateCommand
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)

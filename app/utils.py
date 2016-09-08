@@ -71,3 +71,12 @@ def gen_random_string():
     m5 = hashlib.md5()
     m5.update(time_now)
     return m5.hexdigest()
+
+
+def datetime_timestamp(dt):
+    # s = str(dt)
+    try:
+        v = int(time.mktime(time.strptime(str(dt), '%Y-%m-%d %H:%M:%S')))
+        return str(v)
+    except:
+        return 0

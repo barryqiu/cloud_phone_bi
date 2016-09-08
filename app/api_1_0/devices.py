@@ -182,7 +182,7 @@ def free_device():
             raise ValidationError('does not have a record id')
         game = Game.query.get(game_id)
         if not game:
-            raise ValidationError('game does not exists')
+            raise ValidationError('game does not exists, gameid: %s' % game_id)
 
         device = Device.query.filter_by(id=device_id).first()
         if not device or device.state != DEVICE_STATE_BUSY:
