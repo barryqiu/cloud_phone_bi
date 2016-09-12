@@ -67,6 +67,24 @@ def game_add():
                 if not game.qr_url:
                     game.qr_url = "/uploads/" + qrfilename
 
+            if form.bannerside.data.filename:
+                bannersidefilename = TimeUtil.get_time_stamp() + secure_filename(form.bannerside.data.filename)
+                form.bannerside.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannersidefilename)
+                game.banner_side = upload_to_cdn("/uploads/" + bannersidefilename,
+                                                 app.root_path + '/' + app.config[
+                                                     'UPLOAD_FOLDER'] + '/' + bannersidefilename)
+                if not game.banner_side:
+                    game.banner_side = "/uploads/" + bannersidefilename
+
+            if form.squareimg.data.filename:
+                squareimgfilename = TimeUtil.get_time_stamp() + secure_filename(form.squareimg.data.filename)
+                form.squareimg.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + squareimgfilename)
+                game.square_img = upload_to_cdn("/uploads/" + squareimgfilename,
+                                                app.root_path + '/' + app.config[
+                                                    'UPLOAD_FOLDER'] + '/' + squareimgfilename)
+                if not game.square_img:
+                    game.square_img = "/uploads/" + squareimgfilename
+
             game.state = app.config['TRIAL_GAME_STATE']
 
             db.session.add(game)
@@ -137,6 +155,24 @@ def game_edit(page, game_id):
                                             app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + qrfilename)
                 if not game.qr_url:
                     game.qr_url = "/uploads/" + qrfilename
+
+            if form.bannerside.data.filename:
+                bannersidefilename = TimeUtil.get_time_stamp() + secure_filename(form.bannerside.data.filename)
+                form.bannerside.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + bannersidefilename)
+                game.banner_side = upload_to_cdn("/uploads/" + bannersidefilename,
+                                                 app.root_path + '/' + app.config[
+                                                     'UPLOAD_FOLDER'] + '/' + bannersidefilename)
+                if not game.banner_side:
+                    game.banner_side = "/uploads/" + bannersidefilename
+
+            if form.squareimg.data.filename:
+                squareimgfilename = TimeUtil.get_time_stamp() + secure_filename(form.squareimg.data.filename)
+                form.squareimg.data.save(app.root_path + '/' + app.config['UPLOAD_FOLDER'] + '/' + squareimgfilename)
+                game.square_img = upload_to_cdn("/uploads/" + squareimgfilename,
+                                                app.root_path + '/' + app.config[
+                                                    'UPLOAD_FOLDER'] + '/' + squareimgfilename)
+                if not game.square_img:
+                    game.square_img = "/uploads/" + squareimgfilename
 
             db.session.add(game)
             db.session.commit()

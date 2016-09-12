@@ -16,5 +16,7 @@ class AddGameForm(Form):
     giftdesc = TextAreaField('Gift Desc')
     apk = FileField('Apk File')
     qr = FileField('QR File')
+    bannerside = FileField('Banner Side Img')
+    squareimg = FileField('Square Img')
     id = HiddenField()
     submit = SubmitField('submit')

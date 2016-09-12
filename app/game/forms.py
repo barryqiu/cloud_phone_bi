@@ -13,6 +13,8 @@ class AddGameForm(Form):
     music = FileField('Music File')
     apk = FileField('Apk File')
     qr = FileField('QR File')
+    bannerside = FileField('Banner Side Img')
+    squareimg = FileField('Square Img')
     datafilenames = TextAreaField('Data Files')
     id = HiddenField()
     submit = SubmitField('submit')
