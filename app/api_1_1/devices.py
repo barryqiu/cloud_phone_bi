@@ -159,11 +159,11 @@ def free_device():
         #     raise ValidationError('server does not exists')
 
         device = Device.query.filter_by(id=device_id).first()
-        if not device or device.state != DEVICE_STATE_BUSY:
-            raise ValidationError('wrong device id')
+        if not device:
+            raise ValidationError('device does not exists')
 
         end_record = AgentRecord.query.filter_by(start_id=record_id).first()
-        if end_record is not None:
+        if end_record is not None or device.state == DEVICE_STATE_IDLE:
             raise ValidationError('already free')
 
         start_agent_record = AgentRecord.query.filter_by(
