@@ -275,7 +275,14 @@ class Device(db.Model):
     @staticmethod
     def set_device_info(device_id, info_type, content):
         redis_key = ('YUNPHONE:DEVICE:INFO:%s' % device_id).upper()
-        return redis_store.hset(redis_key, ("%s" % info_type), content)
+        redis_store.hset(redis_key, ("%s" % info_type), content)
+        redis_store.expire(redis_key, 300)
+        return
+
+    @staticmethod
+    def get_device_info(device_id, info_type):
+        redis_key = ('YUNPHONE:DEVICE:INFO:%s' % device_id).upper()
+        return redis_store.hget(redis_key, ("%s" % info_type))
 
     @staticmethod
     def set_device_map(device_name):
