@@ -75,6 +75,7 @@ def new_device():
 def allot_device():
     restore_device_ids = []
     idle_device = None
+    user_id = None
     try:
         user_id = g.current_user.id
         game_id = request.json.get('game_id')
