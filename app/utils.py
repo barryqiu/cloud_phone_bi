@@ -4,6 +4,8 @@ import functools
 import json
 import random
 import time
+import urllib2
+
 import jpush
 
 import signal
@@ -53,6 +55,28 @@ def push_message_to_alias(content, msg_type, alias, platform='android'):
     push.platform = jpush.platform(platform)
     ret = push.send()
     return ret.payload['sendno'].encode('utf-8')
+
+
+def push_message_to_device(device_name, content, msg_type):
+    msg = {
+        'msg_type': msg_type,
+        'content': content
+    }
+
+    url = "http://yunphoneclient.shinegame.cn/%s/injkeyvn" % device_name
+
+    try:
+        req = urllib2.Request(url)
+        req.add_header('Content-Type', 'application/json')
+
+        response = urllib2.urlopen(req, json.dumps(msg), timeout=2)
+
+        app.logger.error("%s:%s" % (json.dumps(msg), response.code))
+        if response.code == 200:
+            return True
+    except Exception as e:
+        app.logger.exception('error')
+    return False
 
 
 def upload_to_cdn(path, file_path):

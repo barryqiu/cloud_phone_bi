@@ -7,7 +7,7 @@ from . import device
 from flask.ext.login import login_required
 from app.device.device_api import get_agent_record_by_device_id
 from app.exceptions import ValidationError
-from app.utils import push_message_to_alias
+from app.utils import push_message_to_device
 from ..models import Device, AgentRecord, Game, User
 
 DEVICE_STATE_DEL = 0
@@ -43,7 +43,7 @@ def free_device(page, device_id):
         agent_device = Device.query.get(device_id)
 
         # push start game command to device
-        push_message_to_alias(game.data_file_names, 'clear', device_id)
+        push_message_to_device(agent_device.device_name, game.data_file_names, 'clear')
 
         agent_record = AgentRecord()
         agent_record.start_id = start_record.id

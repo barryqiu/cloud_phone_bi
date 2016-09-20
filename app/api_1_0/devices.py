@@ -8,7 +8,7 @@ from ..models import AgentRecord, Game, datetime_timestamp, User
 from ..models import Device
 from .. import db
 from app.exceptions import ValidationError, MyException
-from app.utils import push_message_to_alias
+from app.utils import push_message_to_device
 
 DEVICE_STATE_DEL = 0
 DEVICE_STATE_IDLE = 1
@@ -121,7 +121,7 @@ def allot_device():
         # push start game command to device
         try:
             if not app.config['DEBUG']:
-                push_message_to_alias(game.package_name, 'startapp', idle_device.id)
+                push_message_to_device(idle_device.device_name, game.package_name, 'startapp')
         except BaseException, e:
             pass
             # Device.push_redis_set(idle_device.id)
@@ -210,7 +210,7 @@ def free_device():
         # push start game command to device
         try:
             if not app.config['DEBUG']:
-                push_message_to_alias(game.data_file_names, 'clear', device_id)
+                push_message_to_device(device.device_name, game.data_file_names, 'clear')
         except BaseException, e:
             pass
             # return jsonify(BaseApi.api_jpush_error())

@@ -1,13 +1,11 @@
-import json
-
-__author__ = 'love'
 from flask import jsonify, request
 from . import api
 from app.exceptions import ValidationError
-from app.utils import push_message_to_alias
+from app.utils import push_message_to_device
 from .base_api import BaseApi
 from flask import current_app as app
 from .. import db
+from ..models import Device
 
 
 @api.route('/push', methods=['POST'])
@@ -21,9 +19,13 @@ def new_push():
         if not device_id:
             raise ValidationError('no device id')
 
+        device = Device.query.get(device_id)
+        if not device:
+            raise ValidationError('wrong device id')
+
         content = request.json.get('content')
 
-        ret = push_message_to_alias(content, msg_type, device_id.encode('utf-8'))
+        ret = push_message_to_device(device.device_name, content, msg_type)
 
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
