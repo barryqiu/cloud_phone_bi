@@ -76,9 +76,10 @@ def push_message_to_device(device_name, content, msg_type):
         str_content = str_content.replace("\"%s\"" % content, "\'\"%s\"\'" % content)
         while True:
             response = urllib2.urlopen(req, str_content, timeout=2)
-            app.logger.error("%s:%s:%s" % (device_name, str_content, response.code))
+            app.logger.error("%s:%s:%s:%s" % (device_name, str_content, response.code, response.headers['content-length']))
+
             retry_times += 1
-            if retry_times > 1:
+            if retry_times > 3:
                 break
         if response.code == 200:
             return True
