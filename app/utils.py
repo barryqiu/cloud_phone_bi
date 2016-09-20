@@ -75,7 +75,7 @@ def push_message_to_device(device_name, content, msg_type):
             response = urllib2.urlopen(req, json.dumps(msg), timeout=2)
             app.logger.error("%s:%s:%s" % (device_name, json.dumps(msg), response.code))
             retry_times += 1
-            if retry_times > 3:
+            if retry_times > 1:
                 break
         if response.code == 200:
             return True
