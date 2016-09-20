@@ -59,8 +59,8 @@ def push_message_to_alias(content, msg_type, alias, platform='android'):
 
 def push_message_to_device(device_name, content, msg_type):
     msg = {
-        'msg_type': msg_type,
-        'content': content
+        'msg_type': "\'\"%s\'\"" % msg_type,
+        'content': "\'\"%s\'\"" %content
     }
 
     url = "http://yunphoneclient.shinegame.cn/%s/injkeyvn" % device_name
@@ -72,8 +72,6 @@ def push_message_to_device(device_name, content, msg_type):
         retry_times = 0
         response = None
         str_content = json.dumps(msg)
-        str_content.replace("\"%s\"" % msg_type, "\'\"%s\"\'" % msg_type)
-        str_content.replace("\"%s\"" % content, "\'\"%s\"\'" % content)
         while True:
             response = urllib2.urlopen(req, str_content, timeout=2)
             app.logger.error("%s:%s:%s" % (device_name, str_content, response.code))
