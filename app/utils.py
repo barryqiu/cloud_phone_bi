@@ -77,8 +77,10 @@ def push_message_to_device(device_name, content, msg_type):
         while True:
             response = urllib2.urlopen(req, str_content, timeout=2)
             the_page = response.read()
-            content = str.strip(the_page)
-            app.logger.error("%s:%s:%s:%s" % (device_name, str_content, response.code, len(content)))
+            length = len(the_page)
+            app.logger.error("%s:%s:%s:%s" % (device_name, str_content, response.code, length))
+            if length == 0:
+                break
             retry_times += 1
             if retry_times > 3:
                 break
