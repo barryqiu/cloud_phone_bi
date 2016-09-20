@@ -191,7 +191,7 @@ def free_device():
 
         end_record = AgentRecord.query.filter_by(start_id=record_id).first()
         if end_record is not None or device.state == DEVICE_STATE_IDLE:
-            raise ValidationError('already free')
+            raise ValidationError('%s already free' % device.device_name)
 
         start_agent_record = AgentRecord.query.filter_by(
             type=RECORD_TYPE_START,
