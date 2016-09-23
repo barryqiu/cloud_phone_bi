@@ -296,6 +296,11 @@ class Device(db.Model):
         redis_key = ('YUNPHONE:DEVICE:MAP:%s' % random_str).upper()
         return redis_store.delete(redis_key)
 
+    @staticmethod
+    def get_device_map(random_str):
+        redis_key = ('YUNPHONE:DEVICE:MAP:%s' % random_str).upper()
+        return redis_store.get(redis_key)
+
 
 class Game(db.Model):
     __tablename__ = 'tb_game'

@@ -17,7 +17,7 @@ def verify_password(mobile_num_or_token, password):
                     request.endpoint == "api1_1.get_servers" or request.endpoint == "api.get_trial_games" or \
                     request.endpoint == "api1_1.device_info" or request.endpoint == 'api1_1.device_ids' or \
                     request.endpoint == 'api.get_game' or request.endpoint == 'api.get_game_gift' or \
-                    request.endpoint == 'api1_1.unix_time':
+                    request.endpoint == 'api1_1.unix_time' or request.endpoint == 'api1_1.device_map':
         return True
     if password == '':
         g.current_user = User.verify_auth_token(mobile_num_or_token)
@@ -47,7 +47,7 @@ def before_request():
             and request.endpoint != 'api.get_trial_games' and request.endpoint != 'api1_1.device_info' \
             and request.endpoint != 'api1_1.device_ids' and request.endpoint != 'api.get_game'  \
             and request.endpoint != 'api.get_game_gift' and request.endpoint != 'api1_1.unix_time' \
-            and not g.current_user.confirmed:
+            and request.endpoint != 'api1_1.device_map' and not g.current_user.confirmed:
         return forbidden('Unconfirmed account')
 
 

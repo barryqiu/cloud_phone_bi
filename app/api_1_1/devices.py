@@ -320,3 +320,13 @@ def device_ids():
     except Exception as e:
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api1_1.route('/device/map/<string:alias>')
+def device_map(alias):
+    try:
+        device_name = Device.get_device_map(alias)
+        return jsonify(BaseApi.api_success(device_name))
+    except Exception as e:
+        # app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
