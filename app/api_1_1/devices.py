@@ -326,7 +326,9 @@ def device_ids():
 def device_map(alias):
     try:
         device_name = Device.get_device_map(alias)
-        return jsonify(BaseApi.api_success(device_name))
+        if device_name:
+            jsonify(BaseApi.api_success("success"))
+        raise ValidationError('not exist')
     except Exception as e:
         # app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
