@@ -327,7 +327,7 @@ def device_map(alias):
     try:
         device_name = Device.get_device_map(alias)
         if device_name:
-            jsonify(BaseApi.api_success("success"))
+            return jsonify(BaseApi.api_success("success"))
         raise ValidationError('alias %s, ret %s' % (alias, device_name))
     except Exception as e:
         app.logger.exception('info')
