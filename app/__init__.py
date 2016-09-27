@@ -5,6 +5,10 @@ from flask.ext.login import LoginManager
 from flask.ext.redis import FlaskRedis
 from flask.ext.sqlalchemy import SQLAlchemy
 from config import config
+import sys
+
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
@@ -27,6 +31,7 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     redis_store.init_app(app)
+
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
@@ -41,9 +46,6 @@ def create_app(config_name):
 
     from .device import device as device_blueprint
     app.register_blueprint(device_blueprint, url_prefix='/device')
-
-    from .push import push as push_blueprint
-    app.register_blueprint(push_blueprint, url_prefix='/push')
 
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/1.0')

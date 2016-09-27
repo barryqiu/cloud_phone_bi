@@ -1,34 +1,34 @@
-5# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField, FileField, HiddenField, TextAreaField, SelectField
 from wtforms.validators import Length, DataRequired
 
 
 class AddGameForm(Form):
-    gamename = StringField('Game Name', validators=[DataRequired(), Length(1, 50)])
-    packagename = StringField('Package Name', validators=[DataRequired(), Length(1, 50)])
-    gameicon = FileField('Game Icon')
-    gamebanner = FileField('Game Banner')
-    giftimg = FileField('Gift Image')
-    music = FileField('Music File')
-    apk = FileField('Apk File')
-    qr = FileField('QR File')
-    bannerside = FileField('Banner Side Img')
-    squareimg = FileField('Square Img')
-    datafilenames = TextAreaField('Data Files')
+    gamename = StringField('游戏名称', validators=[DataRequired(), Length(1, 50)])
+    packagename = StringField('包名', validators=[DataRequired(), Length(1, 50)])
+    gameicon = FileField('图标')
+    gamebanner = FileField('主 Banner 图')
+    giftimg = FileField('礼包图')
+    music = FileField('音乐文件')
+    apk = FileField('Apk 文件')
+    qr = FileField('二维码图')
+    bannerside = FileField('子 Banner 图')
+    squareimg = FileField('小图')
+    datafilenames = TextAreaField('数据文件')
     id = HiddenField()
-    submit = SubmitField('submit')
+    submit = SubmitField('提交')
 
 
 class AddGameTaskForm(Form):
-    task_name = StringField('Task Name', validators=[DataRequired(), Length(1, 50)])
-    task_des = TextAreaField('Task Description')
-    submit = SubmitField('submit')
+    task_name = StringField('任务名称', validators=[DataRequired(), Length(1, 50)])
+    task_des = TextAreaField('任务描述')
+    submit = SubmitField('提交')
 
 
 class AddGameServerForm(Form):
-    server_name = SelectField('message_type', choices=[('android', 'android'), ('iphone', 'iphone')])
-    packagename = StringField('Package Name', validators=[DataRequired(), Length(1, 50)])
-    datafilenames = TextAreaField('Data Files')
-    server_des = TextAreaField('Server Description')
-    submit = SubmitField('submit')
+    server_name = SelectField('服务器名称', choices=[('android', 'android'), ('iphone', 'iphone')])
+    packagename = StringField('包名', validators=[DataRequired(), Length(1, 50)])
+    datafilenames = TextAreaField('数据文件')
+    server_des = TextAreaField('服务器描述')
+    submit = SubmitField('提交')

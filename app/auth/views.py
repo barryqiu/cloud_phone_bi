@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import render_template, redirect, request, url_for, flash
 from flask.ext.login import login_user, logout_user, login_required, \
     current_user
@@ -26,11 +27,11 @@ def login():
         admin = Admin.query.filter_by(user_name=form.username.data).first()
         if admin is not None and admin.verify_password(form.password.data):
             if admin.role < 3:
-                flash('you are not administrators')
+                flash('您不是管理员')
                 return render_template('auth/login.html', form=form)
             login_user(admin, form.remember_me.data)
             return redirect(request.args.get('next') or url_for('main.index'))
-        flash('Invalid username or password.')
+        flash('用户名或者密码错误')
     return render_template('auth/login.html', form=form)
 
 
@@ -38,7 +39,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out.')
+    flash('您已经登出')
     return redirect(url_for('main.index'))
 
 
@@ -50,8 +51,8 @@ def change_password():
         if current_user.verify_password(form.old_password.data):
             current_user.password = form.password.data
             db.session.add(current_user)
-            flash('Your password has been updated.')
+            flash('密码已经被修改')
             return redirect(url_for('auth.logout'))
         else:
-            flash('Invalid password.')
+            flash('密码错误')
     return render_template("auth/change_password.html", form=form)
