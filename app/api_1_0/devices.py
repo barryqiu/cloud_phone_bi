@@ -19,6 +19,9 @@ RECORD_TYPE_END = 1
 
 ALLOT_RETRY = 3
 
+ALLOT_FAIL = "fail"
+ALLOT_SUCCESS = "suc"
+
 
 @api.route('/device/<string:name>')
 def get_device(name):
@@ -152,7 +155,7 @@ def allot_device():
             "address": address_map,
             "music_url": game.music_url,
             "device": idle_device.to_json()}
-
+        Device.incr_allot("1.0", ALLOT_SUCCESS)
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
         User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_LIMIT_NAME'], 1)
@@ -162,6 +165,7 @@ def allot_device():
         for restore_device_id in restore_device_ids:
             Device.push_redis_set(restore_device_id)
         app.logger.exception('info')
+        Device.incr_allot("1.0", ALLOT_FAIL)
         return jsonify(BaseApi.api_system_error(e.message))
 
 

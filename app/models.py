@@ -301,6 +301,12 @@ class Device(db.Model):
         redis_key = ('YUNPHONE:DEVICE:MAP:%s' % random_str).upper()
         return redis_store.get(redis_key)
 
+    @staticmethod
+    def incr_allot(api, allot_result):
+        date = time.strftime('%Y%m%d', time.localtime(time.time()))
+        redis_key = ('YUNPHONE:DEVICE:%s:ALLOT:%s' % (api, date)).upper()
+        return redis_store.hincrby(redis_key, allot_result, 1)
+
 
 class Game(db.Model):
     __tablename__ = 'tb_game'
