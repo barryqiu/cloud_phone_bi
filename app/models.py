@@ -305,7 +305,7 @@ class Device(db.Model):
     def incr_allot(api, allot_result):
         date = time.strftime('%Y%m%d', time.localtime(time.time()))
         redis_key = ('YUNPHONE:DEVICE:%s:ALLOT:%s' % (api, date)).upper()
-        redis_key_all = ('YUNPHONE:DEVICE:%s:ALLOT' % api).upper()
+        redis_key_all = ('YUNPHONE:DEVICE:%s:ALLOT:ALL' % api).upper()
         redis_store.hincrby(redis_key, allot_result, 1)
         redis_store.hincrby(redis_key_all, allot_result, 1)
         return
