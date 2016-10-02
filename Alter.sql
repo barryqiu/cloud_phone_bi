@@ -28,3 +28,6 @@ PRIMARY KEY (`device_id`)
 ALTER TABLE `tb_game`
 ADD COLUMN `banner_side`  varchar(150) NULL AFTER `qr_url`,
 ADD COLUMN `square_img`  varchar(150) NULL AFTER `banner_side`;
+
+ALTER TABLE `tb_game`
+ADD COLUMN `allow_allot`  tinyint NULL AFTER `gift_url`;

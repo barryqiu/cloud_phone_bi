@@ -18,6 +18,7 @@
                 <th>游戏名</th>
                 <th>包名</th>
                 <th>日期</th>
+                <th>上架</th>
                 <th><a class="btn btn-success" href="{{ url_for('trial_game.game_add') }}" role="button">新增</a>
                     <a class="btn btn-warning" href="#" role="button" onclick="del_all_trial_game({{ pagination.page }})">删除</a>
                 </th>
@@ -31,6 +32,13 @@
                     <td>{{ game.game_name }}</td>
                     <td>{{ game.package_name }}</td>
                     <td>{{ game.add_time | datetimeformat("%Y-%m-%d") }}</td>
+                    <td>
+                        {% if game.allow_allot == 1 %}
+                            <button class="btn btn-success" type="submit">上架</button>
+                        {% else %}
+                            <button type="button" class="btn btn-danger">下架</button>
+                        {% endif %}
+                    </td>
                     <td>
                         <a class="btn btn-info"
                            href="{{ url_for('trial_game.game_edit', game_id= game.id, page=pagination.page) }}" role="button">编辑</a>

@@ -96,6 +96,9 @@ def allot_device():
         if not game:
             raise ValidationError('game does not exists')
 
+        if game.allow_allot != 1:
+            raise ValidationError('game is Off the shelf')
+
         retry_times = 0
         while True:
             device_id = Device.pop_redis_set()

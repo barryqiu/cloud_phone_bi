@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import time
 from datetime import datetime
 import urllib2
@@ -328,7 +329,8 @@ class Game(db.Model):
     banner_side = db.Column(db.String(150))
     square_img = db.Column(db.String(150))
     add_time = db.Column(db.DateTime(), default=datetime.now)
-    state = db.Column(db.Integer, default=1)
+    state = db.Column(db.Integer, default=1)  # 0：删除； 1：挂机游戏； 2：体验游戏；
+    allow_allot = db.Column(db.Integer, default=0)  # 0：禁止分配； 1：允许分配
 
     @staticmethod
     def from_json(json_game):
@@ -356,6 +358,7 @@ class Game(db.Model):
             'banner_side': self.banner_side,
             'square_img': self.square_img,
             'state': self.state,
+            'allow_allot': self.allow_allot,
         }
         return json_game
 
@@ -605,7 +608,7 @@ class Business(db.Model):
     add_time = db.Column(db.DateTime, default=datetime.now())
 
     def __repr__(self):
-        return 'Business %r, %r, %r' % self.id % self.business_name % self.business_desc %\
+        return 'Business %r, %r, %r' % self.id % self.business_name % self.business_desc % \
                self.allot_limit_type % self.allot_limit_num
 
     def to_json(self):
@@ -630,4 +633,3 @@ class DeviceQueue(db.Model):
 
     def __repr__(self):
         return 'DeviceQueue %r, %r, %r' % self.device_id % self.game_id % self.server_id % self.business_id
-

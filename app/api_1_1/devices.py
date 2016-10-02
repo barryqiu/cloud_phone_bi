@@ -51,6 +51,9 @@ def allot_device():
         if not game:
             raise ValidationError('game does not exists')
 
+        if game.allow_allot != 1:
+            raise ValidationError('game is Off the shelf')
+
         server = GameServer.query.get(server_id)
         if not server:
             raise ValidationError('server does not exists')
