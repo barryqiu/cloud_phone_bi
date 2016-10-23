@@ -7,7 +7,7 @@ from ..models import User, Admin
 
 
 class LoginForm(Form):
-    username = StringField('用户名', validators=[DataRequired(), Length(1, 50)])
+    mobile_num = StringField('手机号', validators=[DataRequired(), Length(11, 11)])
     password = PasswordField('密码', validators=[DataRequired()])
     remember_me = BooleanField('记住我')
     submit = SubmitField('登录')
@@ -22,14 +22,14 @@ class ChangePasswordForm(Form):
 
 
 class RegistrationForm(Form):
-    username = StringField('用户名', validators=[
-        DataRequired(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
-                                              '用户名仅支持字母，数字，.或者下划线')])
+    mobile_num = StringField('手机号', validators=[
+        DataRequired(), Length(11, 11), Regexp('^1[0-9]*$', 0,
+                                               '请输入正确的手机号')])
     password = PasswordField('密码', validators=[
         DataRequired(), EqualTo('password2', message='密码不一致')])
     password2 = PasswordField('确认密码', validators=[Required()])
     submit = SubmitField('注册')
 
-    def validate_username(self, field):
-        if Admin.query.filter_by(user_name=field.data).first():
-            raise ValidationError('用户名已经存在')
+    def validate_mobile_num(self, field):
+        if User.query.filter_by(mobile_num=field.data).first():
+            raise ValidationError('手机号已经被注册')

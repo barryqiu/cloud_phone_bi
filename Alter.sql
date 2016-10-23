@@ -31,3 +31,6 @@ ADD COLUMN `square_img`  varchar(150) NULL AFTER `banner_side`;
 
 ALTER TABLE `tb_game`
 ADD COLUMN `allow_allot`  tinyint NULL AFTER `gift_url`;
+
+ALTER TABLE `tb_user`
+ADD COLUMN `role`  int NULL AFTER `busstype`;

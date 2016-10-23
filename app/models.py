@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import time
 from datetime import datetime
-import urllib2
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app, g
-from app.exceptions import ValidationError
+from flask import current_app
+from .constant import SERVICE_STATE
+from .exceptions import ValidationError
 from . import db, login_manager, redis_store
-from app.utils import filter_upload_url, gen_random_string, datetime_timestamp
+from .utils import filter_upload_url, gen_random_string, datetime_timestamp
 
 
 class Admin(UserMixin, db.Model):
@@ -39,10 +39,10 @@ class Admin(UserMixin, db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Admin.query.get(int(user_id))
+    return User.query.get(int(user_id))
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'tb_user'
     id = db.Column(db.Integer, primary_key=True)
     mobile_num = db.Column(db.String(16), unique=True, index=True)
@@ -57,6 +57,7 @@ class User(db.Model):
     mac = db.Column(db.String(32))
     state = db.Column(db.Integer, default=1)
     level = db.Column(db.Integer, default=0)
+    role = db.Column(db.Integer, default=1)
 
     @property
     def password(self):
@@ -175,23 +176,6 @@ class Device(db.Model):
     lan_ip = db.Column(db.String(30))
 
     @staticmethod
-    def test_conn(device):
-        try:
-            url = 'http://yunphoneclient.shinegame.cn/' + device.device_name
-
-            # proxy = urllib2.ProxyHandler({'http': 'proxy.tencent.com:8080'})
-            # opener = urllib2.build_opener(proxy)
-            # urllib2.install_opener(opener)
-
-            req = urllib2.Request(url)
-            response = urllib2.urlopen(req)
-            the_page = response.read()
-
-            return not 'Phone is not in the database. Is it online?' in the_page
-        except Exception:
-            return False
-
-    @staticmethod
     def from_json(json_device):
         device = Device()
         device.device_name = json_device.get('device_name')
@@ -250,10 +234,6 @@ class Device(db.Model):
         if set_type:
             redis_key += "%s" % set_type
         device_id = redis_store.spop(redis_key)
-        # user_id = g.current_user.id
-        # f = open('device.log', 'a')
-        # f.write(("%s POP DEVICE %s \n" % (user_id, device_id)))
-        # f.close()
         return device_id
 
     @staticmethod
@@ -262,10 +242,6 @@ class Device(db.Model):
         if set_type:
             redis_key += "%s" % set_type
         count = redis_store.srem(redis_key, device_id)
-        # user_id = g.current_user.id
-        # f = open('device.log', 'a')
-        # f.write(("%s POP DEVICE %s \n" % (user_id, device_id)))
-        # f.close()
         return count
 
     @staticmethod
@@ -277,13 +253,34 @@ class Device(db.Model):
     def set_device_info(device_id, info_type, content):
         redis_key = ('YUNPHONE:DEVICE:INFO:%s' % device_id).upper()
         redis_store.hset(redis_key, ("%s" % info_type), content)
-        redis_store.expire(redis_key, 300)
+
+        if info_type == SERVICE_STATE:
+            active_redis_key = ('YUNPHONE:DEVICE:ACTIVE:%s' % device_id).upper()
+            redis_store.set(active_redis_key, content)
+            redis_store.expire(active_redis_key, 300)
+        return
+
+    @staticmethod
+    def incr_device_info(device_id, info_type, content):
+        redis_key = ('YUNPHONE:DEVICE:INFO:%s' % device_id).upper()
+        redis_store.hincrby(redis_key, ("%s" % info_type), content)
         return
 
     @staticmethod
     def get_device_info(device_id, info_type):
         redis_key = ('YUNPHONE:DEVICE:INFO:%s' % device_id).upper()
         return redis_store.hget(redis_key, ("%s" % info_type))
+
+    @staticmethod
+    def get_all_device_info(device_id):
+        redis_key = ('YUNPHONE:DEVICE:INFO:%s' % device_id).upper()
+        return redis_store.hgetall(redis_key)
+
+    @staticmethod
+    def get_device_active(device_id):
+        redis_key = ('YUNPHONE:DEVICE:ACTIVE:%s' % device_id).upper()
+        return redis_store.get(redis_key)
+
 
     @staticmethod
     def set_device_map(device_name):

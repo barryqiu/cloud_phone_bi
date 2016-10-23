@@ -1,14 +1,13 @@
 from datetime import datetime
 from flask import jsonify, request, g
 from . import api1_1
-from flask import current_app as app
-from app.api_1_0.base_api import BaseApi, ERR_CODE_EXCEED_ALLOT_NUM_ERROR, ERR_CODE_NO_DEVICE, ERR_CODE_JPUSH_ERROR
-from app.device.device_api import device_available, get_agent_record_by_user_id
+from ..api_1_0.base_api import BaseApi, ERR_CODE_EXCEED_ALLOT_NUM_ERROR, ERR_CODE_NO_DEVICE
+from ..device.device_api import *
 from ..models import AgentRecord, Game, datetime_timestamp, GameServer, User
 from ..models import Device
 from .. import db
-from app.exceptions import ValidationError, MyException
-from app.utils import push_message_to_device, filter_upload_url
+from ..exceptions import ValidationError, MyException
+from ..utils import push_message_to_device, filter_upload_url
 
 DEVICE_STATE_DEL = 0
 DEVICE_STATE_IDLE = 1
@@ -107,6 +106,9 @@ def allot_device():
         db.session.add(idle_device)
         db.session.add(agent_record)
         db.session.commit()
+
+        # record info into redis
+        start_use_device(idle_device.id)
 
         # restore device ids
         for restore_device_id in restore_device_ids:
@@ -215,6 +217,9 @@ def free_device():
         db.session.add(agent_rocord)
         db.session.commit()
 
+        # record some info into redis
+        end_use_device(device_id, agent_rocord.time_long)
+
         # add device into queue
         Device.push_redis_set(device.id)
 
@@ -304,7 +309,7 @@ def device_info():
         if content is None or content == '':
             raise ValidationError('does not have type')
 
-        Device.set_device_info(device_id, info_type, content)
+        set_device_info(device_id, info_type, content)
 
         return jsonify(BaseApi.api_success('sucess'))
     except Exception as e:

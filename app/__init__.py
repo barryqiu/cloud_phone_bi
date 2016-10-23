@@ -59,4 +59,7 @@ def create_app(config_name):
     from .trial_game import trial_game as trial_game_blueprint
     app.register_blueprint(trial_game_blueprint, url_prefix='/trial/game')
 
+    from .in_api_1_0 import in_api as in_api_blueprint
+    app.register_blueprint(in_api_blueprint, url_prefix='/in/api')
+
     return app

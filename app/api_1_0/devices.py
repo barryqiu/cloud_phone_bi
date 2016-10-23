@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import jsonify, request, g
 from . import api
-from app.device.device_api import device_available, get_agent_record_by_user_id
+from app.device.device_api import *
 from .base_api import BaseApi, ERR_CODE_NO_DEVICE, ERR_CODE_EXCEED_ALLOT_NUM_ERROR
 from flask import current_app as app
 from ..models import AgentRecord, Game, datetime_timestamp, User
@@ -152,6 +152,9 @@ def allot_device():
         # increase user's allot device num
         User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_NAME'], 1)
 
+        # record info into redis
+        start_use_device(idle_device.id)
+
         ret = {
             "record_id": agent_record.id,
             "game_id": game_id,
@@ -237,6 +240,9 @@ def free_device():
         db.session.add(device)
         db.session.add(agent_rocord)
         db.session.commit()
+
+        # record some info into redis
+        end_use_device(device_id, agent_rocord.time_long)
 
         # add device into queue
         Device.push_redis_set(device.id)

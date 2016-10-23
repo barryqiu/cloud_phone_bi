@@ -1,10 +1,9 @@
-__author__ = 'barryqiu'
-
-import urllib2
+from ..constant import *
 from .. import db
-from ..models import AgentRecord
 from sqlalchemy import and_
 from flask import current_app as app
+from app.models import AgentRecord, Device
+import time
 
 
 def get_agent_record_by_user_id(user_id, game_id=0):
@@ -44,7 +43,7 @@ def device_available(device):
     if app.config['DEBUG']:
         return True
 
-    active_info = device.get_device_info(device.id, 0)
+    active_info = device.get_device_active(device.id, 0)
     if active_info and active_info.startswith("1"):
         return True
     return False
@@ -87,3 +86,38 @@ def device_available(device):
     # except Exception as e:
     #     app.logger.error(device.device_name + "   " + e.message)
     #     return False
+
+
+def set_device_info(device_id, info_type, content):
+    if info_type == 0 or info_type == '0':
+        Device.set_device_info(device_id, SERVICE_STATE, content)
+        return
+
+    if info_type == 6 or info_type == '6':
+        Device.set_device_info(device_id, SERVICE_VERSION, content)
+        return
+
+    if info_type == 8 or info_type == '8' or info_type == 9 or info_type == '9':
+        for (k, v) in content.items():
+            Device.set_device_info(device_id, k, v)
+            return
+
+    if info_type == USER_TIMES:
+        Device.incr_device_info(device_id, info_type, content)
+
+    Device.set_device_info(device_id, info_type, content)
+
+
+def start_use_device(device_id):
+    Device.set_device_info(device_id, START_USE_TIME, time.time())
+    Device.set_device_info(device_id, USER_FLAG, 1)
+
+
+def end_use_device(device_id, timelong):
+    Device.set_device_info(device_id, START_USE_TIME, 0)
+    Device.set_device_info(device_id, USER_FLAG, 0)
+    Device.set_device_info(device_id, USER_TIMES, timelong)
+
+
+
+
