@@ -33,4 +33,4 @@ ALTER TABLE `tb_game`
 ADD COLUMN `allow_allot`  tinyint NULL AFTER `gift_url`;
 
 ALTER TABLE `tb_user`
-ADD COLUMN `role`  int NULL AFTER `busstype`;
+ADD COLUMN `role`  int NULL ;

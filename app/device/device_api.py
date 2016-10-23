@@ -100,10 +100,11 @@ def set_device_info(device_id, info_type, content):
     if info_type == 8 or info_type == '8' or info_type == 9 or info_type == '9':
         for (k, v) in content.items():
             Device.set_device_info(device_id, k, v)
-            return
+        return
 
     if info_type == USER_TIMES:
         Device.incr_device_info(device_id, info_type, content)
+        return
 
     Device.set_device_info(device_id, info_type, content)
 
@@ -119,5 +120,13 @@ def end_use_device(device_id, timelong):
     Device.set_device_info(device_id, USER_TIMES, timelong)
 
 
+def format_device_info(device_info, is_list=0):
+    property_map = DETAIL_DEVICE_INFO
+    if is_list:
+        property_map = LIST_DEVICE_INFO
 
+    for (k, v) in property_map.items():
+        if not device_info . has_key(k):
+            device_info[k] = v
 
+    return device_info
