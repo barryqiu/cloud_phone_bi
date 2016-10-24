@@ -126,7 +126,7 @@ def format_device_info(device_info, is_list=0):
         property_map = LIST_DEVICE_INFO
 
     for (k, v) in property_map.items():
-        if not device_info . has_key(k):
+        if k not in device_info.keys():
             device_info[k] = v
 
     return device_info
