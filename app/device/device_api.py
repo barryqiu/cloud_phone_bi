@@ -102,10 +102,6 @@ def set_device_info(device_id, info_type, content):
             Device.set_device_info(device_id, k, v)
         return
 
-    if info_type == USE_TIMES:
-        Device.incr_device_info(device_id, info_type, content)
-        return
-
     Device.set_device_info(device_id, info_type, content)
 
 
@@ -117,7 +113,7 @@ def start_use_device(device_id):
 def end_use_device(device_id, timelong):
     Device.set_device_info(device_id, START_USE_TIME, 0)
     Device.set_device_info(device_id, USER_FLAG, 0)
-    Device.set_device_info(device_id, USE_TIMES, timelong)
+    Device.incr_device_info(device_id, USE_TIMES, timelong)
 
 
 def format_device_info(device_info, is_list=0):
