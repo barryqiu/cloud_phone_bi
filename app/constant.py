@@ -13,7 +13,7 @@ DATA_PARTITION = 'data_partition'
 SDCARD_PARTITION = 'sdcard_partition'
 USED_CPU = 'used_cpu'
 USED_MEMORY = 'used_memory'
-RUN_TIME = 'run_time'
+RUN_TIME = 'runtime'
 SERVICE_VERSION = 'service_version'
 
 # List Device Info
