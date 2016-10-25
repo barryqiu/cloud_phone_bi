@@ -7,7 +7,7 @@ USER_FLAG = 'use_flag'
 HARD_STATE = 'hard_state'
 SERVICE_STATE = 'service_state'
 IMG_URL_LIST = 'img_url_list'
-USER_TIMES = 'use_times'
+USE_TIMES = 'use_times'
 ALLOT_TIME = 'allot_time'
 DATA_PARTITION = 'data_partition'
 SDCARD_PARTITION = 'sdcard_partition'
@@ -39,7 +39,7 @@ DETAIL_DEVICE_INFO = {
     HARD_STATE: 0,
     SERVICE_STATE: 0,
     IMG_URL_LIST: '',
-    USER_TIMES: 0,
+    USE_TIMES: 0,
     ALLOT_TIME: 0,
     DATA_PARTITION: '',
     SDCARD_PARTITION: '',

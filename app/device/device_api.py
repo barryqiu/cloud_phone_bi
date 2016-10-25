@@ -102,7 +102,7 @@ def set_device_info(device_id, info_type, content):
             Device.set_device_info(device_id, k, v)
         return
 
-    if info_type == USER_TIMES:
+    if info_type == USE_TIMES:
         Device.incr_device_info(device_id, info_type, content)
         return
 
@@ -117,16 +117,22 @@ def start_use_device(device_id):
 def end_use_device(device_id, timelong):
     Device.set_device_info(device_id, START_USE_TIME, 0)
     Device.set_device_info(device_id, USER_FLAG, 0)
-    Device.set_device_info(device_id, USER_TIMES, timelong)
+    Device.set_device_info(device_id, USE_TIMES, timelong)
 
 
 def format_device_info(device_info, is_list=0):
     property_map = DETAIL_DEVICE_INFO
+    ret_device_info = {}
     if is_list:
         property_map = LIST_DEVICE_INFO
 
     for (k, v) in property_map.items():
         if k not in device_info.keys():
-            device_info[k] = v
+            ret_device_info[k] = v
+        else:
+            ret_device_info[k] = device_info[k]
 
-    return device_info
+    if USE_TIMES in property_map.iterkeys() and START_USE_TIME in device_info.keys() and device_info[START_USE_TIME]:
+        ret_device_info[USE_TIMES] = int(time.time() - int(device_info[START_USE_TIME]))
+
+    return ret_device_info
