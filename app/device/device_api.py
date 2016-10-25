@@ -133,7 +133,8 @@ def format_device_info(device_info, is_list=0):
         ret_device_info[ALLOT_TIME] = int(time.time()) - int(device_info[START_USE_TIME])
         ret_device_info[USE_TIMES] = "%d" % (int(ret_device_info[USE_TIMES]) + ret_device_info[ALLOT_TIME])
 
-    if HARD_STATE in property_map.iterkeys() and device_info[SERVICE_STATE]:
+    if HARD_STATE in property_map.iterkeys() and SERVICE_STATE in device_info.keys and \
+            device_info[SERVICE_STATE].startswith("1"):
         ret_device_info[HARD_STATE] = 1
 
     return ret_device_info
