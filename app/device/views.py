@@ -5,7 +5,7 @@ from .. import db
 
 from . import device
 from flask.ext.login import login_required
-from app.device.device_api import get_agent_record_by_device_id
+from app.device.device_api import get_agent_record_by_device_id, end_use_device
 from app.exceptions import ValidationError
 from app.utils import push_message_to_device
 from ..models import Device, AgentRecord, Game, User
@@ -64,6 +64,8 @@ def free_device(page, device_id):
 
         # add device into queue
         Device.push_redis_set(agent_device.id)
+
+        end_use_device(device_id, agent_record.time_long)
 
         # decrease user's allot device num
         User.redis_incr_ext_info(start_record.user_id, app.config['ALLOT_NUM_NAME'], -1)
