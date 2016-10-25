@@ -281,7 +281,6 @@ class Device(db.Model):
         redis_key = ('YUNPHONE:DEVICE:ACTIVE:%s' % device_id).upper()
         return redis_store.get(redis_key)
 
-
     @staticmethod
     def set_device_map(device_name):
         random_str = gen_random_string()

@@ -10,8 +10,7 @@ def device_info(device_id):
         if not device_id:
             return
         all_device_info = Device.get_all_device_info(device_id)
-        all_device_info = format_device_info(all_device_info)
-        all_device_info[DEVICE_ID] = device_id
+        all_device_info = format_device_info(device_id, all_device_info)
         return jsonify(BaseApi.api_success(all_device_info))
     except Exception as e:
         app.logger.exception('info')

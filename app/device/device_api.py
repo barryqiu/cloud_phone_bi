@@ -43,7 +43,7 @@ def device_available(device):
     if app.config['DEBUG']:
         return True
 
-    active_info = device.get_device_active(device.id, 0)
+    active_info = Device.get_device_active(device.id, 0)
     if active_info and active_info.startswith("1"):
         return True
     return False
@@ -116,7 +116,7 @@ def end_use_device(device_id, timelong):
     Device.incr_device_info(device_id, USE_TIMES, timelong)
 
 
-def format_device_info(device_info, is_list=0):
+def format_device_info(device_id, device_info, is_list=0):
     property_map = DETAIL_DEVICE_INFO
     ret_device_info = {}
     if is_list:
@@ -133,8 +133,9 @@ def format_device_info(device_info, is_list=0):
         ret_device_info[ALLOT_TIME] = int(time.time()) - int(device_info[START_USE_TIME])
         ret_device_info[USE_TIMES] = "%d" % (int(ret_device_info[USE_TIMES]) + ret_device_info[ALLOT_TIME])
 
-    if HARD_STATE in property_map.iterkeys() and SERVICE_STATE in device_info.keys and \
-            device_info[SERVICE_STATE].startswith("1"):
+    if HARD_STATE in property_map.iterkeys() and Device.get_device_active(device_id):
         ret_device_info[HARD_STATE] = 1
+
+    ret_device_info[DEVICE_ID] = device_id
 
     return ret_device_info
