@@ -110,7 +110,7 @@ def set_device_info(device_id, info_type, content):
 
 
 def start_use_device(device_id):
-    Device.set_device_info(device_id, START_USE_TIME, time.time())
+    Device.set_device_info(device_id, START_USE_TIME, int(time.time()))
     Device.set_device_info(device_id, USER_FLAG, 1)
 
 
@@ -133,6 +133,6 @@ def format_device_info(device_info, is_list=0):
             ret_device_info[k] = device_info[k]
 
     if USE_TIMES in property_map.iterkeys() and START_USE_TIME in device_info.keys() and device_info[START_USE_TIME]:
-        ret_device_info[USE_TIMES] = int(time.time() - int(device_info[START_USE_TIME]))
+        ret_device_info[USE_TIMES] = int(time.time()) - int(device_info[START_USE_TIME])
 
     return ret_device_info
