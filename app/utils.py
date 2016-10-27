@@ -116,3 +116,11 @@ def datetime_timestamp(dt):
         return str(v)
     except:
         return 0
+
+
+def convert_pagination(pagination):
+    page_info = {'has_next': pagination.has_next, 'has_prev': pagination.has_prev,
+                 'page': pagination.page, 'pages': pagination.pages,
+                 'per_page': pagination.per_page,
+                 'total': pagination.total}
+    return page_info
