@@ -43,7 +43,7 @@ def device_available(device):
     if app.config['DEBUG']:
         return True
 
-    active_info = Device.get_device_active(device.id, 0)
+    active_info = Device.get_device_active(device.id)
     if active_info and active_info.startswith("1"):
         return True
     return False
