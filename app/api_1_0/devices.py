@@ -127,7 +127,7 @@ def allot_device():
         # push start game command to device
         try:
             if not app.config['DEBUG']:
-                push_message_to_device(idle_device.device_name, game.package_name, 'startapp')
+                push_message_to_device(idle_device.device_name, game.package_name, MSG_TYPE_START_APP)
         except BaseException, e:
             pass
             # Device.push_redis_set(idle_device.id)
@@ -220,7 +220,7 @@ def free_device():
         # push start game command to device
         try:
             if not app.config['DEBUG']:
-                push_message_to_device(device.device_name, game.data_file_names, 'clear')
+                push_message_to_device(device.device_name, game.data_file_names, MSG_TYPE_CLEAR)
         except BaseException, e:
             pass
             # return jsonify(BaseApi.api_jpush_error())

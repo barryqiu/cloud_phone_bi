@@ -1,8 +1,10 @@
+from ..exceptions import ValidationError
 from ..utils import convert_pagination
 from . import in_api
 from flask import jsonify
 from ..api_1_0.base_api import BaseApi
 from ..device.device_api import *
+from ..utils import push_message_to_device
 
 
 @in_api.route('/device/<int:device_id>')
@@ -30,6 +32,23 @@ def device_list(page):
             ret_device[device.id] = format_device_info(device.id, one_device_info, 1)
         ret = {'devices': ret_device, 'pageinfo': convert_pagination(pagination)}
         return jsonify(BaseApi.api_success(ret))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
+
+
+@in_api.route('/device/reboot/<int:device_id>')
+def device_info(device_id):
+    try:
+        if not device_id:
+            raise ValidationError('does not have a device id')
+
+        device = Device.query.get(device_id)
+        if not device:
+            raise ValidationError('device id not right')
+        if push_message_to_device(device.device_name, "", MSG_TYPE_REBOOT):
+            return jsonify(BaseApi.api_success("suc"))
+        return jsonify(BaseApi.api_push_msg_error())
     except Exception as e:
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
