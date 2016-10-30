@@ -307,6 +307,11 @@ class Device(db.Model):
         redis_store.hincrby(redis_key_all, allot_result, 1)
         return
 
+    @staticmethod
+    def get_device_ws_state(device_name):
+        redis_key = ('YUNPHONE:DEVICE:WS:STATE:%s' % device_name).upper()
+        return redis_store.get(redis_key)
+
 
 class Game(db.Model):
     __tablename__ = 'tb_game'
