@@ -274,11 +274,15 @@ def user_device():
         ret = []
         for user_record in user_records:
             device = Device.query.filter_by(id=user_record.device_id).first()
+            game = Game.query.get(user_record.game_id)
             one = device.to_json()
             one['game_id'] = user_record.game_id
             one['record_id'] = user_record.id
             one['start_time'] = datetime_timestamp(user_record.start_time)
             one['address'] = user_record.address_map
+            one['game_name'] = game.game_name
+            one['game_icon'] = game.icon_url
+            one['music_url'] = game.music_url
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
@@ -303,6 +307,7 @@ def user_device_web():
             one['game_name'] = game.game_name
             one['game_icon'] = game.icon_url
             one['game_banner'] = game.banner_url
+            one['music_url'] = game.music_url
             one['record_id'] = user_record.id
             one['start_time'] = datetime_timestamp(user_record.start_time)
             one['address'] = user_record.address_map
