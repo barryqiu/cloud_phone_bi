@@ -90,7 +90,7 @@ def device_available(device):
 
 def set_device_info(device_id, info_type, content):
     if info_type == 0 or info_type == '0':
-        Device.set_device_info(device_id, SERVICE_STATE, content)
+        Device.set_device_info(device_id, SERVICE_STATE, content['status'])
         return
 
     if info_type == 6 or info_type == '6':
