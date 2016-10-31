@@ -28,7 +28,7 @@ def server_shutdown():
     return 'Shutting down...'
 
 
-@main.route('/', methods=['GET', 'POST'])
+@main.route('/admin', methods=['GET', 'POST'])
 @login_required
 def index():
     return render_template('index.html')
