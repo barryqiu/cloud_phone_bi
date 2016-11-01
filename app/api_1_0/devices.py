@@ -160,7 +160,10 @@ def allot_device():
             "game_id": game_id,
             "address": address_map,
             "music_url": game.music_url,
-            "device": idle_device.to_json()}
+            "device": idle_device.to_json(),
+            "game_icon": game.icon_url,
+            "game_name": game.game_name
+        }
         Device.incr_allot("1.0", ALLOT_SUCCESS)
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:

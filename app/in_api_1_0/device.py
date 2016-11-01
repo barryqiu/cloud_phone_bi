@@ -20,26 +20,6 @@ def device_info_in(device_id):
         return jsonify(BaseApi.api_system_error(e.message))
 
 
-@in_api.route('/device/ws/<int:device_id>')
-def device_ws_state(device_id):
-    try:
-        if not device_id:
-            return
-        device = Device.query.get(device_id)
-        if not device:
-            raise ValidationError('device id not right')
-
-        ws_state = Device.get_device_ws_state(device.device_name)
-
-        if not ws_state:
-            ws_state = "0"
-
-        return jsonify(BaseApi.api_success(ws_state))
-    except Exception as e:
-        app.logger.exception('info')
-        return jsonify(BaseApi.api_system_error(e.message))
-
-
 @in_api.route('/device/list/<int:page>')
 def device_list(page):
     try:

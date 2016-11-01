@@ -123,7 +123,9 @@ def allot_device():
             "server_id": server_id,
             "address": address_map,
             "music_url": game.music_url,
-            "device": idle_device.to_json()
+            "device": idle_device.to_json(),
+            "game_icon": game.icon_url,
+            "game_name": game.game_name
         }
 
         Device.incr_allot("1.1", ALLOT_SUCCESS)
@@ -343,6 +345,26 @@ def device_map(alias):
         if device_name:
             return jsonify(BaseApi.api_success("success"))
         raise ValidationError('alias %s, ret %s' % (alias, device_name))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api1_1.route('/device/ws/<int:device_id>')
+def device_ws_state(device_id):
+    try:
+        if not device_id:
+            return
+        device = Device.query.get(device_id)
+        if not device:
+            raise ValidationError('device id not right')
+
+        ws_state = Device.get_device_ws_state(device.device_name)
+
+        if not ws_state:
+            ws_state = "0"
+
+        return jsonify(BaseApi.api_success(ws_state))
     except Exception as e:
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
