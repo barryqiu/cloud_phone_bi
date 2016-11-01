@@ -87,7 +87,7 @@ def push_message_to_device(device_name, content, msg_type):
         if response.code == 200:
             return True
     except Exception as e:
-        app.logger.exception('error')
+        app.logger.exception('%s,%s,%s' % (device_name, content, msg_type))
     return False
 
 
