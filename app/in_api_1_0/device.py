@@ -53,29 +53,3 @@ def device_info(device_id):
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
 
-
-@in_api.route('/device/forward/content', methods=['POST'])
-def forward_content():
-    try:
-        device_id = request.json.get('device_id')
-        if not device_id:
-            raise ValidationError('does not have a device id')
-
-        device_id = request.json.get('device_id')
-        if not device_id:
-            raise ValidationError('does not have a device id')
-
-        device = Device.query.get(device_id)
-        if not device:
-            raise ValidationError('device id not right')
-
-        content = request.json.get('content')
-        if not content:
-            raise ValidationError('content is empty')
-
-        if push_message_to_device(device.device_name, content, MSG_TYPE_WEBKEY_INPUT):
-            return jsonify(BaseApi.api_success("suc"))
-        return jsonify(BaseApi.api_push_msg_error())
-    except Exception as e:
-        app.logger.exception('info')
-        return jsonify(BaseApi.api_system_error(e.message))
