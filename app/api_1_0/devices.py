@@ -286,6 +286,7 @@ def user_device():
             one['game_name'] = game.game_name
             one['game_icon'] = game.icon_url
             one['music_url'] = game.music_url
+            one['remark'] = user_record.remark
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
@@ -314,6 +315,7 @@ def user_device_web():
             one['record_id'] = user_record.id
             one['start_time'] = datetime_timestamp(user_record.start_time)
             one['address'] = user_record.address_map
+            one['remark'] = user_record.remark
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))

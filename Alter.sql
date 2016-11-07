@@ -34,3 +34,6 @@ ADD COLUMN `allow_allot`  tinyint NULL AFTER `gift_url`;
 
 ALTER TABLE `tb_user`
 ADD COLUMN `role`  int NULL ;
+
+ALTER TABLE `tb_agent_record`
+ADD COLUMN `remark`  varchar(150) NULL;

@@ -258,6 +258,7 @@ def user_device():
             one['record_id'] = user_record.id
             one['address'] = user_record.address_map
             one['start_time'] = datetime_timestamp(user_record.start_time)
+            one['remark'] = user_record.remark
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
@@ -285,6 +286,7 @@ def user_device_web():
             one['start_time'] = datetime_timestamp(user_record.start_time)
             one['server_id'] = user_record.server_id
             one['address'] = user_record.address_map
+            one['remark'] = user_record.remark
             if user_record.server_id:
                 server = GameServer.query.get(user_record.server_id)
                 if server:
@@ -368,3 +370,25 @@ def device_ws_state(device_id):
     except Exception as e:
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api1_1.route('/device/agent/record/remark', methods=['POST'])
+def edit_device_agent_record():
+    try:
+        user_id = g.current_user.id
+        record_id = request.json.get('record_id')
+        if not record_id:
+            raise ValidationError('empty record_id')
+        remark = request.json.get('remark')
+        record = AgentRecord.query.get(record_id)
+        if not record or record.user_id != user_id:
+            raise ValidationError('wrong record id')
+
+        record.remark = remark
+        db.session.add(record)
+        db.session.commit()
+        jsonify(BaseApi.api_success("success"))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
+

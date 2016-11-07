@@ -382,6 +382,7 @@ class AgentRecord(db.Model):
     address_map = db.Column(db.String(40), default='')
     state = db.Column(db.Integer, default=1)
     business_id = db.Column(db.Integer, default=0)
+    remark = db.Column(db.String(150))
 
     def __repr__(self):
         return '<Record %r,%r,%r>' % self.user_id % self.game_id % self.device_id
@@ -395,6 +396,7 @@ class AgentRecord(db.Model):
             'game_id': self.game_id,
             'server_id': self.server_id,
             'address_map': self.address_map,
+            'remark': self.remark
         }
         return json_agent_record
 
