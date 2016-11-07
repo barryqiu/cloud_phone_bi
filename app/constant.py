@@ -73,4 +73,5 @@ MSG_TYPE_CLEAR_LOG = "clearlog"
 MSG_TYPE_DOWNLOAD_2_MOVE = "download2move"
 MSG_TYPE_UNINSTALL_WEBKEY = "uninstall_webkey"
 MSG_TYPE_SET_TIME = "settime"
+MSG_TYPE_WEBKEY_INPUT = "webkey_input"
 
