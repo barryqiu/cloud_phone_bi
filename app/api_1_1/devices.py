@@ -412,6 +412,9 @@ def forward_content():
         if not content:
             raise ValidationError('content is empty')
 
+        app.logger.error(content)
+        content = content.encode('utf-8')
+
         if push_message_to_device(device.device_name, content, MSG_TYPE_WEBKEY_INPUT):
             return jsonify(BaseApi.api_success("suc"))
         return jsonify(BaseApi.api_push_msg_error())
