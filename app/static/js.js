@@ -71,6 +71,21 @@ function del_all_game_server(game_id, page) {
     });
 }
 
+function del_all_apk(page) {
+    event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
+    var str = "0";
+    $("[name='selectFlag']:checkbox").each(function () {
+        if (this.checked == true) {
+            str += "," + this.id ;
+        }
+    });
+    $.get("/apk/del/" + page +"/" + str, function (result) {
+        self.location.reload();
+    });
+}
+
+
+
 function delete_confirm()
 {
     event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");

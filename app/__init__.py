@@ -62,4 +62,7 @@ def create_app(config_name):
     from .in_api_1_0 import in_api as in_api_blueprint
     app.register_blueprint(in_api_blueprint, url_prefix='/in/api')
 
+    from .apk import apk as apk_blueprint
+    app.register_blueprint(apk_blueprint, url_prefix='/apk')
+
     return app

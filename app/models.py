@@ -636,3 +636,50 @@ class DeviceQueue(db.Model):
 
     def __repr__(self):
         return 'DeviceQueue %r, %r, %r' % self.device_id % self.game_id % self.server_id % self.business_id
+
+
+class Apk(db.Model):
+    __tablename__ = 'tb_apk'
+    id = db.Column(db.Integer, primary_key=True)
+    apk_name = db.Column(db.String(50), index=True)
+    icon_url = db.Column(db.String(150))
+    banner_url = db.Column(db.String(150))
+    music_url = db.Column(db.String(150))
+    package_name = db.Column(db.String(250))
+    data_file_names = db.Column(db.Text)
+    apk_desc = db.Column(db.Text)
+    qr_url = db.Column(db.String(150))
+    apk_url = db.Column(db.String(150))
+    banner_side = db.Column(db.String(150))
+    square_img = db.Column(db.String(150))
+    add_time = db.Column(db.DateTime(), default=datetime.now)
+    state = db.Column(db.Integer, default=1)  # 0：删除； 1： 正常
+    allow_allot = db.Column(db.Integer, default=0)  # 0：禁止分配； 1：允许分配
+
+    @staticmethod
+    def from_json(json_apk):
+        apk = Apk()
+        apk.game_name = json_apk.get('apk_name')
+        if apk.apk_name is None or apk.apk_name == '':
+            raise ValidationError('apk does not have a name')
+        return apk
+
+    def to_json(self):
+        json_apk = {
+            'id': self.id,
+            'apk_name': self.apk_name,
+            'package_name': self.package_name,
+            'data_file_names': self.data_file_names,
+            'icon_url': filter_upload_url(self.icon_url),
+            'banner_url': filter_upload_url(self.banner_url),
+            'music_url': filter_upload_url(self.music_url),
+            'add_time': datetime_timestamp(self.add_time),
+            'apk_desc': self.apk_desc,
+            'qr_url': self.qr_url,
+            'apk_url': self.apk_url,
+            'banner_side': self.banner_side,
+            'square_img': self.square_img,
+            'state': self.state,
+            'allow_allot': self.allow_allot,
+        }
+        return json_apk
