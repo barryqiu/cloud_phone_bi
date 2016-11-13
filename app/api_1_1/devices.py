@@ -372,6 +372,27 @@ def device_ws_state(device_id):
         return jsonify(BaseApi.api_system_error(e.message))
 
 
+@api1_1.route('/device/ws/alias/<string:alias>')
+def device_ws_state_by_alias(alias):
+    try:
+        if not alias:
+            raise ValidationError('no alias')
+
+        device_name = Device.get_device_map(alias)
+        if not device_name:
+            raise ValidationError("wrong alias")
+
+        ws_state = Device.get_device_ws_state(device_name)
+
+        if not ws_state:
+            ws_state = "0"
+
+        return jsonify(BaseApi.api_success(ws_state))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
+
+
 @api1_1.route('/device/agent/record/remark', methods=['POST'])
 def edit_device_agent_record():
     try:
