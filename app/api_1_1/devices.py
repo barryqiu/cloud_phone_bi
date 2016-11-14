@@ -408,7 +408,7 @@ def edit_device_agent_record():
         record.remark = remark
         db.session.add(record)
         db.session.commit()
-        jsonify(BaseApi.api_success("success"))
+        return jsonify(BaseApi.api_success("success"))
     except Exception as e:
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
