@@ -37,6 +37,13 @@ class Admin(UserMixin, db.Model):
         return '<Admin %r>' % self.user_name
 
 
+class UserApk(db.Model):
+    __tablename__ = "tb_user_apk"
+    user_id = db.Column(db.Integer, db.ForeignKey('tb_user.id'), primary_key=True)
+    apk_id = db.Column(db.Integer, db.ForeignKey('tb_apk.id'), primary_key=True)
+    add_time = db.Column(db.DateTime(), default=datetime.now)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -58,6 +65,11 @@ class User(UserMixin, db.Model):
     state = db.Column(db.Integer, default=1)
     level = db.Column(db.Integer, default=0)
     role = db.Column(db.Integer, default=1)
+
+    apk = db.relationship('UserApk', foreign_keys=[UserApk.user_id],
+                          backref=db.backref('user', lazy='joined'),
+                          lazy='dynamic',
+                          cascade='all, delete-orphan')
 
     @property
     def password(self):
@@ -107,6 +119,40 @@ class User(UserMixin, db.Model):
                        expires_in=expiration)
         return s.dumps({'id': self.id}).decode('ascii')
 
+    def to_json(self):
+        json_user = {
+            'id': self.id,
+            'mobile_num': self.mobile_num,
+            'system_version': self.system_version,
+            'imei': self.imei,
+            'imsi': self.imsi,
+            'model_number': self.model_number,
+            'collect_time': datetime_timestamp(self.collect_time),
+            'android_id': self.android_id,
+            'mac': self.mac,
+            'state': self.state,
+            'level': self.level
+        }
+        return json_user
+
+    def has_apk(self, apk):
+        return self.apk.filter_by(apk_id=apk.id).first() is not None
+
+    def add_apk(self, apk):
+        if not self.has_apk(apk):
+            user_apk = UserApk(user=self, apk=apk)
+            db.session.add(user_apk)
+            db.session.commit()
+
+    def del_apk(self, apk):
+        now_apk = self.apk.filter_by(apk_id=apk.id).first()
+        if now_apk:
+            db.session.delete(now_apk)
+            db.session.commit()
+
+    def __repr__(self):
+        return '<User %r>' % self.mobile_num
+
     @staticmethod
     def verify_auth_token(token):
         s = Serializer(current_app.config['SECRET_KEY'])
@@ -133,25 +179,6 @@ class User(UserMixin, db.Model):
         user.android_id = json_user.get('android_id')
         user.mac = json_user.get('mac')
         return user
-
-    def to_json(self):
-        json_user = {
-            'id': self.id,
-            'mobile_num': self.mobile_num,
-            'system_version': self.system_version,
-            'imei': self.imei,
-            'imsi': self.imsi,
-            'model_number': self.model_number,
-            'collect_time': datetime_timestamp(self.collect_time),
-            'android_id': self.android_id,
-            'mac': self.mac,
-            'state': self.state,
-            'level': self.level
-        }
-        return json_user
-
-    def __repr__(self):
-        return '<User %r>' % self.mobile_num
 
     @staticmethod
     def redis_incr_ext_info(user_id, key, num):
@@ -655,6 +682,11 @@ class Apk(db.Model):
     add_time = db.Column(db.DateTime(), default=datetime.now)
     state = db.Column(db.Integer, default=1)  # 0：删除； 1： 正常
     allow_allot = db.Column(db.Integer, default=0)  # 0：禁止分配； 1：允许分配
+
+    user = db.relationship('UserApk', foreign_keys=[UserApk.apk_id],
+                           backref=db.backref('apk', lazy='joined'),
+                           lazy='dynamic',
+                           cascade='all, delete-orphan')
 
     @staticmethod
     def from_json(json_apk):
