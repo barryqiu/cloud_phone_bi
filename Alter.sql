@@ -37,3 +37,5 @@ ADD COLUMN `role`  int NULL ;
 
 ALTER TABLE `tb_agent_record`
 ADD COLUMN `remark`  varchar(150) NULL;
+
+ALTER TABLE `tb_apk` ADD COLUMN `rec` int(11) DEFAULT '0';

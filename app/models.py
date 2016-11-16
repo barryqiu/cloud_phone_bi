@@ -682,6 +682,7 @@ class Apk(db.Model):
     add_time = db.Column(db.DateTime(), default=datetime.now)
     state = db.Column(db.Integer, default=1)  # 0：删除； 1： 正常
     allow_allot = db.Column(db.Integer, default=0)  # 0：禁止分配； 1：允许分配
+    rec = db.Column(db.Integer, default=0)  # 推荐值 大于0表示推荐游戏,按照 rec 降序排列
 
     user = db.relationship('UserApk', foreign_keys=[UserApk.apk_id],
                            backref=db.backref('apk', lazy='joined'),
