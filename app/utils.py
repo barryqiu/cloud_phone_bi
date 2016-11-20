@@ -58,6 +58,10 @@ def push_message_to_alias(content, msg_type, alias, platform='android'):
 
 
 def push_message_to_device(device_name, content, msg_type):
+
+    if app.config['DEBUG']:
+        return True
+
     msg = {
         'msg_type': msg_type,
         'content': content

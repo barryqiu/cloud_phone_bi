@@ -5,10 +5,10 @@ from .. import db
 
 from . import device
 from flask.ext.login import login_required
-from app.device.device_api import get_agent_record_by_device_id, end_use_device
+from app.device.device_api import get_agent_record_by_device_id, get_agent_record_by_device_id_v2, end_use_device
 from app.exceptions import ValidationError
 from app.utils import push_message_to_device
-from ..models import Device, AgentRecord, Game, User
+from ..models import Device, AgentRecord, Game, User, AgentRecord2
 
 DEVICE_STATE_DEL = 0
 DEVICE_STATE_IDLE = 1
@@ -33,44 +33,80 @@ def device_list(page):
 def free_device(page, device_id):
     try:
         start_record = get_agent_record_by_device_id(device_id)
-        if start_record is None:
+        start_record_v2 = get_agent_record_by_device_id_v2(device_id)
+        if start_record is not None:
+            if start_record.address_map:
+                Device.del_device_map(start_record.address_map)
+
+            game = Game.query.get(start_record.game_id)
+            agent_device = Device.query.get(device_id)
+
+            # push start game command to device
+            push_message_to_device(agent_device.device_name, game.data_file_names, 'clear')
+
+            agent_record = AgentRecord()
+            agent_record.start_id = start_record.id
+            agent_record.game_id = game.id
+            agent_record.user_id = start_record.user_id
+            agent_record.device_id = device_id
+            agent_record.server_id = start_record.server_id
+            agent_record.type = RECORD_TYPE_END
+            agent_record.record_time = datetime.now()
+            agent_record.time_long = (agent_record.record_time - start_record.record_time).seconds
+            agent_record.start_time = start_record.record_time
+
+            agent_device.state = DEVICE_STATE_IDLE
+
+            db.session.add(agent_device)
+            db.session.add(agent_record)
+            db.session.commit()
+
+            # add device into queue
+            Device.push_redis_set(agent_device.id)
+
+            end_use_device(device_id, agent_record.time_long)
+
+            # decrease user's allot device num
+            User.redis_incr_ext_info(start_record.user_id, app.config['ALLOT_NUM_NAME'], -1)
+            User.redis_incr_ext_info(start_record.user_id, app.config['ALLOT_NUM_LIMIT_NAME'], 1)
+            flash("free device %s success." % device_id)
+        elif start_record_v2 is not None:
+            if start_record_v2.address_map:
+                Device.del_device_map(start_record_v2.address_map)
+
+            apk = Game.query.get(start_record_v2.apk_id)
+            agent_device = Device.query.get(device_id)
+
+            # push start game command to device
+            push_message_to_device(agent_device.device_name, apk.data_file_names, 'clear')
+
+            agent_record2 = AgentRecord2()
+            agent_record2.start_id = start_record_v2.id
+            agent_record2.apk_id = apk.id
+            agent_record2.user_id = start_record_v2.user_id
+            agent_record2.device_id = device_id
+            agent_record2.type = RECORD_TYPE_END
+            agent_record2.record_time = datetime.now()
+            agent_record2.time_long = (agent_record2.record_time - start_record_v2.record_time).seconds
+            agent_record2.start_time = start_record_v2.record_time
+
+            agent_device.state = DEVICE_STATE_IDLE
+
+            db.session.add(agent_device)
+            db.session.add(agent_record2)
+            db.session.commit()
+
+            # add device into queue
+            Device.push_redis_set(agent_device.id)
+
+            end_use_device(device_id, agent_record2.time_long)
+
+            # decrease user's allot device num
+            User.redis_incr_ext_info(start_record_v2.user_id, app.config['ALLOT_NUM_NAME'], -1)
+            User.redis_incr_ext_info(start_record_v2.user_id, app.config['ALLOT_NUM_LIMIT_NAME'], 1)
+            flash("free device %s success." % device_id)
+        else:
             raise ValidationError('already free')
-
-        if start_record.address_map:
-            Device.del_device_map(start_record.address_map)
-
-        game = Game.query.get(start_record.game_id)
-        agent_device = Device.query.get(device_id)
-
-        # push start game command to device
-        push_message_to_device(agent_device.device_name, game.data_file_names, 'clear')
-
-        agent_record = AgentRecord()
-        agent_record.start_id = start_record.id
-        agent_record.game_id = game.id
-        agent_record.user_id = start_record.user_id
-        agent_record.device_id = device_id
-        agent_record.server_id = start_record.server_id
-        agent_record.type = RECORD_TYPE_END
-        agent_record.record_time = datetime.now()
-        agent_record.time_long = (agent_record.record_time - start_record.record_time).seconds
-        agent_record.start_time = start_record.record_time
-
-        agent_device.state = DEVICE_STATE_IDLE
-
-        db.session.add(agent_device)
-        db.session.add(agent_record)
-        db.session.commit()
-
-        # add device into queue
-        Device.push_redis_set(agent_device.id)
-
-        end_use_device(device_id, agent_record.time_long)
-
-        # decrease user's allot device num
-        User.redis_incr_ext_info(start_record.user_id, app.config['ALLOT_NUM_NAME'], -1)
-        User.redis_incr_ext_info(start_record.user_id, app.config['ALLOT_NUM_LIMIT_NAME'], 1)
-        flash("free device %s success." % device_id)
     except Exception as e:
         db.session.rollback()
         flash("free device  %s fail. error: %s" % (device_id,  e.message))
