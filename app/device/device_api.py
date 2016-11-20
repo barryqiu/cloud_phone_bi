@@ -2,7 +2,7 @@ from ..constant import *
 from .. import db
 from sqlalchemy import and_
 from flask import current_app as app
-from app.models import AgentRecord, Device
+from app.models import AgentRecord, AgentRecord2, Device
 import time
 
 
@@ -35,6 +35,39 @@ def get_agent_record_by_device_id(device_id):
 
     user_record = AgentRecord.query.filter(
         and_(AgentRecord.type == 0, AgentRecord.device_id == device_id, AgentRecord.id.notin_(start_ids))).first()
+
+    return user_record
+
+
+def get_agent_record_by_user_id_v2(user_id, apk_id=0):
+    start_ids = []
+    end_records = db.session.query(AgentRecord2).filter(
+        and_(AgentRecord2.start_id > 0, AgentRecord2.user_id == user_id)).all()
+
+    for end_record in end_records:
+        start_ids.append(end_record.start_id)
+
+    if not apk_id:
+        user_records = AgentRecord2.query.filter(
+            and_(AgentRecord2.type == 0, AgentRecord2.user_id == user_id, AgentRecord2.id.notin_(start_ids))).all()
+    else:
+        user_records = AgentRecord.query.filter(
+            and_(AgentRecord2.type == 0, AgentRecord2.user_id == user_id, AgentRecord2.apk_id == apk_id,
+                 AgentRecord2.id.notin_(start_ids))).all()
+
+    return user_records
+
+
+def get_agent_record_by_device_id_v2(device_id):
+    start_ids = []
+    end_records = db.session.query(AgentRecord2).filter(
+        and_(AgentRecord2.start_id > 0, AgentRecord2.device_id == device_id)).all()
+
+    for end_record in end_records:
+        start_ids.append(end_record.start_id)
+
+    user_record = AgentRecord2.query.filter(
+        and_(AgentRecord2.type == 0, AgentRecord2.device_id == device_id, AgentRecord2.id.notin_(start_ids))).first()
 
     return user_record
 

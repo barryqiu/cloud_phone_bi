@@ -44,6 +44,37 @@ class UserApk(db.Model):
     add_time = db.Column(db.DateTime(), default=datetime.now)
 
 
+class AgentRecord2(db.Model):
+    __tablename__ = 'tb_agent_record2'
+    id = db.Column(db.Integer, primary_key=True)
+    start_id = db.Column(db.Integer, default=0)
+    type = db.Column(db.Integer, default=0)
+    start_time = db.Column(db.DateTime(), default=datetime.now())
+    record_time = db.Column(db.DateTime(), default=datetime.now())
+    time_long = db.Column(db.Integer, default=0)
+    device_id = db.Column(db.Integer, db.ForeignKey('tb_device.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('tb_user.id'))
+    address_map = db.Column(db.String(40), default='')
+    apk_id = db.Column(db.Integer, db.ForeignKey('tb_apk.id'))
+    remark = db.Column(db.String(150))
+    state = db.Column(db.Integer, default=1)
+
+    def __repr__(self):
+        return '<Record %r,%r,%r>' % self.user_id % self.game_id % self.device_id
+
+    def to_json(self):
+        json_agent_record = {
+            'id': self.id,
+            'start_id': self.start_id,
+            'device': self.device.to_json(),
+            'user': self.user.to_json(),
+            'apk': self.apk.to_json(),
+            'address_map': self.address_map,
+            'remark': self.remark
+        }
+        return json_agent_record
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -70,6 +101,8 @@ class User(UserMixin, db.Model):
                           backref=db.backref('user', lazy='joined'),
                           lazy='dynamic',
                           cascade='all, delete-orphan')
+
+    agent_records = db.relationship("AgentRecord2", backref="user")
 
     @property
     def password(self):
@@ -214,6 +247,7 @@ class Device(db.Model):
     collect_time = db.Column(db.DateTime(), default=datetime.now)
     state = db.Column(db.Integer, default=1)
     lan_ip = db.Column(db.String(30))
+    agent_records = db.relationship('AgentRecord2', backref='device')
 
     @staticmethod
     def from_json(json_device):
@@ -422,6 +456,7 @@ class AgentRecord(db.Model):
     address_map = db.Column(db.String(40), default='')
     state = db.Column(db.Integer, default=1)
     business_id = db.Column(db.Integer, default=0)
+    apk_id = db.Column(db.Integer, db.ForeignKey('tb_apk.id'))
     remark = db.Column(db.String(150))
 
     def __repr__(self):
@@ -701,6 +736,8 @@ class Apk(db.Model):
                            backref=db.backref('apk', lazy='joined'),
                            lazy='dynamic',
                            cascade='all, delete-orphan')
+
+    agent_records = db.relationship('AgentRecord2', backref='apk')
 
     @staticmethod
     def from_json(json_apk):

@@ -8,18 +8,7 @@ from ..models import Device
 from .. import db
 from ..exceptions import ValidationError, MyException
 from ..utils import push_message_to_device, filter_upload_url
-
-DEVICE_STATE_DEL = 0
-DEVICE_STATE_IDLE = 1
-DEVICE_STATE_BUSY = 2
-
-RECORD_TYPE_START = 0
-RECORD_TYPE_END = 1
-
-ALLOT_RETRY = 3
-
-ALLOT_FAIL = "fail"
-ALLOT_SUCCESS = "suc"
+from ..constant import *
 
 
 @api1_1.route('/device/allot', methods=['POST'])

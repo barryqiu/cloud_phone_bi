@@ -75,3 +75,16 @@ MSG_TYPE_UNINSTALL_WEBKEY = "uninstall_webkey"
 MSG_TYPE_SET_TIME = "settime"
 MSG_TYPE_WEBKEY_INPUT = "webkey_input"
 
+# device state
+DEVICE_STATE_DEL = 0
+DEVICE_STATE_IDLE = 1
+DEVICE_STATE_BUSY = 2
+
+# agent record type
+RECORD_TYPE_START = 0
+RECORD_TYPE_END = 1
+
+# ALLOT
+ALLOT_RETRY = 3
+ALLOT_FAIL = "fail"
+ALLOT_SUCCESS = "suc"

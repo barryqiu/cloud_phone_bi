@@ -9,18 +9,7 @@ from ..models import Device
 from .. import db
 from app.exceptions import ValidationError, MyException
 from app.utils import push_message_to_device
-
-DEVICE_STATE_DEL = 0
-DEVICE_STATE_IDLE = 1
-DEVICE_STATE_BUSY = 2
-
-RECORD_TYPE_START = 0
-RECORD_TYPE_END = 1
-
-ALLOT_RETRY = 3
-
-ALLOT_FAIL = "fail"
-ALLOT_SUCCESS = "suc"
+from ..constant import *
 
 
 @api.route('/device/<string:name>')

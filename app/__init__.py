@@ -53,6 +53,9 @@ def create_app(config_name):
     from .api_1_1 import api1_1 as api_1_1_blueprint
     app.register_blueprint(api_1_1_blueprint, url_prefix='/api/1.1')
 
+    from .api_1_2 import api1_2 as apk_1_2_blueprint
+    app.register_blueprint(apk_1_2_blueprint, url_prefix='/api/1.2')
+
     from .server import server as server_blueprint
     app.register_blueprint(server_blueprint, url_prefix='/server')
 
