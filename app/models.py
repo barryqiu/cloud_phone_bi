@@ -160,6 +160,9 @@ class User(UserMixin, db.Model):
             data = s.loads(token)
         except:
             return None
+        new_token = User.redis_get_token(data['id'])
+        if new_token and new_token != token:
+            return None
         return User.query.get(data['id'])
 
     @staticmethod
@@ -189,6 +192,16 @@ class User(UserMixin, db.Model):
     def redis_get_ext_info(user_id, key):
         redis_key = ('YUNPHONE:USER_EXT:%s' % user_id).upper()
         return redis_store.hget(redis_key, key)
+
+    @staticmethod
+    def redis_get_token(user_id):
+        redis_key = ('YUNPHONE:USER_TOEKN:%s' % user_id).upper()
+        return redis_store.get(redis_key)
+
+    @staticmethod
+    def redis_set_token(user_id, token):
+        redis_key = ('YUNPHONE:USER_TOEKN:%s' % user_id).upper()
+        return redis_store.set(redis_key, token)
 
 
 class Device(db.Model):

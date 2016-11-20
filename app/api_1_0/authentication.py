@@ -66,5 +66,6 @@ def in_api_before_request():
 def get_token():
     if g.token_used:
         return unauthorized('Invalid credentials')
-    return jsonify({'token': g.current_user.generate_auth_token(
-        expiration=3600 * 24 * 30), 'expiration': 3600 * 24 * 30})
+    token = g.current_user.generate_auth_token(expiration=3600 * 24 * 30)
+    User.redis_set_token(g.current_user.id, token)
+    return jsonify({'token': token, 'expiration': 3600 * 24 * 30})
