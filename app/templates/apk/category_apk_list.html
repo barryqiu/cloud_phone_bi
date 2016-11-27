@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %} {{ category.category_name }} APK 列表{% endblock %}
+
+{% block page_content %}
+    <div class="container">
+        <div class="page-header">
+            <h1> {{ category.category_name }} APK 列表</h1>
+        </div>
+        <table class="table table-striped">
+            <tr>
+                <th width="5%">
+                    <input type="checkbox" id="checkAll">
+                </th>
+                <th>APK ID</th>
+                <th>APK 名称</th>
+                <th>APK ICON</th>
+                <th>日期</th>
+                <th><a class="btn btn-success" href="{{ url_for('apk.category_apk_add', category_id=category.id) }}"
+                       role="button">新增</a>
+                    <a class="btn btn-warning" href="#" role="button"
+                       onclick="del_all_apk_category_apk( {{ category.id }}, {{ pagination.page }})">删除</a>
+                </th>
+            </tr>
+            {% for category_apk in category_apks %}
+                <tr>
+                    <td><input type="checkbox" id="{{ category_apk.apk_id }}" name="selectFlag"></td>
+                    <td>{{ category_apk.apk_id }}</td>
+                    <td>{{ category_apk.apk.apk_name }}</td>
+                    <td>{{ category_apk.add_time | datetimeformat("%Y-%m-%d") }}</td>
+                    <td>
+                        <a class="btn btn-warning"
+                           href="{{ url_for('apk.category_apk_del', category_id=category.id,
+                           apk_id = category_apk.apk_id, page=pagination.page ) }}"
+                           role="button" onclick="delete_confirm()">
+                            删除
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination, 'apk.category_apk_list', category_id=category.id) }}
+    </div>
+{% endblock %}

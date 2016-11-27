@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask.ext.wtf import Form
-from wtforms import StringField, SubmitField, FileField, HiddenField, TextAreaField, SelectField, RadioField
+from wtforms import StringField, SubmitField, FileField, HiddenField, TextAreaField, SelectField
 from wtforms.validators import Length, DataRequired
 
 

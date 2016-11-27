@@ -713,6 +713,38 @@ class DeviceQueue(db.Model):
         return 'DeviceQueue %r, %r, %r' % self.device_id % self.game_id % self.server_id % self.business_id
 
 
+class CategoryApk(db.Model):
+    __tablename__ = 'tb_category_apk'
+    apk_id = db.Column(db.Integer, db.ForeignKey('tb_apk.id'), primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('tb_category.id'), primary_key=True)
+    add_time = db.Column(db.DateTime, default=datetime.now())
+
+
+class Category(db.Model):
+    __tablename__ = 'tb_category'
+    id = db.Column(db.Integer, primary_key=True)
+    category_name = db.Column(db.String(50))
+    add_time = db.Column(db.DateTime(), default=datetime.now)
+    state = db.Column(db.Integer, default=1)
+
+    apk = db.relationship('CategoryApk', foreign_keys=[CategoryApk.category_id],
+                          backref=db.backref('category', lazy='joined'),
+                          lazy='dynamic',
+                          cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return 'Category %r, %r, %r' % self.id % self.category_name % self.add_time
+
+    def to_json(self):
+        category_apk = {
+            'id': self.id,
+            'category_name': self.category_name,
+            'add_time': datetime_timestamp(self.add_time),
+            'state': self.state,
+        }
+        return category_apk
+
+
 class Apk(db.Model):
     __tablename__ = 'tb_apk'
     id = db.Column(db.Integer, primary_key=True)
@@ -733,6 +765,11 @@ class Apk(db.Model):
     rec = db.Column(db.Integer, default=0)  # 推荐值 大于0表示推荐游戏,按照 rec 降序排列
 
     user = db.relationship('UserApk', foreign_keys=[UserApk.apk_id],
+                           backref=db.backref('apk', lazy='joined'),
+                           lazy='dynamic',
+                           cascade='all, delete-orphan')
+
+    category = db.relationship('CategoryApk', foreign_keys=[CategoryApk.apk_id],
                            backref=db.backref('apk', lazy='joined'),
                            lazy='dynamic',
                            cascade='all, delete-orphan')

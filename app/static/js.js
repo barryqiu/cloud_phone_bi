@@ -84,6 +84,32 @@ function del_all_apk(page) {
     });
 }
 
+function del_all_apk_category(page) {
+    event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
+    var str = "0";
+    $("[name='selectFlag']:checkbox").each(function () {
+        if (this.checked == true) {
+            str += "," + this.id ;
+        }
+    });
+    $.get("/apk/category/" + page + "/del/" + str, function (result) {
+        self.location.reload();
+    });
+}
+
+function del_all_apk_category_apk(category_id, page) {
+    event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
+    var str = "0";
+    $("[name='selectFlag']:checkbox").each(function () {
+        if (this.checked == true) {
+            str += "," + this.id ;
+        }
+    });
+    $.get("/apk/category/"+ category_id +"/apk/"+ page +"/del/"+ str, function (result) {
+        self.location.reload();
+    });
+}
+
 
 
 function delete_confirm()

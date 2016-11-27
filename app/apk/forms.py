@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask.ext.wtf import Form
-from wtforms import StringField, SubmitField, FileField, HiddenField, TextAreaField, SelectField, RadioField
+from wtforms import StringField, SubmitField, FileField, HiddenField, TextAreaField, SelectField
 from wtforms.validators import Length, DataRequired
 
 
@@ -17,4 +17,14 @@ class AddApkForm(Form):
     squareimg = FileField('小图')
     datafilenames = TextAreaField('数据文件')
     id = HiddenField()
+    submit = SubmitField('提交')
+
+
+class CategoryForm(Form):
+    category_name = StringField('分类名', validators=[DataRequired(), Length(1,50)])
+    submit = SubmitField('提交')
+
+
+class CategoryApkForm(Form):
+    apk_id = StringField('APK ID')
     submit = SubmitField('提交')

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}APK 分类列表{% endblock %}
+
+{% block page_content %}
+    <div class="container">
+        <div class="page-header">
+            <h1> APK 分类列表</h1>
+        </div>
+        <table class="table table-striped">
+            <tr>
+                <th width="5%">
+                    <input type="checkbox" id="checkAll">
+                </th>
+                <th>ID</th>
+                <th>分类名</th>
+                <th>日期</th>
+                <th>APK 列表</th>
+                <th><a class="btn btn-success" href="{{ url_for('apk.category_add') }}"
+                       role="button">新增</a>
+                    <a class="btn btn-warning" href="#" role="button" onclick="del_all_apk_category({{ pagination.page }})">删除</a>
+                </th>
+            </tr>
+            {% for category in categories %}
+                <tr>
+                    <td><input type="checkbox" id="{{ category.id }}" name="selectFlag"></td>
+                    <td>{{ category.id }}</td>
+                    <td>{{ category.category_name }}</td>
+                    <td>{{ category.add_time | datetimeformat("%Y-%m-%d") }}</td>
+                    <td><a href="{{ url_for('apk.category_apk_list', category_id=category.id) }}">APK 列表</a></td>
+                    <td>
+                        <a class="btn btn-info"
+                           href="{{ url_for('apk.category_edit', category_id=category.id,page=pagination.page) }}"
+                           role="button">编辑</a>
+                        <a class="btn btn-warning"
+                           href="{{ url_for('apk.category_del', category_id=category.id,page=pagination.page ) }}"
+                           role="button" onclick="delete_confirm()">
+                            删除
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination, 'apk.category_list') }}
+    </div>
+{% endblock %}
