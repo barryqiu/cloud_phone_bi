@@ -30,13 +30,13 @@
                     <li><a href="{{ url_for('user.user_list') }}">用户管理</a></li>
                     <li><a href="{{ url_for('apk.apk_list') }}">APK管理</a></li>
                     <li><a href="{{ url_for('apk.category_list') }}">APK 分类管理</a></li>
-                    <li><a href="{{ url_for('server.server_list') }}">服务器管理</a></li>
+{#                    <li><a href="{{ url_for('server.server_list') }}">服务器管理</a></li>#}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated() %}
                         <li>
                             <a>
-                                {{ current_user.user_name }}
+                                {{ current_user.mobile_num }}
                             </a>
                         </li>
                         <li class="dropdown">

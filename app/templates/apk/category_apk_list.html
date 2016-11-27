@@ -27,6 +27,7 @@
                     <td><input type="checkbox" id="{{ category_apk.apk_id }}" name="selectFlag"></td>
                     <td>{{ category_apk.apk_id }}</td>
                     <td>{{ category_apk.apk.apk_name }}</td>
+                    <td><img src="{{ category_apk.apk.icon_url }}" class="img-circle" height="50px" width="50px"></td>
                     <td>{{ category_apk.add_time | datetimeformat("%Y-%m-%d") }}</td>
                     <td>
                         <a class="btn btn-warning"

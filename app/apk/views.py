@@ -262,39 +262,47 @@ def category_del(page, category_id):
 @login_required
 def category_apk_add(category_id):
     form = CategoryApkForm()
+    category = Category.query.get(category_id)
     if form.validate_on_submit():
         try:
-            category_apk = CategoryApk(apk_id=form.apk_id.data, category_id=category_id)
+            apk_id = form.apk_id.data
+            curr_apk = Apk.query.get(apk_id)
+            if not curr_apk:
+                flash('wrong apk id ')
+                return render_template('apk/category_apk_add.html', form=form, category=category)
+            category_apk = CategoryApk(apk=curr_apk, category=category)
             db.session.add(category_apk)
             db.session.commit()
             flash('add category apk success')
         except Exception:
             flash('add category task fail', 'error')
-        return redirect(url_for('apk.category_apk_add'))
-    category = Category.query.get(category_id)
+        return redirect(url_for('apk.category_apk_list', category_id=category_id))
     return render_template('apk/category_apk_add.html', form=form, category=category)
 
 
-@apk.route('/category/list', defaults={'page': 1})
+@apk.route('/category/<int:category_id>/apk/list', defaults={'page': 1})
 @apk.route('/category/<int:category_id>/apk/list/<int:page>')
 @login_required
 def category_apk_list(category_id, page):
+    category = Category.query.get(category_id)
     pagination = CategoryApk.query.filter_by(category_id=category_id).paginate(
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
     category_apks = pagination.items
-    return render_template('apk/category_apk_list.html', category_apks=category_apks, pagination=pagination)
+    return render_template('apk/category_apk_list.html', category_apks=category_apks, category=category,
+                           pagination=pagination)
 
 
-@apk.route('/category/<category_id>/apk/<page>/del/<string:apk_id>')
+@apk.route('/category/<category_id>/apk/<page>/del/<apk_id>')
 @login_required
 def category_apk_del(page, category_id, apk_id):
     try:
         apk_ids = apk_id.split(",")
-        CategoryApk.query.filter(CategoryApk.apk_id.in_(apk_ids) & CategoryApk.category_id == category_id).delete(
-            synchronize_session='fetch')
+        CategoryApk.query.filter(CategoryApk.apk_id.in_(apk_ids),
+                                 CategoryApk.category_id == category_id).delete(
+                                synchronize_session='fetch')
         db.session.commit()
         flash('del success.')
     except Exception, e:
         db.session.rollback()
         flash('del fail.', 'error')
-    return redirect(url_for('apk.category_apk_list', page=page))
+    return redirect(url_for('apk.category_apk_list', category_id=category_id, page=page))
