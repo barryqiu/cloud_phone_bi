@@ -456,7 +456,6 @@ class AgentRecord(db.Model):
     address_map = db.Column(db.String(40), default='')
     state = db.Column(db.Integer, default=1)
     business_id = db.Column(db.Integer, default=0)
-    apk_id = db.Column(db.Integer, db.ForeignKey('tb_apk.id'))
     remark = db.Column(db.String(150))
 
     def __repr__(self):
