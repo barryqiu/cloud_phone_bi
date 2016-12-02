@@ -120,7 +120,7 @@ def allot_device():
 
         Device.incr_allot("1.1", ALLOT_SUCCESS)
 
-        app.logger.info('allot success user_id : %d, game_id: %d, device_id: %d' % user_id % game_id % idle_device.id)
+        app.logger.info('allot success user_id : %d, game_id: %d, device_id: %d' % (user_id, game_id,  idle_device.id))
 
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
@@ -227,7 +227,7 @@ def free_device():
             "device_name": device.device_name
         }
 
-        app.logger.info('free success user_id : %d, device_id: %d, record_id: %d' % user_id % device_id % record_id)
+        app.logger.info('free success user_id : %d, device_id: %d, record_id: %d' % (user_id, device_id, record_id))
 
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
