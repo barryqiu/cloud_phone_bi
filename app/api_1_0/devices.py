@@ -154,6 +154,7 @@ def allot_device():
             "game_name": game.game_name
         }
         Device.incr_allot("1.0", ALLOT_SUCCESS)
+        app.logger.info('allot success user_id : %d, game_id: %d, device_id: %d' % user_id % game_id % idle_device.id)
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
         User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_LIMIT_NAME'], 1)
@@ -248,6 +249,8 @@ def free_device():
         User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_NAME'], -1)
         # increase user's allot device num limit
         User.redis_incr_ext_info(user_id, app.config['ALLOT_NUM_LIMIT_NAME'], 1)
+
+        app.logger.info('free success user_id : %d, device_id: %d, record_id: %d' % user_id % device_id % record_id)
 
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
