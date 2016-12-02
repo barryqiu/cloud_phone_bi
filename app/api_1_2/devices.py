@@ -104,7 +104,7 @@ def allot_device():
 
         Device.incr_allot("1.2", ALLOT_SUCCESS)
 
-        app.logger.info('allot success user_id : %d, apk_id: %d, device_id: %d' % (user_id, apk_id, idle_device.id))
+        app.logger.info('allot success user_id : %r, apk_id: %r, device_id: %r' % (user_id, apk_id, idle_device.id))
 
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
@@ -202,7 +202,7 @@ def free_device():
             "device_name": device.device_name
         }
 
-        app.logger.info('free success user_id : %d, device_id: %d, record_id: %d' % (user_id, device_id, record_id))
+        app.logger.info('free success user_id : %r, device_id: %r, record_id: %r' % (user_id, device_id, record_id))
 
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
