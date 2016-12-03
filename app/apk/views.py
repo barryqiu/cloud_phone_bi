@@ -177,7 +177,7 @@ def apk_edit(page, apk_id):
 @apk.route('/list/<int:page>')
 @login_required
 def apk_list(page):
-    pagination = Apk.query.filter_by(state=1).order_by(Apk.id.aesc()).paginate(
+    pagination = Apk.query.filter_by(state=1).order_by(Apk.id.asc()).paginate(
         page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
     apks = pagination.items
     return render_template('apk/list.html', apks=apks, pagination=pagination)
