@@ -15,6 +15,7 @@ from ..constant import *
 def allot_device():
     restore_device_ids = []
     idle_device = None
+    user_id = 0
     try:
 
         # raise MyException(message='exceed the max allot num error', code=ERR_CODE_EXCEED_ALLOT_NUM_ERROR)
@@ -118,6 +119,8 @@ def allot_device():
         }
 
         Device.incr_allot("1.1", ALLOT_SUCCESS)
+
+        app.logger.error('allot success user_id : %r, game_id: %r, device_id: %r' % (user_id, game_id,  idle_device.id))
 
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
@@ -223,6 +226,8 @@ def free_device():
             "device_id": device_id,
             "device_name": device.device_name
         }
+
+        app.logger.error('free success user_id : %r, device_id: %r, record_id: %r' % (user_id, device_id, record_id))
 
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:

@@ -187,15 +187,16 @@ class User(UserMixin, db.Model):
         return '<User %r>' % self.mobile_num
 
     @staticmethod
-    def verify_auth_token(token):
+    def verify_auth_token(token, verify_current):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
         except:
             return None
-        new_token = User.redis_get_token(data['id'])
-        if new_token and new_token != token:
-            return None
+        if verify_current:
+            new_token = User.redis_get_token(data['id'])
+            if new_token and new_token != token:
+                return None
         return User.query.get(data['id'])
 
     @staticmethod

@@ -7,6 +7,7 @@ from ..in_api_1_0 import in_api
 from ..models import User
 from . import api
 from .errors import unauthorized, forbidden
+import re
 
 auth = HTTPBasicAuth()
 
@@ -24,7 +25,8 @@ def verify_password(mobile_num_or_token, password):
                     request.endpoint == 'api1_1.unix_time' or request.endpoint == 'api1_1.device_map':
         return True
     if password == '':
-        g.current_user = User.verify_auth_token(mobile_num_or_token)
+        pattern = re.compile(r'api\..*')
+        g.current_user = User.verify_auth_token(mobile_num_or_token, not pattern.match(request.endpoint))
         g.token_used = True
         return g.current_user is not None
     user = User.query.filter_by(mobile_num=mobile_num_or_token).first()
