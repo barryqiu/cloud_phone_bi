@@ -228,7 +228,7 @@ def user_device():
             one['remark'] = user_record.remark
             one['apk_icon'] = filter_upload_url(user_record.apk.icon_url)
             one['music_url'] = filter_upload_url(user_record.apk.music_url)
-            one['apk_name'] = filter_upload_url(user_record.apk.apk_name)
+            one['apk_name'] = user_record.apk.apk_name
             one['apk_banner'] = filter_upload_url(user_record.apk.banner_url)
             ret.append(one)
 
@@ -250,7 +250,7 @@ def user_device_web():
             one['apk_id'] = user_record.apk_id
             one['apk_icon'] = filter_upload_url(user_record.apk.icon_url)
             one['music_url'] = filter_upload_url(user_record.apk.music_url)
-            one['apk_name'] = filter_upload_url(user_record.apk.apk_name)
+            one['apk_name'] = user_record.apk.apk_name
             one['apk_banner'] = filter_upload_url(user_record.apk.banner_url)
             one['record_id'] = user_record.id
             one['start_time'] = datetime_timestamp(user_record.start_time)
