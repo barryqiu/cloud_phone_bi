@@ -262,3 +262,24 @@ def user_device_web():
     except Exception as e:
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api1_2.route('/device/agent/record/remark', methods=['POST'])
+def edit_device_agent_record():
+    try:
+        user_id = g.current_user.id
+        record_id = request.json.get('record_id')
+        if not record_id:
+            raise ValidationError('empty record_id')
+        remark = request.json.get('remark')
+        record = AgentRecord2.query.get(record_id)
+        if not record or record.user_id != user_id:
+            raise ValidationError('wrong record id')
+
+        record.remark = remark
+        db.session.add(record)
+        db.session.commit()
+        return jsonify(BaseApi.api_success("success"))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
