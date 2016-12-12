@@ -226,6 +226,10 @@ def user_device():
             one['address'] = user_record.address_map
             one['start_time'] = datetime_timestamp(user_record.start_time)
             one['remark'] = user_record.remark
+            one['apk_icon'] = filter_upload_url(user_record.apk.icon_url)
+            one['music_url'] = filter_upload_url(user_record.apk.music_url)
+            one['apk_name'] = user_record.apk.apk_name
+            one['apk_banner'] = filter_upload_url(user_record.apk.banner_url)
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
@@ -244,8 +248,9 @@ def user_device_web():
         for user_record in user_records:
             one = user_record.device.to_json()
             one['apk_id'] = user_record.apk_id
-            one['apk_name'] = user_record.apk.apk_name
             one['apk_icon'] = filter_upload_url(user_record.apk.icon_url)
+            one['music_url'] = filter_upload_url(user_record.apk.music_url)
+            one['apk_name'] = user_record.apk.apk_name
             one['apk_banner'] = filter_upload_url(user_record.apk.banner_url)
             one['record_id'] = user_record.id
             one['start_time'] = datetime_timestamp(user_record.start_time)
@@ -254,6 +259,27 @@ def user_device_web():
             ret.append(one)
 
         return jsonify(BaseApi.api_success(ret))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api1_2.route('/device/agent/record/remark', methods=['POST'])
+def edit_device_agent_record():
+    try:
+        user_id = g.current_user.id
+        record_id = request.json.get('record_id')
+        if not record_id:
+            raise ValidationError('empty record_id')
+        remark = request.json.get('remark')
+        record = AgentRecord2.query.get(record_id)
+        if not record or record.user_id != user_id:
+            raise ValidationError('wrong record id')
+
+        record.remark = remark
+        db.session.add(record)
+        db.session.commit()
+        return jsonify(BaseApi.api_success("success"))
     except Exception as e:
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
