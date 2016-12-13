@@ -49,13 +49,13 @@ def new_user():
         user = User.from_json(request.json)
 
         # verify code
-        code = request.json.get('code')
-        redis_key = ('YUNPHONE:VERIFYCODE:%s' % user.mobile_num).upper()
-        code_redis = redis_store.get(redis_key)
-
-        if not app.config['DEBUG']:
-            if not code_redis or code != code_redis:
-                return jsonify(BaseApi.api_wrong_verify_code())
+        # code = request.json.get('code')
+        # redis_key = ('YUNPHONE:VERIFYCODE:%s' % user.mobile_num).upper()
+        # code_redis = redis_store.get(redis_key)
+        #
+        # if not app.config['DEBUG']:
+        #     if not code_redis or code != code_redis:
+        #         return jsonify(BaseApi.api_wrong_verify_code())
 
         now_user = User.query.filter_by(mobile_num=user.mobile_num).first()
         if now_user:
