@@ -100,6 +100,14 @@ class BaseApi:
         }
         return ret
 
+    @staticmethod
+    def api_common_error(code, msg):
+        ret = {
+            'err_code': code,
+            'content': msg
+        }
+        return ret
+
 
 @api.before_app_first_request
 def init_queue():

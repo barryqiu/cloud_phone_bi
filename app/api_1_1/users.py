@@ -8,7 +8,11 @@ from flask import current_app as app
 @api1_1.route('/user')
 def get_user():
     try:
-        return jsonify(BaseApi.api_success(g.current_user.to_json()))
+        user = g.current_user
+        allot_num_limit = User.redis_get_ext_info(user.id, 'allot_num_limit')
+        user_json = user.to_json()
+        user_json['allot_num_limit'] = allot_num_limit
+        return jsonify(BaseApi.api_success(user_json))
     except Exception as e:
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
