@@ -10,8 +10,11 @@ def get_user():
     try:
         user = g.current_user
         allot_num_limit = User.redis_get_ext_info(user.id, 'allot_num_limit')
+        allot_num_curr = User.redis_get_ext_info(user.id, 'allot_num')
+
         user_json = user.to_json()
         user_json['allot_num_limit'] = allot_num_limit
+        user_json['allot_num'] = allot_num_curr
         return jsonify(BaseApi.api_success(user_json))
     except Exception as e:
         app.logger.exception('info')
