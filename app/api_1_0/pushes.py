@@ -15,18 +15,16 @@ def new_push():
         if not msg_type:
             raise ValidationError('no msg type')
 
-        device_id = request.json.get('device_id')
-        if not device_id:
+        device_ids = request.json.get('device_id')
+        if not device_ids:
             raise ValidationError('no device id')
 
-        device = Device.query.get(device_id)
-        if not device:
-            raise ValidationError('wrong device id')
-
+        deviceids = device_ids.split(",")
+        devices = Device.query.filter(Device.id.in_(deviceids)).all()
         content = request.json.get('content')
-
-        ret = push_message_to_device(device.device_name, content, msg_type)
-
+        ret = False
+        for device in devices:
+            ret = push_message_to_device(device.device_name, content, msg_type)
         return jsonify(BaseApi.api_success(ret))
     except Exception as e:
         db.session.rollback()
