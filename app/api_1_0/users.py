@@ -48,6 +48,9 @@ def new_user():
     try:
         user = User.from_json(request.json)
 
+        invite_code = request.json.get('invite_code')
+        if invite_code != "48936542":
+            raise ValidationError("wrong invite_code")
         # verify code
         # code = request.json.get('code')
         # redis_key = ('YUNPHONE:VERIFYCODE:%s' % user.mobile_num).upper()

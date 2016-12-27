@@ -39,3 +39,11 @@ ALTER TABLE `tb_agent_record`
 ADD COLUMN `remark`  varchar(150) NULL;
 
 ALTER TABLE `tb_apk` ADD COLUMN `rec` int(11) DEFAULT '0';
+
+ALTER TABLE `tb_user`
+ADD COLUMN `email`  varchar(128) NOT NULL;
+
+update tb_user set email = mobile_num;
+
+ALTER TABLE `tb_user`
+ADD UNIQUE INDEX (`email`) ;

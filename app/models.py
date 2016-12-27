@@ -84,6 +84,7 @@ class User(UserMixin, db.Model):
     __tablename__ = 'tb_user'
     id = db.Column(db.Integer, primary_key=True)
     mobile_num = db.Column(db.String(16), unique=True, index=True)
+    email = db.Column(db.String(128), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
     system_version = db.Column(db.String(64))
@@ -164,7 +165,8 @@ class User(UserMixin, db.Model):
             'android_id': self.android_id,
             'mac': self.mac,
             'state': self.state,
-            'level': self.level
+            'level': self.level,
+            'email': self.email
         }
         return json_user
 
@@ -215,6 +217,7 @@ class User(UserMixin, db.Model):
         user.imsi = json_user.get('imsi')
         user.android_id = json_user.get('android_id')
         user.mac = json_user.get('mac')
+        user.email = json_user.get('email')
         return user
 
     @staticmethod
