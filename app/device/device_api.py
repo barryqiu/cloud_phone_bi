@@ -77,8 +77,9 @@ def device_available(device):
         return True
 
     active_info = Device.get_device_active(device.id)
-    if active_info and active_info.startswith("1"):
+    ws_state = Device.get_device_ws_state(device.device_name)
     # if active_info is not None:
+    if active_info and active_info.startswith("1") and ws_state != '1':
         return True
     return False
 

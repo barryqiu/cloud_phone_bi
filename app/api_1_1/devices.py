@@ -7,7 +7,7 @@ from ..models import AgentRecord, Game, datetime_timestamp, GameServer, User
 from ..models import Device
 from .. import db
 from ..exceptions import ValidationError, MyException
-from ..utils import push_message_to_device, filter_upload_url
+from ..utils import push_message_to_device, filter_upload_url, push_closeime_to_device
 from ..constant import *
 
 
@@ -189,6 +189,7 @@ def free_device():
         try:
             if not app.config['DEBUG']:
                 push_message_to_device(device.device_name, game.data_file_names, MSG_TYPE_CLEAR)
+                push_closeime_to_device(device.device_name)
         except Exception as e:
             pass
             # app.logger.exception('info')

@@ -95,6 +95,27 @@ def push_message_to_device(device_name, content, msg_type):
     return False
 
 
+def push_closeime_to_device(device_name):
+
+    if app.config['DEBUG']:
+        return True
+
+    url = "http://yunphoneclient.shinegame.cn/%s/closeime" % device_name
+    try:
+        req = urllib2.Request(url)
+        retry_times = 0
+        while True:
+            response = urllib2.urlopen(req, timeout=2)
+            if response.code == 200:
+                return True
+            retry_times += 1
+            if retry_times > 3:
+                break
+    except Exception as e:
+        app.logger.exception('%s' % device_name)
+    return False
+
+
 def upload_to_cdn(path, file_path):
     try:
         up = upyun.UpYun(app.config['CDN_BUCKET'], username=app.config['CDN_USER_NAME'],

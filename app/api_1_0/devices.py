@@ -8,7 +8,7 @@ from ..models import AgentRecord, Game, datetime_timestamp, User
 from ..models import Device
 from .. import db
 from app.exceptions import ValidationError, MyException
-from app.utils import push_message_to_device
+from app.utils import push_message_to_device, push_closeime_to_device
 from ..constant import *
 
 
@@ -214,6 +214,7 @@ def free_device():
         try:
             if not app.config['DEBUG']:
                 push_message_to_device(device.device_name, game.data_file_names, MSG_TYPE_CLEAR)
+                push_closeime_to_device(device.device_name)
         except BaseException, e:
             pass
             # return jsonify(BaseApi.api_jpush_error())
