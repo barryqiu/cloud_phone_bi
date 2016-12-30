@@ -42,7 +42,7 @@ def get_apk_category():
 @api1_1.route('/category/<int:category_id>/apk/<int:page>')
 def get_apk_by_category(category_id, page):
     try:
-        pagination = CategoryApk.query.filter_by(category_id=category_id).paginate(
+        pagination = CategoryApk.query.filter_by(category_id=category_id).order_by(CategoryApk.apk_id.desc()).paginate(
             page, per_page=app.config['GAME_NUM_PER_PAGE'], error_out=False)
         ret = {'apks': [category_apk.apk.to_json() for category_apk in pagination.items], 'pageinfo': convert_pagination(pagination)}
         return jsonify(BaseApi.api_success(ret))
