@@ -284,3 +284,19 @@ def edit_device_agent_record():
     except Exception as e:
         app.logger.exception('info')
         return jsonify(BaseApi.api_system_error(e.message))
+
+
+@api1_2.route('/device/run/package/<string:name>')
+def get_run_apk_device(name):
+    try:
+        device = Device.query.filter_by(device_name=name).first()
+        if device is None:
+            return jsonify(BaseApi.api_wrong_param())
+        agent_record = get_agent_record_by_device_id_v2(device.id)
+        if agent_record is not None:
+            return jsonify(BaseApi.api_success(agent_record.apk.package_name))
+        else:
+            return jsonify(BaseApi.api_success(""))
+    except Exception as e:
+        app.logger.exception('info')
+        return jsonify(BaseApi.api_system_error(e.message))
